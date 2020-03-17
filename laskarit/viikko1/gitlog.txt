@@ -1,0 +1,106 @@
+commit 9733260cfcee8a1dfdc6c0631d6a13cdedf2730e
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 16:13:00 2020 +0200
+
+    harjoittelua tehty
+
+ tiedostoja/file2             | 0
+ tiedostoja/{file1 => file22} | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 66597edefc56095827699561ea7ba9f32fd1ae5f
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:52:55 2020 +0200
+
+    lisatty tiedostoja
+
+ tiedostoja/file1 | 0
+ tiedostoja/file2 | 0
+ tiedostoja/file3 | 0
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 19d3d18797255f7d741fcd45ea5eed5a684cadf4
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:47:46 2020 +0200
+
+    patch-muutokset
+
+ eka.txt    | 4 +++-
+ kolmas.txt | 2 ++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+commit ae0741a2e9296a53b9450d7e14d13d462a0185ee
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:43:20 2020 +0200
+
+    tiedosto.txt nimetty uudelleen eka.txt
+
+ tiedosto.txt => eka.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 97519f59a5507a6f7e8da83c86166bb82313ba6a
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:41:27 2020 +0200
+
+    toinen.txt poistettu
+
+ toinen.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit 58cae05af113c5bb08733449bfd9a94cedabbdfe
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:38:46 2020 +0200
+
+    txt poistettu ja lisätty
+
+ tiedosto.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit ca4fa378bd9d595dd98a37762d20bce93bbd9e9c
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:37:19 2020 +0200
+
+    txt lisätty
+
+ tiedosto.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 212c50471f46aadf695f93814d9733ff69737ce2
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:32:30 2020 +0200
+
+    muutokset ja kansio
+
+ kolmas.txt              | 1 +
+ stuff/jokintiedosto.txt | 0
+ toinen.txt              | 1 +
+ 3 files changed, 2 insertions(+)
+
+commit e589171f61f499438100f1a53a4708cb5fceb096
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:29:48 2020 +0200
+
+    kolmas tiedosto
+
+ kolmas.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 417858739eec37ad2e5e9f6ca39b4197a78da809
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:27:36 2020 +0200
+
+    muutos ja lisäys
+
+ tiedosto.txt | 1 +
+ toinen.txt   | 0
+ 2 files changed, 1 insertion(+)
+
+commit b20982308df66bfc6d1aa3960279138934a52c2f
+Author: Sami <thekirvesmies@hotmail.com>
+Date:   Tue Mar 17 14:24:57 2020 +0200
+
+    tiedosto.txt luotu
+
+ tiedosto.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
