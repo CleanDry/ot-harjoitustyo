@@ -9,3 +9,5 @@ T채m채 repositorio on **harjoittelua varten tehty** joten siit채 ei pid채 vet채�
 [gitlog.txt](https://github.com/CleanDry/ot-harjoitustyo/blob/master/laskarit/viikko1/gitlog.txt)
 
 [komentorivi.txt](https://github.com/CleanDry/ot-harjoitustyo/blob/master/laskarit/viikko1/komentorivi.txt)
+
+### Viikko 2
