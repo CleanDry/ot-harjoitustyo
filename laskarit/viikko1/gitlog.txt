@@ -104,3 +104,4 @@ Date:   Tue Mar 17 14:24:57 2020 +0200
  tiedosto.txt | 0
  1 file changed, 0 insertions(+), 0 deletions(-)
 
+Loppuun tehty editointi harjoitukseksi.
