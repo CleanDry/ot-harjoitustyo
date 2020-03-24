@@ -12,6 +12,8 @@ Tämä repositorio on **harjoittelua varten tehty** joten siitä ei pidä vetä�
 
 ### Viikko 2
 
+[testikattavuuden kuvankaappaus](https://github.com/CleanDry/ot-harjoitustyo/blob/master/laskarit/viikko2/Viikon%202%20laskarin%20kassapaatteen%20testien%20kattavuus.png)
+
 ### Harjoitustyö
 
 [Työaikakirjanpito](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Ohjelmistotekniikan%20harjoitusty%C3%B6n%20ty%C3%B6aikakirjanpito.md)
