@@ -14,6 +14,6 @@ Tämä repositorio on **harjoittelua varten tehty** joten siitä ei pidä vetä�
 
 ### Harjoitustyö
 
-[Työaikakirjanpito](https://github.com/CleanDry/ot-harjoitustyo/blob/master/Ohjelmistotekniikan%20harjoitusty%C3%B6n%20ty%C3%B6aikakirjanpito.md)
+[Työaikakirjanpito](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Ohjelmistotekniikan%20harjoitusty%C3%B6n%20ty%C3%B6aikakirjanpito.md)
 
-[Alustava määrittelydokumentti](https://github.com/CleanDry/ot-harjoitustyo/blob/master/Ohjelmistotekniikan%20harjoitusty%C3%B6n%20alustava%20vaatimusm%C3%A4%C3%A4rittely.md)
+[Alustava määrittelydokumentti](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Ohjelmistotekniikan%20harjoitusty%C3%B6n%20alustava%20vaatimusm%C3%A4%C3%A4rittely.md)
