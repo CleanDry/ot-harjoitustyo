@@ -22,10 +22,10 @@ Sovellus koostuu ainakin kolmesta näkymästä: Kirjautuminäkymä, käyttäjät
 ### Kirjautumisen jälkeen
     • Käyttäjä voi lisätä ja poistaa tyhjiä projektikategorioita (esim. Warhammer, BFG, Sekalaiset)
     • Kategorioihin voi lisätä ja poistaa tyhjiä projekteja (esim yksikkö, ajoneuvo, maastonkappale). 
-      Kategoriat ovat ryhmiteltynä projektiin liittyvän organisaation mukaan (esim Astra Militarum, maasto).
+      Kategoriat ovat ryhmiteltynä projektiin liittyvän organisaation mukaan (esim Astra Militarum, maasto)
     • Projekteihin voi lisätä ja poistaa alaprojekteja (esim. rivisotilas, kersantti, maastonkappaleen 
       elementti). 
-      Projekteja voi merkitä valmistuneiksi ja valmistuneeksi merkityt projektit voi siirtää arkisto-osioon. 
+      Projekteja voi merkitä valmistuneiksi ja valmistuneeksi merkityt projektit voi siirtää arkisto-osioon
       Poistetut projektit siirtyvät poistetut-osioon, josta projekteja voi siirtää takaisin varsinaisiin 
       tai poistaa kokonaan.
     • Alaprojekteihin voi lisätä ja poistaa maalipintoja (esim. metalliset osat, vaatteet, jalusta).
