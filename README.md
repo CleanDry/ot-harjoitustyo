@@ -1,21 +1,31 @@
-# README
+# Kirjanpitosovellus maalausprojekteille
 
-## Repositorion yleiskuvaus
+Sovelluksen avulla käyttäjät voivat pitää suojatusti kirjaa, organisoida ja arkistoida maalausprojektejaan. Sovellusta voi käyttää useampi käyttäjä, joiden projektit ovat tallessa henkilökohtaisen salasanan takana.
 
-Tämä repositorio on **harjoittelua varten tehty** joten siitä ei pidä vetää *liian pitkälle meneviä johtopäätöksiä*.
+Sovelluksen ensimmäisessä iteraatiossa toiminnassa ovat harjoitustyölle viikolla 3 vaadittavat ominaisuudet:
+- Repositorion juuresta löytyy Maven-projekti
+- Projektin pystyy suorittamaan NetBeansista tai komentokehotteesta komennolla mvn compile exec:java -Dexec.mainClass=maalausprojektikirjanpito.ui.Main
+ - *HUOM. projektin Maven-liitännäiset täytyy ensin ladata ennen komennon käyttöä, onnistuu mm NetBeansista right-clickaamalla Dependencies ja valitsemalla "Download Declared Dependencies"*
+- Toiminnassa on käyttäjätunnuksen luominen, sisäänkirjautuminen ja uloskirjautuminen
+- Toiminnassa on kourallinen testejä jotka menevät läpi
+- Testikattavuusraportin generointi onnistuu
+- Sovelluksen toimivuus on tarkastettu laitoksen järjestelmällä etäyhteyden välityksellä, sekä komentokehotteesta että NetBeansilla.
 
-### Viikko 1
-
-[gitlog.txt](https://github.com/CleanDry/ot-harjoitustyo/blob/master/laskarit/viikko1/gitlog.txt)
-
-[komentorivi.txt](https://github.com/CleanDry/ot-harjoitustyo/blob/master/laskarit/viikko1/komentorivi.txt)
-
-### Viikko 2
-
-[testikattavuuden kuvankaappaus](https://github.com/CleanDry/ot-harjoitustyo/blob/master/laskarit/viikko2/Viikon%202%20laskarin%20kassapaatteen%20testien%20kattavuus.png)
-
-### Harjoitustyö
+## Dokumentaatio
 
 [Työaikakirjanpito](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Ohjelmistotekniikan%20harjoitusty%C3%B6n%20ty%C3%B6aikakirjanpito.md)
 
 [Alustava määrittelydokumentti](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Ohjelmistotekniikan%20harjoitusty%C3%B6n%20alustava%20vaatimusm%C3%A4%C3%A4rittely.md)
+
+## Komentorivitoiminnot
+
+Testit suoritetaan komennolla
+```
+mvn test
+```
+Testikattavuusraportti luodaan komennolla
+
+```
+mvn jacoco:report
+```
+Kattavuusraporttia voi tarkastella avaamalla selaimella tiedosto _target/site/jacoco/index.html_
