@@ -5,7 +5,7 @@ Sovelluksen avulla käyttäjät voivat pitää suojatusti kirjaa, organisoida ja
 Sovelluksen ensimmäisessä iteraatiossa toiminnassa ovat harjoitustyölle viikolla 3 vaadittavat ominaisuudet:
 - Repositorion juuresta löytyy Maven-projekti
 - Projektin pystyy suorittamaan NetBeansista tai komentokehotteesta komennolla mvn compile exec:java -Dexec.mainClass=maalausprojektikirjanpito.ui.Main
- - *HUOM. projektin Maven-liitännäiset täytyy ensin ladata ennen komennon käyttöä, onnistuu mm NetBeansista right-clickaamalla Dependencies ja valitsemalla "Download Declared Dependencies"*
+  - **HUOM. projektin Maven-liitännäiset täytyy ensin ladata ennen komennon käyttöä, onnistuu mm NetBeansista right-clickaamalla Dependencies ja valitsemalla "Download Declared Dependencies"**
 - Toiminnassa on käyttäjätunnuksen luominen, sisäänkirjautuminen ja uloskirjautuminen
 - Toiminnassa on kourallinen testejä jotka menevät läpi
 - Testikattavuusraportin generointi onnistuu
