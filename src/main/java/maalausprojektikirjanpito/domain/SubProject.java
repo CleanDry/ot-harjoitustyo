@@ -2,14 +2,14 @@ package maalausprojektikirjanpito.domain;
 
 import java.util.ArrayList;
 
-public class Subproject {
+public class SubProject {
     String name;
     boolean completed;
     boolean archived;
     boolean isInTrash;
     ArrayList<Surface> surfaces;
 
-    public Subproject(String name) {
+    public SubProject(String name) {
         this.name = name;
         this.completed = false;
         this.archived = false;

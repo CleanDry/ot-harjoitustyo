@@ -2,13 +2,13 @@ package maalausprojektikirjanpito.domain;
 
 import java.util.ArrayList;
 
-public class ProjectCategory {
+public class PaintProject {
     String name;
-    ArrayList<PaintingProject> projects;
+    ArrayList<SubProject> subprojects;
 
-    public ProjectCategory(String name) {
+    public PaintProject(String name) {
         this.name = name;
-        this.projects = new ArrayList<>();
+        this.subprojects = new ArrayList<>();
     }
 
     public String getName() {
@@ -19,8 +19,8 @@ public class ProjectCategory {
         this.name = name;
     }
 
-    public ArrayList getProjects() {
-        return projects;
-    }
+    public ArrayList getSubprojects() {
+        return subprojects;
+    }    
     
 }

@@ -42,11 +42,26 @@ public class ManagerServiceTest {
         service.createUser("username", "password");
         assertFalse(service.createUser("username", "password"));
     }
-
-
+    
     @Test
-    public void logifFailsIfFieldsEmpty() {
+    public void userCreationFailsIfNameOrPwNotLongEnoughAndSucceedsOtherwise() {
+        assertFalse(service.createUser("username", "pass"));
+        assertFalse(service.createUser("us", "password"));
+        assertFalse(service.createUser("us", "pass"));
+        assertTrue(service.createUser("username", "password"));
+    }
+    
+    @Test
+    public void loginfFailsIfFieldsEmpty() {
         assertFalse(service.login("", ""));
+    }
+    
+    @Test
+    public void loginfFailsIfPairNotMatching() {
+        assertTrue(service.createUser("username", "password"));
+        assertFalse(service.login("username", "pass"));
+        assertFalse(service.login("user", "password"));
+        assertFalse(service.login("user", "pass"));
     }
     
     @Test
