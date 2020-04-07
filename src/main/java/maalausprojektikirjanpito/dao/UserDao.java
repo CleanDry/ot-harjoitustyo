@@ -6,11 +6,14 @@ import maalausprojektikirjanpito.domain.User;
 
 public class UserDao implements Dao<User, Integer> {
 
+    /**
+     * Constructor.
+     */
     public UserDao() {
         Object users = this.list();
         System.out.println("users: " + users);
         if (users == null) {
-                try (Connection connection = DriverManager.getConnection("jdbc:sqlite:db/example.db")) {
+            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:db/example.db")) {
                 PreparedStatement stmt = connection.prepareStatement("CREATE TABLE Users ("
                         + "id INTEGER, "
                         + "username VARCHAR(20), "

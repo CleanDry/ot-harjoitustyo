@@ -4,6 +4,11 @@ import java.util.Scanner;
 import maalausprojektikirjanpito.domain.ManagerService;
 
 public class Main {
+    
+    /**
+     * Main method of the program, for now.
+     * @param args 
+     */
     public static void main(String[] args) {
         System.out.println("Ohjelma kääntyy ja ajaa!");
         
@@ -16,20 +21,20 @@ public class Main {
 
             if (input.equals("C")) {
                 System.out.println("Enter username:");
-                String UID = lukija.nextLine();
+                String username = lukija.nextLine();
                 System.out.println("Enter password:");
-                String PW = lukija.nextLine();
+                String password = lukija.nextLine();
                 System.out.println(service.getLoggedIn());
-                service.createUser(UID, PW);
-                service.login(UID, PW);
+                service.createUser(username, password);
+                service.login(username, password);
                 System.out.println(service.getLoggedIn());
             } else if (input.equals("L")) {
                 System.out.println("Enter username:");
-                String UID = lukija.nextLine();
+                String username = lukija.nextLine();
                 System.out.println("Enter password:");
-                String PW = lukija.nextLine();
+                String password = lukija.nextLine();
                 System.out.println(service.getLoggedIn());
-                service.login(UID, PW);
+                service.login(username, password);
                 System.out.println(service.getLoggedIn());
             } else if (input.equals("Q")) {
                 break;

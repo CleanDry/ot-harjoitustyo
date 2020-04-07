@@ -5,7 +5,11 @@ import java.util.ArrayList;
 public class PaintProject {
     String name;
     ArrayList<SubProject> subprojects;
-
+    
+    /**
+     * Create a new paint project object.
+     * @param name of the project
+     */
     public PaintProject(String name) {
         this.name = name;
         this.subprojects = new ArrayList<>();

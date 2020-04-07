@@ -10,6 +10,9 @@ public class ManagerService {
     private UserDao userDao;
     private HashMap<String, User> users = new HashMap<>();
 
+    /**
+     * Constructor with no parameters.
+     */
     public ManagerService() {
         // 1st DB ref!
         userDao = new UserDao();
@@ -19,13 +22,13 @@ public class ManagerService {
     }
     
     /**
-     * 
+     * Create a user to the system.
      * @param username User's username
      * @param password User's password
      * @return returns false if username already taken, username.length is less than 3 or password.length is less than 8, otherwise true
      */
     
-    public boolean createUser (String username, String password) {
+    public boolean createUser(String username, String password) {
         // Check if the given pair meets the criteria
         if (username.length() < 3 || password.length() < 8) {
             System.out.println("Username has to be at least 3 and password 8 characters");
@@ -38,18 +41,18 @@ public class ManagerService {
         System.out.println("User created successfully!");
         User user = new User(username, password);
         userDao.create(user);
-        users.put(username,user);
+        users.put(username, user);
         return true;
     }
     
     /**
-     * 
+     * login a user to the system.
      * @param username  User's username
      * @param password  User's password
      * @return false if either field is empty or no matching pair of username and password found, true if found
      */
     
-    public boolean login (String username, String password) {
+    public boolean login(String username, String password) {
         if (username.isEmpty() || password.isEmpty()) {
             System.out.println("Either field was empty!");
             return false;
@@ -62,15 +65,22 @@ public class ManagerService {
         return false;
     }
 
+    /**
+     * Find out currently logged in user.
+     * @return logged in user
+     */
     public User getLoggedIn() {
         if (loggedIn == null) {
             System.out.println("Nobody logged in!");
-            return new User("","");
+            return new User("", "");
         }
         System.out.println("Logged in: " + loggedIn.getUsername());
         return loggedIn;
     }
     
+    /**
+     * Log out current user.
+     */
     public void logout() {
         System.out.println("Logging out");
         loggedIn = null;  

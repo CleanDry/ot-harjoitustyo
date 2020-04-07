@@ -9,6 +9,10 @@ public class SubProject {
     boolean isInTrash;
     ArrayList<Surface> surfaces;
 
+    /**
+     * Create a new sub project object.
+     * @param name of the sub project
+     */
     public SubProject(String name) {
         this.name = name;
         this.completed = false;
