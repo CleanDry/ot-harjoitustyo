@@ -16,7 +16,7 @@ public interface Dao<T, K> {
     /**
      * Interface for reading an object.
      * @param key integer to be read
-     * @return object read
+     * @return object read, null if not found
      * @throws SQLException 
      */
     T read(K key) throws SQLException;
@@ -24,7 +24,7 @@ public interface Dao<T, K> {
     /**
      * Interface for updating an object.
      * @param object to be updated
-     * @return updated object
+     * @return updated object, null if not found
      * @throws SQLException 
      */
     T update(T object) throws SQLException;

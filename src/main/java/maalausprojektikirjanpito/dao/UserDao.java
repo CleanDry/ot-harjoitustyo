@@ -5,30 +5,31 @@ import java.util.*;
 import maalausprojektikirjanpito.domain.User;
 
 public class UserDao implements Dao<User, Integer> {
+    String databaseURL;
 
     /**
-     * Constructor.
+     * Constructs a new UserDao-object. Checks the existence of a Users table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
+     * @param url URL of the selected database as a String
      */
-    public UserDao() {
-        Object users = this.list();
-        System.out.println("users: " + users);
-        if (users == null) {
-            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:db/example.db")) {
-                PreparedStatement stmt = connection.prepareStatement("CREATE TABLE Users ("
-                        + "id INTEGER, "
-                        + "username VARCHAR(20), "
-                        + "password VARCHAR(20), "
-                        + "PRIMARY KEY (id)"
-                        + ");");
+    public UserDao(String url) {
+        databaseURL = url;
+        
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+            PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users ("
+                + "id INTEGER, "
+                + "username VARCHAR(20), "
+                + "password VARCHAR(20), "
+                + "PRIMARY KEY (id)"
+                + ");");
+            stmt.executeUpdate();
 
-                stmt.executeUpdate();
-
-                stmt.close();
-                connection.close();
-            } catch (SQLException e) {
-                System.out.println("Error: " + e);
-            }
+            stmt.close();
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
         }
+        
+        Object users = this.list();
     }
     
 
@@ -36,7 +37,7 @@ public class UserDao implements Dao<User, Integer> {
     public User create(User user) {
         int id = -1;
         
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:db/example.db")) {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO Users "
                     + "(username, password) "
                     + " VALUES (?,?)",
@@ -54,6 +55,7 @@ public class UserDao implements Dao<User, Integer> {
             generatedKeys.close();
             stmt.close();
             connection.close();
+            
         } catch (SQLException e) {
             System.out.println("Error: " + e);
         }
@@ -68,11 +70,16 @@ public class UserDao implements Dao<User, Integer> {
     @Override
     public User read(Integer key) {
         User user = null;
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:db/example.db")) {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Users WHERE id = (?)");
             stmt.setInt(1, key);
             ResultSet rs = stmt.executeQuery();
             user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+            
+            rs.close();
+            stmt.close();
+            connection.close();
+            
         } catch (SQLException e) {
             System.out.println("Error: " + e);
         }
@@ -80,29 +87,59 @@ public class UserDao implements Dao<User, Integer> {
     }
 
     @Override
-    public User update(User object) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public User update(User user) {
+        User updatedUser = null;
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+            PreparedStatement stmt = connection.prepareStatement("UPDATE Users "
+                    + "SET username  = ?, password = ? "
+                    + "WHERE id = " + user.getId());
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPassword());
+            stmt.executeUpdate();
+            
+            updatedUser = this.read(user.getId());
+            
+            stmt.close();
+            connection.close();
+            
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+        }
+        return updatedUser;
     }
 
     @Override
-    public void delete(Integer key) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void delete(Integer key) {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM Users "
+                    + "WHERE id = " + key);
+            stmt.executeUpdate();
+            
+            stmt.close();
+            connection.close();
+            
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+        }
     }
 
     @Override
     public List<User> list() {
         ArrayList<User> users = new ArrayList<>();
         
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:db/example.db")) {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Users");
             
             ResultSet resultSet = stmt.executeQuery();
             
             while (resultSet.next()) {
-                users.add(new User(resultSet.getString("username"), resultSet.getString("password")));
+                users.add(new User(resultSet.getInt("id"), resultSet.getString("username"), resultSet.getString("password")));
             }
             
+            resultSet.close();
             stmt.close();
+            connection.close();
+            
             return users;            
         } catch (SQLException e) {
             System.out.println("Error: " + e.toString());

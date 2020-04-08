@@ -7,7 +7,7 @@ public class User {
     private Integer identifier;
     private String username;
     private String password;
-    private HashMap<String, ArrayList<PaintProject>> projectCategories;
+    private HashMap<String, ArrayList<PaintProject>> projects;
 
     /**
      * Create a new User object.
@@ -17,7 +17,7 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.projectCategories = new HashMap<>();
+        this.projects = new HashMap<>();
     }
     
     /**
@@ -30,7 +30,7 @@ public class User {
         this.identifier = id;
         this.username = username;
         this.password = password;
-        this.projectCategories = new HashMap<>();
+        this.projects = new HashMap<>();
     }
 
     public Integer getId() {
@@ -53,8 +53,8 @@ public class User {
         this.password = password;
     }
 
-    public HashMap getProjectCategories() {
-        return projectCategories;
+    public HashMap getProjects() {
+        return projects;
     }
 
     @Override

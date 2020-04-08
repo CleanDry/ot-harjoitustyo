@@ -13,7 +13,7 @@ public class Main {
         System.out.println("Ohjelma kääntyy ja ajaa!");
         
         Scanner lukija = new Scanner(System.in);
-        ManagerService service = new ManagerService();
+        ManagerService service = new ManagerService("db/example.db");
         
         while (true) {
             System.out.println("(C)reate new, (L)ogin or (Q)uit:  ");
