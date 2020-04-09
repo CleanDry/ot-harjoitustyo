@@ -8,4 +8,5 @@ PVM | Tunnit | Työ
 03.04.2020 | 5 | Tietokantakaavioiden luonnostelu, ensimmäiset dao:t ja dao-testit, käyttöliittymän päivitys
 07.04.2020 | 1 | Luokkakaavion lisäys ja Checkstylen korjaukset
 08.04.2020 | 6 | Käyttäjätunnusten perusominaisuuksien ja niiden testauksen viimeistely
-Yhteensä   | 20 |tuntia
+09.04.2020 | 4 | Maalausprojektiluokan ja sen Daon rungon rakennusta
+Yhteensä   | 24 |tuntia
