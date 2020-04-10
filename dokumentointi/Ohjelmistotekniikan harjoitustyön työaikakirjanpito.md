@@ -9,4 +9,5 @@ PVM | Tunnit | Työ
 07.04.2020 | 1 | Luokkakaavion lisäys ja Checkstylen korjaukset
 08.04.2020 | 6 | Käyttäjätunnusten perusominaisuuksien ja niiden testauksen viimeistely
 09.04.2020 | 4 | Maalausprojektiluokan ja sen Daon rungon rakennusta
-Yhteensä   | 24 |tuntia
+10.04.2020 | 2 | PaintProjectDaon työstö
+Yhteensä   | 26 |tuntia
