@@ -123,13 +123,55 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     }
 
     @Override
-    public PaintProject update(PaintProject object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public PaintProject update(PaintProject project) {
+        PaintProject updatedProject = null;
+        if (this.projectsCache.contains(project)) {
+            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+                PreparedStatement stmt = connection.prepareStatement("UPDATE PaintProjects "
+                    + "SET user_id = ?, project_name = ?, project_category = ?, project_completed = ?, project_archived = ?, project_intrash = ? "
+                    + "WHERE project_id = ?;");
+                
+                stmt.setInt(1, project.getUser_id());
+                stmt.setString(2, project.getProject_name());
+                stmt.setString(3, project.getProject_category());
+                stmt.setBoolean(4, project.getProject_completed());
+                stmt.setBoolean(5, project.getProject_archived());
+                stmt.setBoolean(6, project.getProject_intrash());
+                stmt.setInt(7, project.getProject_id());
+                
+                stmt.executeUpdate();
+                
+                stmt.close();
+                connection.close();
+                
+                updatedProject = this.read(project.getProject_id());
+                this.projectsCache.set(this.projectsCache.indexOf(project), updatedProject);
+            } catch (SQLException e) {
+                System.out.println("Error: " + e);
+            }
+        }
+        return updatedProject;
     }
 
     @Override
-    public void delete(Integer key) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void delete(Integer project_id) {
+        PaintProject projectToRemove = this.read(project_id);
+        if (projectToRemove != null) {
+            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM PaintProjects WHERE project_id = ?");
+                
+                stmt.setInt(1, project_id);
+                
+                stmt.executeUpdate();
+                
+                stmt.close();
+                connection.close();
+                
+                this.projectsCache.remove(projectToRemove);
+            } catch (SQLException e) {
+                System.out.println("Error: " + e);
+            }
+        }
     }
 
     @Override
