@@ -10,4 +10,5 @@ PVM | Tunnit | Työ
 08.04.2020 | 6 | Käyttäjätunnusten perusominaisuuksien ja niiden testauksen viimeistely
 09.04.2020 | 4 | Maalausprojektiluokan ja sen Daon rungon rakennusta
 10.04.2020 | 2 | PaintProjectDaon työstö
-Yhteensä   | 26 |tuntia
+14.04.2020 | 4 | PaintProjectien luominen ja kirjaaminen käyttöliittymässä, aliprojektien alustava toteutus ja testaus
+Yhteensä   | 30 |tuntia
