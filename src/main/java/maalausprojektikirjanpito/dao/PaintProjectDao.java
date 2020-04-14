@@ -12,7 +12,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     ArrayList<PaintProject> projectsCache;
     
     /**
-     * Constructs a new PaintProjectDao-object.Checks the existence of a PaintProjects table in the designated database and creates one if not present.SQLITE3 used creates the database if one does not exist.
+     * Constructs a new PaintProjectDao-object. Checks the existence of a PaintProjects table in the designated database and creates one if not present.SQLITE3 used creates the database if one does not exist.
      * @param user_id User_id of the user currently logged in
      * @param databaseURL URL of the selected database as a String
      */
@@ -96,7 +96,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
         } else {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PaintProjects "
-                        + "WHERE PaintProject.project_id = (?);");
+                        + "WHERE PaintProjects.project_id = (?);");
                 
                 stmt.setInt(1, project_id);
                 ResultSet rs = stmt.executeQuery();
@@ -126,6 +126,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     public PaintProject update(PaintProject project) {
         PaintProject updatedProject = null;
         if (this.projectsCache.contains(project)) {
+            System.out.println("Project found in cache!");
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("UPDATE PaintProjects "
                     + "SET user_id = ?, project_name = ?, project_category = ?, project_completed = ?, project_archived = ?, project_intrash = ? "

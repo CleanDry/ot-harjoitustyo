@@ -48,55 +48,77 @@ public class PaintProjectDaoTest {
         testDb.delete();
     }
     
-//    @Test
-//    public void usersAreReadCorrectlyFromDb() {
-//        List<User> users = testDao.list();
-//        assertEquals(1, users.size());
-//        User user = users.get(0);
-//        assertEquals(1, user.getId().intValue());
-//        assertEquals("username", user.getUsername());
-//        assertEquals("password", user.getPassword());
-//    }
-//    
-//    @Test
-//    public void usersAreCanBeCreatedAndAreReturnedCorrectly() {
-//        User user = testDao.create(new User("user", "passphrase"));
-//        assertEquals("user", user.getUsername());
-//        assertEquals("passphrase", user.getPassword());
-//        List<User> users = testDao.list();
-//        assertEquals(2, users.size());
-//        User sameUser = users.get(1);
-//        assertEquals(2, sameUser.getId().intValue());
-//        assertEquals("user", sameUser.getUsername());
-//        assertEquals("passphrase", sameUser.getPassword());
-//    }
-//    
-//    @Test
-//    public void usersAreReadSuccessfully() {
-//        User user = testDao.read(1);
-//        assertEquals(1, user.getId().intValue());
-//        assertEquals("username", user.getUsername());
-//        assertEquals("password", user.getPassword());
-//    }
-//    
-//    @Test
-//    public void updatedUsersReturnedMatchTheUpdate() {
-//        User user = testDao.update(new User(1, "user", "passphrase"));
-//        assertEquals(1, user.getId().intValue());
-//        assertEquals("user", user.getUsername());
-//        assertEquals("passphrase", user.getPassword());
-//    }
-//    
-//    @Test
-//    public void deletedUsersAreRemovedFromDb() {
-//        User user = testDao.create(new User("user", "passphrase"));
-//        User userToDelete = testDao.read(1);
-//        testDao.delete(1);
-//        assertEquals(2, user.getId().intValue());
-//        assertEquals("user", user.getUsername());
-//        assertEquals("passphrase", user.getPassword());
-//        List<User> users = testDao.list();
-//        assertEquals(1, users.size());
-//        assertFalse(users.contains(userToDelete));
-//    }
+    @Test
+    public void projectsAreReadCorrectlyFromDb() {
+        List<PaintProject> projects = testDao.list();
+        assertEquals(1, projects.size());
+        PaintProject project = projects.get(0);
+        assertEquals(1, project.getProject_id().intValue());
+        assertEquals(1, project.getUser_id().intValue());
+        assertEquals("test_project", project.getProject_name());
+        assertEquals("test_category", project.getProject_category());
+        assertFalse(project.getProject_archived());
+        assertFalse(project.getProject_completed());
+        assertFalse(project.getProject_intrash());
+    }
+    
+    @Test
+    public void projectsCanBeCreatedAndAreReturnedCorrectly() {
+        PaintProject project = testDao.create(new PaintProject(testUser_id, "test_otherProject", "test_category"));
+        List<PaintProject> projects = testDao.list();
+        assertEquals(2, projects.size());
+        PaintProject sameProject = projects.get(1);
+        assertEquals(2, sameProject.getProject_id().intValue());
+        assertEquals(1, sameProject.getUser_id().intValue());
+        assertEquals("test_otherProject", sameProject.getProject_name());
+        assertEquals("test_category", sameProject.getProject_category());
+        assertFalse(sameProject.getProject_archived());
+        assertFalse(sameProject.getProject_completed());
+        assertFalse(sameProject.getProject_intrash());
+    }
+    
+    @Test
+    public void usersAreReadSuccessfully() {
+        PaintProject project = testDao.read(1);
+        assertEquals(1, project.getProject_id().intValue());
+        assertEquals(1, project.getUser_id().intValue());
+        assertEquals("test_project", project.getProject_name());
+        assertEquals("test_category", project.getProject_category());
+        assertFalse(project.getProject_archived());
+        assertFalse(project.getProject_completed());
+        assertFalse(project.getProject_intrash());
+    }
+    
+    @Test
+    public void updatedUsersReturnedMatchTheUpdate() {
+        PaintProject project = testDao.read(1);
+        project.setProject_name("test_otherProject");
+        PaintProject updatedProject = testDao.update(project);
+        assertNotNull(project);
+        assertEquals(1, project.getProject_id().intValue());
+        assertEquals(1, project.getUser_id().intValue());
+        assertEquals("test_otherProject", project.getProject_name());
+        assertEquals("test_category", project.getProject_category());
+        assertFalse(project.getProject_archived());
+        assertFalse(project.getProject_completed());
+        assertFalse(project.getProject_intrash());
+    }
+    
+    @Test
+    public void deletedUsersAreRemovedFromDb() {
+        testDao.create(new PaintProject(testUser_id, "test_otherProject", "test_category"));
+        PaintProject projectToDelete = testDao.read(1);
+        testDao.delete(1);
+        PaintProject project = testDao.read(2);
+        assertEquals(2, project.getProject_id().intValue());
+        assertEquals(1, project.getUser_id().intValue());
+        assertEquals("test_otherProject", project.getProject_name());
+        assertEquals("test_category", project.getProject_category());
+        assertFalse(project.getProject_archived());
+        assertFalse(project.getProject_completed());
+        assertFalse(project.getProject_intrash());
+        List<PaintProject> projects = testDao.list();
+        assertEquals(1, projects.size());
+        assertFalse(projects.contains(projectToDelete));
+    }
 }

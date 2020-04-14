@@ -1,6 +1,7 @@
 package maalausprojektikirjanpito.domain;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PaintProject {
     Integer project_id;
@@ -34,9 +35,7 @@ public class PaintProject {
      * @param project_name Project's name as a String
      * @param project_category Project's category as a String
      */
-    
-
-    public PaintProject(Integer project_id, Integer user_id, String project_name, String project_category, Boolean project_completed, Boolean project_archived, Boolean project_intrash) {
+   public PaintProject(Integer project_id, Integer user_id, String project_name, String project_category, Boolean project_completed, Boolean project_archived, Boolean project_intrash) {
         this.project_id = project_id;
         this.user_id = user_id;
         this.project_name = project_name;
@@ -109,5 +108,31 @@ public class PaintProject {
     public void setSubprojects(ArrayList<SubProject> subprojects) {
         this.subprojects = subprojects;
     }
+
+    /**
+     * Projects are considered equal if either their project_id or project_name match.
+     * @param obj object that is compared
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (obj.getClass().equals(this.getClass())) {
+            PaintProject project = (PaintProject) obj;
+            return Objects.equals(this.project_id, project.project_id) || this.project_name.equals(project.project_name);
+        } else {
+            return false;
+        }    
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.project_id);
+        hash = 59 * hash + Objects.hashCode(this.project_name);
+        return hash;
+    }
+    
     
 }
