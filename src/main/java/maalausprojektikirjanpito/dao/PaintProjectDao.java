@@ -197,13 +197,11 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
             
             rs.close();
             stmt.close();
-            connection.close();
-            
-            return projects;            
+            connection.close();          
         } catch (SQLException e) {
             System.out.println("Error: " + e.toString());
         }
-        return null;
+        return projects;
     }
     
     /**
