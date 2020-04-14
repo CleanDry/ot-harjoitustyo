@@ -18,6 +18,10 @@ Sovelluksen toisessa iteraatiossa toiminnassa ovat ominaisuudet:
 
 [Arkkitehtuuri](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/arkkitehtuuri.md)
 
+## Viimeisin release
+
+[Release 0.1.0]()
+
 ## Komentorivitoiminnot
 
 Testit suoritetaan komennolla
@@ -37,3 +41,12 @@ Checkstyle-raportti luodaan komennolla
 mvn jxr:jxr checkstyle:checkstyle
 ```
 Checkstyle-raporttia voi tarkastella avaamalla selaimella tiedosto /target/site/checkstyle.html
+
+Suoritettavan jar-pakkauksen generointi tapahtuu komennolla
+```
+mvn package
+```
+Jar-tiedosto löytyy sijainnista /target/Maalausprojektikirjanpito-1.0-SNAPSHOT.jar. Tiedoston voi ajaa komennolla
+```
+java -jar /target/Maalausprojektikirjanpito-1.0-SNAPSHOT.jar
+```
