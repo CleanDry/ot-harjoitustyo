@@ -1,6 +1,10 @@
 package maalausprojektikirjanpito.domain;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import maalausprojektikirjanpito.dao.PaintProjectDao;
 import maalausprojektikirjanpito.dao.UserDao;
 import static maalausprojektikirjanpito.domain.Utilities.*;
@@ -24,6 +28,22 @@ public class ManagerService {
         userDao.list().forEach((u) -> {
             users.put(u.getUsername().toLowerCase(), u);
         });
+        try {
+            this.dbInit();
+        } catch (IOException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void dbInit() throws IOException {
+        String relativePath = userDatabaseUrl;
+        File file = new File(relativePath);
+        
+        if (file.createNewFile()) {
+            System.out.println(relativePath + " File Created in /db directory");
+        } else {
+            System.out.println("File "+relativePath+" already exists in the /db directory");
+        }
     }
     
     /**
