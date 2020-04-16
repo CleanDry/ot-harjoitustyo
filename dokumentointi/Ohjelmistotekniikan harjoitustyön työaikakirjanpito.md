@@ -11,4 +11,5 @@ PVM | Tunnit | Työ
 09.04.2020 | 4 | Maalausprojektiluokan ja sen Daon rungon rakennusta
 10.04.2020 | 2 | PaintProjectDaon työstö
 14.04.2020 | 4 | PaintProjectien luominen ja kirjaaminen käyttöliittymässä, aliprojektien alustava toteutus ja testaus
-Yhteensä   | 30 |tuntia
+16.04.2020 | 2 | Tietokannan alustus ja Surface-luokan ja -Dao:n toteutus
+Yhteensä   | 32 |tuntia
