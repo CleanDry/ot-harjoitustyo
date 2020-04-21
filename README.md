@@ -9,7 +9,7 @@ Sovelluksen toisessa iteraatiossa toiminnassa ovat ominaisuudet:
 - Testikattavuusraportin generointi onnistuu, sovelluksen testauksen rivikattavauus on yli 40% ja käytössä on mielekkäitä testejä alla mainitulla komennolla
 - Checkstyle-toiminnallisuus on käytössä ja raportin generointi onnistuu alla mainitulla komennolla. Tällä hetkellä virheitä on 10. Tärkeimpinä haasteina on maksimissaan 20 rivin pituus metodille, joka esim tietueen päivitykseen ei riitä, jos käyttää PreparedStatementin parametrinasetusominaisuuksia. Herjaa myös throws SQLExceptionin puuttumisesta kohdissa joissa se on.
 - Ohjelmasta on tehty release, mutta jostain syystä Linuxilla sen tietokantatiedosto lukkiutuu. Liittyneekö moniajoon tai vastaavaa? Omalla Windows-koneellani ongelmaa ei ole.
-- Ohjelman sekvenssikaavio löytyy arkkitehtuurista, jos kerkeän sen vielä lisäämään.
+- Ohjelman sekvenssikaavio löytyy arkkitehtuurista, jos kerkeän sen vielä lisäämään. Määrämitta, määrämuoto, määräaika.
 
 ## Dokumentaatio
 
