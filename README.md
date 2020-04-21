@@ -20,7 +20,7 @@ Sovelluksen toisessa iteraatiossa toiminnassa ovat ominaisuudet:
 
 ## Viimeisin release
 
-[Release 0.1.0]()
+[Release 0.1.0](https://github.com/CleanDry/ot-harjoitustyo/releases/tag/viikko5)
 
 ## Komentorivitoiminnot
 
