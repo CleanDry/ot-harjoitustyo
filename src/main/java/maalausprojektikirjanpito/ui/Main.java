@@ -17,7 +17,7 @@ public class Main {
         System.out.println("Ohjelma kääntyy ja ajaa!");
         
         Scanner lukija = new Scanner(System.in);
-        ManagerService service = new ManagerService("db" + File.separator + "example.db");
+        ManagerService service = new ManagerService("AppDatabase.db");
         service.init();
         
         while (true) {

@@ -41,9 +41,9 @@ public class ManagerService {
         File file = new File(relativePath);
         
         if (file.createNewFile()) {
-            System.out.println("File " + relativePath + " created in ./db/ directory");
+            System.out.println("File " + relativePath + " created in App root directory");
         } else {
-            System.out.println("File " + relativePath + " already exists in the ./db/ directory");
+            System.out.println("File " + relativePath + " already exists in the App root directory");
         }
         
         // Initialize Dao-objects; ensure database's tables exist and dao's fetch their initial caches

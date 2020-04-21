@@ -11,4 +11,4 @@
 /nbproject/
 
 nbactions.xml
-/db/example.db
+AppDatabase.db
