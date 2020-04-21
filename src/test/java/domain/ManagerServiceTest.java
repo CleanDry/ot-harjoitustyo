@@ -1,6 +1,7 @@
 package domain;
 
 import java.io.File;
+import java.sql.SQLException;
 import maalausprojektikirjanpito.dao.UserDao;
 import maalausprojektikirjanpito.domain.ManagerService;
 import maalausprojektikirjanpito.domain.User;
@@ -48,19 +49,19 @@ public class ManagerServiceTest {
     }
     
     @Test
-    public void userCreationSucceedsIfUnique() {
+    public void userCreationSucceedsIfUnique() throws SQLException {
         assertTrue(service.createUser("username", "password"));
     }
     
     @Test
-    public void userCreationFailsIfNotUnique() {
+    public void userCreationFailsIfNotUnique() throws SQLException {
         service.createUser("username", "password");
         assertFalse(service.createUser("username", "password"));
         assertFalse(service.createUser("UsErNaMe", "password"));
     }
     
     @Test
-    public void userCreationFailsIfNameOrPwNotLongEnoughAndSucceedsOtherwise() {
+    public void userCreationFailsIfNameOrPwNotLongEnoughAndSucceedsOtherwise() throws SQLException {
         // System.out.println("Test begun");
         assertFalse(service.createUser("username", "pass"));
         // System.out.println("1st fails");
@@ -79,7 +80,7 @@ public class ManagerServiceTest {
     }
     
     @Test
-    public void loginfFailsIfPairNotMatching() {
+    public void loginfFailsIfPairNotMatching() throws SQLException {
         assertTrue(service.createUser("username", "password"));
         assertFalse(service.login("username", "pass"));
         assertFalse(service.login("user", "password"));
@@ -87,7 +88,7 @@ public class ManagerServiceTest {
     }
     
     @Test
-    public void loginSucceedsIfEntryCorrect() {
+    public void loginSucceedsIfEntryCorrect() throws SQLException {
         service.createUser("username", "password");
         assertTrue(service.login("username", "password"));
     }

@@ -9,7 +9,7 @@ import maalausprojektikirjanpito.domain.SubProject;
 
 public class SubProjectDao implements Dao<SubProject, Integer> {
     String databaseURL;
-    Integer project_id;
+    Integer projectId;
     ArrayList<SubProject> subProjectsCache;
     
     /**
@@ -29,14 +29,8 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
     public void init() {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS SubProjects ("
-                + "subproject_id INTEGER, "
-                + "project_id INTEGER, "
-                + "subproject_name VARCHAR(40), "
-                + "subproject_completed BOOLEAN, "
-                + "subproject_intrash BOOLEAN, "
-                + "PRIMARY KEY (subproject_id), "
-                + "FOREIGN KEY (project_id) REFERENCES Projects(project_id)"
-                + ");");
+                + "subproject_id INTEGER, project_id INTEGER, subproject_name VARCHAR(40), subproject_completed BOOLEAN DEFAULT false, subproject_intrash BOOLEAN DEFAULT false, "
+                + "PRIMARY KEY (subproject_id), FOREIGN KEY (project_id) REFERENCES Projects(project_id));");
             stmt.executeUpdate();
 
             stmt.close();
@@ -55,33 +49,22 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
         if (this.subProjectsCache.contains(subProject)) {
             return this.subProjectsCache.get(this.subProjectsCache.indexOf(subProject));
         } else {
-            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-                PreparedStatement stmt = connection.prepareStatement("INSERT INTO SubProjects "
-                    + "(project_id, subproject_name, subproject_completed, subproject_intrash) "
-                    + "VALUES (?,?,?,?,?);",
-                    Statement.RETURN_GENERATED_KEYS);
-                
-                stmt.setInt(1, subProject.getProject_id());
-                stmt.setString(2, subProject.getSubProject_name());
-                stmt.setBoolean(4, false);
-                stmt.setBoolean(5, false);
-                
-                stmt.executeUpdate();
-                
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                
-                if (generatedKeys.next()) {
-                    id = generatedKeys.getInt(1);
-                }
-
-                generatedKeys.close();
-                stmt.close();
-                connection.close();
-            } catch (SQLException e) {
-                System.out.println("Error: " + e);
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO SubProjects "
+                + "(project_id, subproject_name) "
+                + "VALUES (?,?);",
+                Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, subProject.getProjectId());
+            stmt.setString(2, subProject.getSubProjectName());
+            stmt.executeUpdate();
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                id = generatedKeys.getInt(1);
             }
+            generatedKeys.close();
+            stmt.close();
+            connection.close();
         }
-        
         if (id >= 0) {
             subProject = this.read(id);
             this.subProjectsCache.add(subProject);
@@ -92,27 +75,18 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
     }
 
     @Override
-    public SubProject read(Integer subProject_id) {
+    public SubProject read(Integer subProjectId) {
         SubProject subProject = null;
-        List<Integer> subProject_ids = this.subProjectsCache.stream().map(p -> p.getProject_id()).collect(Collectors.toList());
-        if (subProject_ids.contains(subProject_id)) {
-            return this.subProjectsCache.get(subProject_ids.indexOf(subProject_id));
+        List<Integer> subProjectIds = this.subProjectsCache.stream().map(p -> p.getProjectId()).collect(Collectors.toList());
+        if (subProjectIds.contains(subProjectId)) {
+            return this.subProjectsCache.get(subProjectIds.indexOf(subProjectId));
         } else {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("SELECT * FROM SubProjects "
                         + "WHERE SubProjects.subproject_id = (?);");
-                
-                stmt.setInt(1, subProject_id);
+                stmt.setInt(1, subProjectId);
                 ResultSet rs = stmt.executeQuery();
-
-                subProject = new SubProject(
-                        rs.getInt("subproject_id"), 
-                        rs.getInt("project_id"), 
-                        rs.getString("subproject_name"),
-                        rs.getBoolean("subproject_completed"),
-                        rs.getBoolean("subproject_intrash")
-                );
-
+                subProject = new SubProject(rs.getInt("subproject_id"), rs.getInt("project_id"), rs.getString("subproject_name"), rs.getBoolean("subproject_completed"), rs.getBoolean("subproject_intrash"));
                 rs.close();
                 stmt.close();
                 connection.close();           
@@ -120,54 +94,41 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
                 System.out.println("Error: " + e.toString());
             }
         }
-        
         return subProject;
     }
 
     @Override
-    public SubProject update(SubProject subProject) {
+    public SubProject update(SubProject subProject) throws SQLException {
         SubProject updatedSubProject = null;
         if (this.subProjectsCache.contains(subProject)) {
-            System.out.println("SubProject found in cache!");
-            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-                PreparedStatement stmt = connection.prepareStatement("UPDATE SubProjects "
-                    + "SET project_id = ?, subproject_name = ?, subproject_completed = ?, subproject_intrash = ? "
-                    + "WHERE subproject_id = ?;");
-                
-                stmt.setInt(1, subProject.getProject_id());
-                stmt.setString(2, subProject.getSubProject_name());
-                stmt.setBoolean(3, subProject.isSubProject_completed());
-                stmt.setBoolean(4, subProject.isSubProject_isInTrash());
-                stmt.setInt(5, subProject.getSubProject_id());
-                
-                stmt.executeUpdate();
-                
-                stmt.close();
-                connection.close();
-                
-                updatedSubProject = this.read(subProject.getProject_id());
-                this.subProjectsCache.set(this.subProjectsCache.indexOf(subProject), updatedSubProject);
-            } catch (SQLException e) {
-                System.out.println("Error: " + e);
-            }
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+            PreparedStatement stmt = connection.prepareStatement("UPDATE SubProjects "
+                + "SET project_id = ?, subproject_name = ?, subproject_completed = ?, subproject_intrash = ? "
+                + "WHERE subproject_id = ?;");
+            stmt.setInt(1, subProject.getProjectId());
+            stmt.setString(2, subProject.getSubProjectName());
+            stmt.setBoolean(3, subProject.isSubProjectCompleted());
+            stmt.setBoolean(4, subProject.isSubProjectInTrash());
+            stmt.setInt(5, subProject.getSubProjectId());
+            stmt.executeUpdate();
+            stmt.close();
+            connection.close();
+            updatedSubProject = this.read(subProject.getProjectId());
+            this.subProjectsCache.set(this.subProjectsCache.indexOf(subProject), updatedSubProject);
         }
         return updatedSubProject;
     }
 
     @Override
-    public void delete(Integer subProject_id) {
-        SubProject subProjectToRemove = this.read(subProject_id);
+    public void delete(Integer subProjectId) {
+        SubProject subProjectToRemove = this.read(subProjectId);
         if (subProjectToRemove != null) {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("DELETE FROM SubProjects WHERE subproject_id = ?");
-                
-                stmt.setInt(1, subProject_id);
-                
+                stmt.setInt(1, subProjectId);
                 stmt.executeUpdate();
-                
                 stmt.close();
                 connection.close();
-                
                 this.subProjectsCache.remove(subProjectToRemove);
             } catch (SQLException e) {
                 System.out.println("Error: " + e);
@@ -178,30 +139,18 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
     @Override
     public List<SubProject> list() {
         ArrayList<SubProject> subProjects = new ArrayList<>();
-        
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM SubProjects;");
-            
             ResultSet rs = stmt.executeQuery();
-            
             while (rs.next()) {
-                subProjects.add(new SubProject(
-                        rs.getInt("subproject_id"), 
-                        rs.getInt("project_id"), 
-                        rs.getString("subproject_name"),
-                        rs.getBoolean("subproject_completed"),
-                        rs.getBoolean("subproject_intrash")));
+                subProjects.add(new SubProject(rs.getInt("subproject_id"), rs.getInt("project_id"), rs.getString("subproject_name"), rs.getBoolean("subproject_completed"), rs.getBoolean("subproject_intrash")));
             }
-            
             rs.close();
             stmt.close();
-            connection.close();
-            
-            return subProjects;            
+            connection.close();           
         } catch (SQLException e) {
             System.out.println("Error: " + e.toString());
         }
-        return null;    
-    }
-    
+        return subProjects;    
+    }    
 }

@@ -3,58 +3,59 @@ package maalausprojektikirjanpito.domain;
 import java.util.ArrayList;
 
 public class Surface {
-    Integer surface_id;
-    Integer subproject_id;
-    String surface_name;
+    Integer surfaceId;
+    Integer subprojectId;
+    String surfaceName;
     Boolean inTrash;
     ArrayList<TreatmentCombination> treamentCombinations = new ArrayList<>();
 
     /**
      * Create a new surface object.
-     * @param subproject_id of the surface as Integer
-     * @param surface_name of the surface as String
+     * @param subprojectId of the surface as Integer
+     * @param surfaceName of the surface as String
      */
-    public Surface(Integer subproject_id, String surface_name) {
-        this.subproject_id = subproject_id;
-        this.surface_name = surface_name;
+    public Surface(Integer subprojectId, String surfaceName) {
+        this.subprojectId = subprojectId;
+        this.surfaceName = surfaceName;
         this.inTrash = false;
     }
     
     /**
      * Create a new surface object with surface_id.
-     * @param surface_id of the surface.
-     * @param subproject_id of the surface.
-     * @param surface_name of the surface.
+     * @param surfaceId of the surface.
+     * @param subprojectId of the surface.
+     * @param surfaceName of the surface.
+     * @param inTrash Boolean.
      */
-    public Surface(Integer surface_id, Integer subproject_id, String surface_name, boolean inTrash) {
-        this.surface_id = surface_id;
-        this.subproject_id = subproject_id;
-        this.surface_name = surface_name;
+    public Surface(Integer surfaceId, Integer subprojectId, String surfaceName, boolean inTrash) {
+        this.surfaceId = surfaceId;
+        this.subprojectId = subprojectId;
+        this.surfaceName = surfaceName;
         this.inTrash = inTrash;
     }
 
-    public Integer getSurface_id() {
-        return surface_id;
+    public Integer getSurfaceId() {
+        return surfaceId;
     }
 
-    public void setSurface_id(Integer surface_id) {
-        this.surface_id = surface_id;
+    public void setSurfaceId(Integer surfaceId) {
+        this.surfaceId = surfaceId;
     }
 
-    public Integer getSubproject_id() {
-        return subproject_id;
+    public Integer getSubprojectId() {
+        return subprojectId;
     }
 
-    public void setSubproject_id(Integer subproject_id) {
-        this.subproject_id = subproject_id;
+    public void setSubprojectId(Integer subprojectId) {
+        this.subprojectId = subprojectId;
     }
 
-    public String getSurface_name() {
-        return surface_name;
+    public String getSurfaceName() {
+        return surfaceName;
     }
 
-    public void setSurface_name(String surface_name) {
-        this.surface_name = surface_name;
+    public void setSurfaceName(String surfaceName) {
+        this.surfaceName = surfaceName;
     }
 
     public Boolean getInTrash() {
@@ -72,7 +73,7 @@ public class Surface {
     public void setTreamentCombinations(ArrayList<TreatmentCombination> treamentCombinations) {
         this.treamentCombinations = treamentCombinations;
     }
-    
+
     
     
     

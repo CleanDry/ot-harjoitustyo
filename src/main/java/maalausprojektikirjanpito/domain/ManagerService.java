@@ -1,10 +1,8 @@
 package maalausprojektikirjanpito.domain;
 
 import java.io.File;
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import maalausprojektikirjanpito.dao.PaintProjectDao;
 import maalausprojektikirjanpito.dao.SubProjectDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
@@ -33,7 +31,11 @@ public class ManagerService {
         
     }
     
-    public void init() throws IOException {
+    /**
+     * Initializes the ManagerService-object in a controlled sequence.
+     * @throws Exception 
+     */
+    public void init() throws Exception {
         // Ensure database file exists
         String relativePath = databaseUrl;
         File file = new File(relativePath);
@@ -55,8 +57,9 @@ public class ManagerService {
      * @param username User's username, must be between 3 to 20 characters.
      * @param password User's password, must be between 8 to 20 characters.
      * @return returns false if username already taken, username.length is less than 3 or password.length is less than 8, otherwise true
+     * @throws SQLException
      */
-    public boolean createUser(String username, String password) {
+    public boolean createUser(String username, String password) throws SQLException {
         // Check if the given pair meets the criterias for length
         if (!stringLengthCheck(username, 3, 20)) {
             System.out.println("Username has to have 3-20 characters");
@@ -81,8 +84,9 @@ public class ManagerService {
      * @param projectName for the project as String, must be 3-40 character long
      * @param projectCategory for the project as String, must be 3-40 character long
      * @return true if successful, false otherwise
+     * @throws SQLException
      */
-    public boolean createPaintProject(String projectName, String projectCategory) {
+    public boolean createPaintProject(String projectName, String projectCategory) throws SQLException {
         // Check if the given pair meets the criterias for length
         if (!stringLengthCheck(projectName, 3, 40)) {
             System.out.println("Project's name has to have 3-40 characters");
@@ -155,12 +159,6 @@ public class ManagerService {
         this.userProjectsByCategory = null;
         this.projectsDao.setUser(-1);
         this.getLoggedIn();
-    }
-    
-    public ArrayList<PaintProject> getPaintProjectsInDb() {
-        ArrayList<PaintProject> projects = new ArrayList<>();
-        
-        return projects;
     }
 
     public HashMap<String, ArrayList<PaintProject>> getUserProjectsByCategory() {

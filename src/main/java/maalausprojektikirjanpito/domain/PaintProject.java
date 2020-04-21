@@ -4,101 +4,104 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class PaintProject {
-    Integer project_id;
-    Integer user_id;
-    String project_name;
-    String project_category;
-    Boolean project_completed;
-    Boolean project_archived;
-    Boolean project_intrash;
+    Integer projectId;
+    Integer userId;
+    String projectName;
+    String projectCategory;
+    Boolean projectCompleted;
+    Boolean projectArchived;
+    Boolean projectIntrash;
     ArrayList<SubProject> subprojects = new ArrayList<>();
 
     /**
      * Create a new PaintProject-object.
-     * @param user_id User_id of the user whose projects are being managed as an Integer
-     * @param project_name Project's name as a String
-     * @param project_category Project's category as a String
+     * @param userId User_id of the user whose projects are being managed as an Integer
+     * @param projectName Project's name as a String
+     * @param projectCategory Project's category as a String
      */
-    public PaintProject(Integer user_id, String project_name, String project_category) {
-        this.user_id = user_id;
-        this.project_name = project_name;
-        this.project_category = project_category;
-        this.project_completed = false;
-        this.project_archived = false;
-        this.project_intrash = false;
+    public PaintProject(Integer userId, String projectName, String projectCategory) {
+        this.userId = userId;
+        this.projectName = projectName;
+        this.projectCategory = projectCategory;
+        this.projectCompleted = false;
+        this.projectArchived = false;
+        this.projectIntrash = false;
     }
 
     /**
      * Create a new PaintProject-object.
-     * @param project_id Project_id of the project as an Integer
-     * @param user_id User_id of the user whose projects are being managed as an Integer
-     * @param project_name Project's name as a String
-     * @param project_category Project's category as a String
+     * @param projectId Project_id of the project as an Integer
+     * @param userId User_id of the user whose projects are being managed as an Integer
+     * @param projectName Project's name as a String
+     * @param projectCategory Project's category as a String
+     * @param projectCompleted Boolean
+     * @param projectArchived Boolean
+     * @param projectIntrash Boolean
      */
-   public PaintProject(Integer project_id, Integer user_id, String project_name, String project_category, Boolean project_completed, Boolean project_archived, Boolean project_intrash) {
-        this.project_id = project_id;
-        this.user_id = user_id;
-        this.project_name = project_name;
-        this.project_category = project_category;
-        this.project_completed = project_completed;
-        this.project_archived = project_archived;
-        this.project_intrash = project_intrash;
+    public PaintProject(Integer projectId, Integer userId, String projectName, String projectCategory, Boolean projectCompleted, Boolean projectArchived, Boolean projectIntrash) {
+        this.projectId = projectId;
+        this.userId = userId;
+        this.projectName = projectName;
+        this.projectCategory = projectCategory;
+        this.projectCompleted = projectCompleted;
+        this.projectArchived = projectArchived;
+        this.projectIntrash = projectIntrash;
     }
 
-    public Integer getProject_id() {
-        return project_id;
+    public Integer getProjectId() {
+        return projectId;
     }
 
-    public void setProject_id(Integer project_id) {
-        this.project_id = project_id;
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 
-    public Integer getUser_id() {
-        return user_id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public String getProject_name() {
-        return project_name;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setProject_name(String project_name) {
-        this.project_name = project_name;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    public String getProject_category() {
-        return project_category;
+    public String getProjectCategory() {
+        return projectCategory;
     }
 
-    public void setProject_category(String project_category) {
-        this.project_category = project_category;
+    public void setProjectCategory(String projectCategory) {
+        this.projectCategory = projectCategory;
     }
 
-    public Boolean getProject_completed() {
-        return project_completed;
+    public Boolean getProjectCompleted() {
+        return projectCompleted;
     }
 
-    public void setProject_completed(Boolean project_completed) {
-        this.project_completed = project_completed;
+    public void setProjectCompleted(Boolean projectCompleted) {
+        this.projectCompleted = projectCompleted;
     }
 
-    public Boolean getProject_archived() {
-        return project_archived;
+    public Boolean getProjectArchived() {
+        return projectArchived;
     }
 
-    public void setProject_archived(Boolean project_archived) {
-        this.project_archived = project_archived;
+    public void setProjectArchived(Boolean projectArchived) {
+        this.projectArchived = projectArchived;
     }
 
-    public Boolean getProject_intrash() {
-        return project_intrash;
+    public Boolean getProjectIntrash() {
+        return projectIntrash;
     }
 
-    public void setProject_intrash(Boolean project_intrash) {
-        this.project_intrash = project_intrash;
+    public void setProjectIntrash(Boolean projectIntrash) {
+        this.projectIntrash = projectIntrash;
     }
 
     public ArrayList<SubProject> getSubprojects() {
@@ -120,7 +123,7 @@ public class PaintProject {
             return false;
         } else if (obj.getClass().equals(this.getClass())) {
             PaintProject project = (PaintProject) obj;
-            return Objects.equals(this.project_id, project.project_id) || this.project_name.equals(project.project_name);
+            return Objects.equals(this.projectId, project.projectId) || this.projectName.equals(project.projectName);
         } else {
             return false;
         }    
@@ -129,8 +132,8 @@ public class PaintProject {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 59 * hash + Objects.hashCode(this.project_id);
-        hash = 59 * hash + Objects.hashCode(this.project_name);
+        hash = 59 * hash + Objects.hashCode(this.projectId);
+        hash = 59 * hash + Objects.hashCode(this.projectName);
         return hash;
     }
     

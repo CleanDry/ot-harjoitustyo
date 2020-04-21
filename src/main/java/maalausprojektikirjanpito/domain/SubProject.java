@@ -4,80 +4,80 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class SubProject {
-    Integer subProject_id;
-    Integer project_id;
-    String subProject_name;
-    boolean subProject_completed;
-    boolean subProject_isInTrash;
+    Integer subProjectId;
+    Integer projectId;
+    String subProjectName;
+    boolean subProjectCompleted;
+    boolean subProjectInTrash;
     ArrayList<Surface> surfaces = new ArrayList<>();
 
 
     /**
      * Create a new PaintProject-object.
-     * @param project_id Project_id of the project that the sub project belongs to as an Integer
-     * @param subProject_name Sub project's name as a String
+     * @param projectId Project_id of the project that the sub project belongs to as an Integer
+     * @param subProjectName Sub project's name as a String
      */
-    public SubProject(Integer project_id, String subProject_name) {
-        this.project_id = project_id;
-        this.subProject_name = subProject_name;
-        this.subProject_completed = false;
-        this.subProject_isInTrash = false;
+    public SubProject(Integer projectId, String subProjectName) {
+        this.projectId = projectId;
+        this.subProjectName = subProjectName;
+        this.subProjectCompleted = false;
+        this.subProjectInTrash = false;
     }
 
     /**
      * Create a new PaintProject-object.
-     * @param subProject_id subProject_id of the sub project as an Integer
-     * @param project_id Project_id of the project that the sub project belongs to as an Integer
-     * @param subProject_name Sub project's name as a String
-     * @param subProject_completed True if sub project is marked as completed, false otherwise
-     * @param subProject_isInTrash True if sub project is marked as being in trash, false otherwise
+     * @param subProjectId subProject_id of the sub project as an Integer
+     * @param projectId Project_id of the project that the sub project belongs to as an Integer
+     * @param subProjectName Sub project's name as a String
+     * @param subProjectCompleted True if sub project is marked as completed, false otherwise
+     * @param subProjectInTrash True if sub project is marked as being in trash, false otherwise
      */
-   public SubProject(Integer subProject_id, Integer project_id, String subProject_name, Boolean subProject_completed, Boolean subProject_isInTrash) {
-        this.subProject_id = subProject_id;
-        this.project_id = project_id;
-        this.subProject_name = subProject_name;
-        this.subProject_completed = subProject_completed;
-        this.subProject_isInTrash = subProject_isInTrash;
+    public SubProject(Integer subProjectId, Integer projectId, String subProjectName, Boolean subProjectCompleted, Boolean subProjectInTrash) {
+        this.subProjectId = subProjectId;
+        this.projectId = projectId;
+        this.subProjectName = subProjectName;
+        this.subProjectCompleted = subProjectCompleted;
+        this.subProjectInTrash = subProjectInTrash;
     }
 
-    public Integer getSubProject_id() {
-        return subProject_id;
+    public Integer getSubProjectId() {
+        return subProjectId;
     }
 
-    public void setSubProject_id(Integer subProject_id) {
-        this.subProject_id = subProject_id;
+    public void setSubProjectId(Integer subProjectId) {
+        this.subProjectId = subProjectId;
     }
 
-    public Integer getProject_id() {
-        return project_id;
+    public Integer getProjectId() {
+        return projectId;
     }
 
-    public void setProject_id(Integer project_id) {
-        this.project_id = project_id;
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 
-    public String getSubProject_name() {
-        return subProject_name;
+    public String getSubProjectName() {
+        return subProjectName;
     }
 
-    public void setSubProject_name(String subProject_name) {
-        this.subProject_name = subProject_name;
+    public void setSubProjectName(String subProjectName) {
+        this.subProjectName = subProjectName;
     }
 
-    public boolean isSubProject_completed() {
-        return subProject_completed;
+    public boolean isSubProjectCompleted() {
+        return subProjectCompleted;
     }
 
-    public void setSubProject_completed(boolean subProject_completed) {
-        this.subProject_completed = subProject_completed;
+    public void setSubProjectCompleted(boolean subProjectCompleted) {
+        this.subProjectCompleted = subProjectCompleted;
     }
 
-    public boolean isSubProject_isInTrash() {
-        return subProject_isInTrash;
+    public boolean isSubProjectInTrash() {
+        return subProjectInTrash;
     }
 
-    public void setSubProject_isInTrash(boolean subProject_isInTrash) {
-        this.subProject_isInTrash = subProject_isInTrash;
+    public void setSubProjectInTrash(boolean subProjectInTrash) {
+        this.subProjectInTrash = subProjectInTrash;
     }
 
     public ArrayList<Surface> getSurfaces() {
@@ -87,6 +87,8 @@ public class SubProject {
     public void setSurfaces(ArrayList<Surface> surfaces) {
         this.surfaces = surfaces;
     }
+
+    
    
     /**
      * Sub projects are considered equal if either their subProject_id or subProject_name match.
@@ -99,7 +101,7 @@ public class SubProject {
             return false;
         } else if (obj.getClass().equals(this.getClass())) {
             SubProject subProject = (SubProject) obj;
-            return Objects.equals(this.subProject_id, subProject.project_id) || this.subProject_name.equals(subProject.subProject_name);
+            return Objects.equals(this.subProjectId, subProject.subProjectId) || this.subProjectName.equals(subProject.subProjectName);
         } else {
             return false;
         }    
@@ -108,8 +110,8 @@ public class SubProject {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 59 * hash + Objects.hashCode(this.subProject_id);
-        hash = 59 * hash + Objects.hashCode(this.subProject_name);
+        hash = 59 * hash + Objects.hashCode(this.subProjectId);
+        hash = 59 * hash + Objects.hashCode(this.subProjectName);
         return hash;
     }
 }

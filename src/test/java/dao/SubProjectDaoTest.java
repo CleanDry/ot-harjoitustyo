@@ -23,7 +23,7 @@ public class SubProjectDaoTest {
     @Rule 
     public TemporaryFolder testFolder = new TemporaryFolder();
     
-    Integer testProject_id;
+    Integer testProjectId;
     File testDb;
     SubProjectDao testDao;
     
@@ -40,12 +40,13 @@ public class SubProjectDaoTest {
     
     @Before
     public void setUp() throws Exception {
-        testProject_id = 1;
+        testProjectId = 1;
         testDb = testFolder.newFile("test.db");
         
         testDao = new SubProjectDao(testDb.getAbsolutePath());
+        testDao.init();
         
-        testDao.create(new SubProject(testProject_id, "test_subproject"));
+        testDao.create(new SubProject(testProjectId, "test_subproject"));
     }
     
     @After
@@ -53,80 +54,67 @@ public class SubProjectDaoTest {
         testDb.delete();
     }
     
-//    @Test
-//    public void subprojectsAreReadCorrectlyFromDb() {
-//        List<SubProject> subProjects = testDao.list();
-//        assertEquals(1, subProjects.size());
-//        SubProject subProject = subProjects.get(0);
-//        assertEquals(1, subProject.getSubProject_id().intValue());
-//        assertEquals(1, subProject.getProject_id().intValue());
-//        assertEquals("test_subproject", subProject.getSubProject_name());
-//        assertFalse(subProject.isSubProject_completed());
-//        assertFalse(subProject.isSubProject_isInTrash());
-//    }
+    @Test
+    public void subprojectsAreReadCorrectlyFromDb() throws SQLException {
+        List<SubProject> subProjects = testDao.list();
+        assertEquals(1, subProjects.size());
+        SubProject subProject = subProjects.get(0);
+        assertEquals(1, subProject.getSubProjectId().intValue());
+        assertEquals(1, subProject.getProjectId().intValue());
+        assertEquals("test_subproject", subProject.getSubProjectName());
+        assertFalse(subProject.isSubProjectCompleted());
+        assertFalse(subProject.isSubProjectInTrash());
+    }
     
-//    @Test
-//    public void subprojectsCanBeCreatedAndAreReturnedCorrectly() throws SQLException {
-//        SubProject subProject = testDao.create(new SubProject(testProject_id, "test_otherSubProject"));
-//        List<SubProject> subProjects = testDao.list();
-//        assertEquals(2, subProjects.size());
-//        SubProject sameSubProject = subProjects.get(1);
-//        assertEquals(2, project.getProject_id().intValue());
-//        assertEquals(1, project.getUser_id().intValue());
-//        assertEquals("test_otherProject", project.getProject_name());
-//        assertFalse(project.getProject_archived());
-//        assertFalse(project.getProject_completed());
-//        assertFalse(project.getProject_intrash());
-//    }
-//    
-//    @Test
-//    public void usersAreReadSuccessfully() {
-//        SubProject project = testDao.read(1);
-//        assertEquals(1, project.getProject_id().intValue());
-//        assertEquals(1, project.getUser_id().intValue());
-//        assertEquals("test_project", project.getProject_name());
-//        assertEquals("test_category", project.getProject_category());
-//        assertFalse(project.getProject_archived());
-//        assertFalse(project.getProject_completed());
-//        assertFalse(project.getProject_intrash());
-//    }
-//    
-//    @Test
-//    public void updatedUsersReturnedMatchTheUpdate() {
-//        SubProject project = testDao.read(1);
-//        project.setProject_name("test_otherProject");
-//        SubProject updatedProject = testDao.update(project);
-//        assertNotNull(project);
-//        assertEquals(1, project.getProject_id().intValue());
-//        assertEquals(1, project.getUser_id().intValue());
-//        assertEquals("test_otherProject", project.getProject_name());
-//        assertEquals("test_category", project.getProject_category());
-//        assertFalse(project.getProject_archived());
-//        assertFalse(project.getProject_completed());
-//        assertFalse(project.getProject_intrash());
-//    }
-//    
-//    @Test
-//    public void deletedUsersAreRemovedFromDb() {
-//        testDao.create(new SubProject(testUser_id, "test_otherProject", "test_category"));
-//        SubProject projectToDelete = testDao.read(1);
-//        testDao.delete(1);
-//        SubProject project = testDao.read(2);
-//        assertEquals(2, project.getProject_id().intValue());
-//        assertEquals(1, project.getUser_id().intValue());
-//        assertEquals("test_otherProject", project.getProject_name());
-//        assertEquals("test_category", project.getProject_category());
-//        assertFalse(project.getProject_archived());
-//        assertFalse(project.getProject_completed());
-//        assertFalse(project.getProject_intrash());
-//        List<SubProject> projects = testDao.list();
-//        assertEquals(1, projects.size());
-//        assertFalse(projects.contains(projectToDelete));
-//    }
-
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+    @Test
+    public void subprojectsCanBeCreatedAndAreReturnedCorrectly() throws SQLException {
+        SubProject subProject = testDao.create(new SubProject(testProjectId, "test_otherSubProject"));
+        List<SubProject> subProjects = testDao.list();
+        assertEquals(2, subProjects.size());
+        SubProject sameSubProject = subProjects.get(1);
+        assertEquals(2, sameSubProject.getSubProjectId().intValue());
+        assertEquals(1, sameSubProject.getProjectId().intValue());
+        assertEquals("test_otherSubProject", sameSubProject.getSubProjectName());
+        assertFalse(sameSubProject.isSubProjectCompleted());
+        assertFalse(sameSubProject.isSubProjectInTrash());
+    }
+    
+    @Test
+    public void subprojectsAreReadSuccessfully() throws SQLException {
+        SubProject subProject = testDao.read(1);
+        assertEquals(1, subProject.getSubProjectId().intValue());
+        assertEquals(1, subProject.getProjectId().intValue());
+        assertEquals("test_subproject", subProject.getSubProjectName());
+        assertFalse(subProject.isSubProjectCompleted());
+        assertFalse(subProject.isSubProjectInTrash());
+    }
+    
+    @Test
+    public void updatedSubprojectsReturnedMatchTheUpdate() throws SQLException {
+        SubProject subProject = testDao.read(1);
+        subProject.setSubProjectName("test_otherSubProject");
+        SubProject updatedSubProject = testDao.update(subProject);
+        assertNotNull(subProject);
+        assertEquals(1, updatedSubProject.getSubProjectId().intValue());
+        assertEquals(1, updatedSubProject.getProjectId().intValue());
+        assertEquals("test_otherSubProject", updatedSubProject.getSubProjectName());
+        assertFalse(updatedSubProject.isSubProjectCompleted());
+        assertFalse(updatedSubProject.isSubProjectInTrash());
+    }
+    
+    @Test
+    public void deletedSubprojectsAreRemovedFromDb() throws SQLException {
+        testDao.create(new SubProject(testProjectId, "test_otherSubProject"));
+        SubProject subProjectToDelete = testDao.read(1);
+        testDao.delete(1);
+        SubProject subProject = testDao.read(2);
+        assertEquals(2, subProject.getSubProjectId().intValue());
+        assertEquals(1, subProject.getProjectId().intValue());
+        assertEquals("test_otherSubProject", subProject.getSubProjectName());
+        assertFalse(subProject.isSubProjectCompleted());
+        assertFalse(subProject.isSubProjectInTrash());
+        List<SubProject> projects = testDao.list();
+        assertEquals(1, projects.size());
+        assertFalse(projects.contains(subProjectToDelete));
+    }
 }

@@ -8,7 +8,7 @@ import maalausprojektikirjanpito.domain.PaintProject;
 
 public class PaintProjectDao implements Dao<PaintProject, Integer> {
     String databaseURL;
-    Integer user_id;
+    Integer userId;
     ArrayList<PaintProject> projectsCache;
     
     /**
@@ -25,98 +25,60 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     }
     
     @Override
-    public void init() {
+    public void init() throws SQLException {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS PaintProjects ("
-                + "project_id INTEGER, "
-                + "user_id INTEGER, "
-                + "project_name VARCHAR(40), "
-                + "project_category VARCHAR(40), "
-                + "project_completed BOOLEAN, "
-                + "project_archived BOOLEAN, "
-                + "project_intrash BOOLEAN, "
-                + "PRIMARY KEY (project_id), "
-                + "FOREIGN KEY (user_id) REFERENCES Users(id)"
-                + ");");
+                + "project_id INTEGER, user_id INTEGER, project_name VARCHAR(40), project_category VARCHAR(40), project_completed BOOLEAN DEFAULT false, project_archived BOOLEAN DEFAULT false, project_intrash BOOLEAN DEFAULT false, "
+                + "PRIMARY KEY (project_id), FOREIGN KEY (user_id) REFERENCES Users(id));");
             stmt.executeUpdate();
-
             stmt.close();
             connection.close();
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
-        
         this.projectsCache = (ArrayList<PaintProject>) this.list();
     }
 
     @Override
-    public PaintProject create(PaintProject project) { 
+    public PaintProject create(PaintProject project) throws SQLException { 
         int id = -1;
+        PaintProject createdProject = null;
         if (this.projectsCache.contains(project)) {
             return this.projectsCache.get(this.projectsCache.indexOf(project));
         } else {
-            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-                PreparedStatement stmt = connection.prepareStatement("INSERT INTO PaintProjects "
-                    + "(user_id, project_name, project_category, project_completed, project_archived, project_intrash) "
-                    + "VALUES (?,?,?,?,?,?);",
-                    Statement.RETURN_GENERATED_KEYS);
-                
-                stmt.setInt(1, this.user_id);
-                stmt.setString(2, project.getProject_name());
-                stmt.setString(3, project.getProject_category());
-                stmt.setBoolean(4, false);
-                stmt.setBoolean(5, false);
-                stmt.setBoolean(6, false);
-                
-                stmt.executeUpdate();
-                
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                
-                if (generatedKeys.next()) {
-                    id = generatedKeys.getInt(1);
-                }
-
-                generatedKeys.close();
-                stmt.close();
-                connection.close();
-            } catch (SQLException e) {
-                System.out.println("Error: " + e);
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO PaintProjects "
+                + "(user_id, project_name, project_category) "
+                + "VALUES (?,?,?);",
+                Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, this.userId);
+            stmt.setString(2, project.getProjectName());
+            stmt.setString(3, project.getProjectCategory());
+            stmt.executeUpdate();
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                createdProject = this.read(generatedKeys.getInt(1));
+                this.projectsCache.add(createdProject);
             }
+            generatedKeys.close();
+            stmt.close();
+            connection.close();
         }
-        
-        if (id >= 0) {
-            project = this.read(id);
-            this.projectsCache.add(project);
-            return project;
-        } else {
-            return null;
-        }
+        return createdProject;
     }
 
     @Override
-    public PaintProject read(Integer project_id) {
+    public PaintProject read(Integer projectId) throws SQLException {
         PaintProject project = null;
-        List<Integer> project_ids = this.projectsCache.stream().map(p -> p.getProject_id()).collect(Collectors.toList());
-        if (project_ids.contains(project_id)) {
-            return this.projectsCache.get(project_ids.indexOf(project_id));
+        List<Integer> projectIds = this.projectsCache.stream().map(p -> p.getProjectId()).collect(Collectors.toList());
+        if (projectIds.contains(projectId)) {
+            return this.projectsCache.get(projectIds.indexOf(projectId));
         } else {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-                PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PaintProjects "
-                        + "WHERE PaintProjects.project_id = (?);");
-                
-                stmt.setInt(1, project_id);
+                PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PaintProjects WHERE PaintProjects.project_id = (?);");
+                stmt.setInt(1, projectId);
                 ResultSet rs = stmt.executeQuery();
-
-                project = new PaintProject(
-                        rs.getInt("project_id"), 
-                        rs.getInt("user_id"), 
-                        rs.getString("project_name"), 
-                        rs.getString("project_category"),
-                        rs.getBoolean("project_completed"),
-                        rs.getBoolean("project_archived"),
-                        rs.getBoolean("project_intrash")
-                );
-
+                project = new PaintProject(rs.getInt("project_id"), rs.getInt("user_id"), rs.getString("project_name"), rs.getString("project_category"), rs.getBoolean("project_completed"), rs.getBoolean("project_archived"), rs.getBoolean("project_intrash"));
                 rs.close();
                 stmt.close();
                 connection.close();           
@@ -124,34 +86,28 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
                 System.out.println("Error: " + e.toString());
             }
         }
-        
         return project;
     }
 
     @Override
-    public PaintProject update(PaintProject project) {
+    public PaintProject update(PaintProject project) throws SQLException {
         PaintProject updatedProject = null;
         if (this.projectsCache.contains(project)) {
-            System.out.println("Project found in cache!");
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("UPDATE PaintProjects "
                     + "SET user_id = ?, project_name = ?, project_category = ?, project_completed = ?, project_archived = ?, project_intrash = ? "
                     + "WHERE project_id = ?;");
-                
-                stmt.setInt(1, project.getUser_id());
-                stmt.setString(2, project.getProject_name());
-                stmt.setString(3, project.getProject_category());
-                stmt.setBoolean(4, project.getProject_completed());
-                stmt.setBoolean(5, project.getProject_archived());
-                stmt.setBoolean(6, project.getProject_intrash());
-                stmt.setInt(7, project.getProject_id());
-                
-                stmt.executeUpdate();
-                
-                stmt.close();
+                stmt.setInt(1, project.getUserId());
+                stmt.setString(2, project.getProjectName());
+                stmt.setString(3, project.getProjectCategory());
+                stmt.setBoolean(4, project.getProjectCompleted());
+                stmt.setBoolean(5, project.getProjectArchived());
+                stmt.setBoolean(6, project.getProjectIntrash());
+                stmt.setInt(7, project.getProjectId());
+                stmt.executeUpdate(); 
+                stmt.close(); 
                 connection.close();
-                
-                updatedProject = this.read(project.getProject_id());
+                updatedProject = this.read(project.getProjectId());
                 this.projectsCache.set(this.projectsCache.indexOf(project), updatedProject);
             } catch (SQLException e) {
                 System.out.println("Error: " + e);
@@ -161,13 +117,13 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     }
 
     @Override
-    public void delete(Integer project_id) {
-        PaintProject projectToRemove = this.read(project_id);
+    public void delete(Integer projectId) throws SQLException {
+        PaintProject projectToRemove = this.read(projectId);
         if (projectToRemove != null) {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("DELETE FROM PaintProjects WHERE project_id = ?");
                 
-                stmt.setInt(1, project_id);
+                stmt.setInt(1, projectId);
                 
                 stmt.executeUpdate();
                 
@@ -182,49 +138,36 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     }
 
     @Override
-    public List<PaintProject> list() {
+    public List<PaintProject> list() throws SQLException {
         ArrayList<PaintProject> projects = new ArrayList<>();
-        
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PaintProjects;");
-            
-            ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                projects.add(new PaintProject(
-                        rs.getInt("project_id"), 
-                        rs.getInt("user_id"), 
-                        rs.getString("project_name"), 
-                        rs.getString("project_category"),
-                        rs.getBoolean("project_completed"),
-                        rs.getBoolean("project_archived"),
-                        rs.getBoolean("project_intrash")));
-            }
-            
-            rs.close();
-            stmt.close();
-            connection.close();          
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.toString());
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PaintProjects;");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            projects.add(new PaintProject(rs.getInt("project_id"), rs.getInt("user_id"), rs.getString("project_name"), 
+                    rs.getString("project_category"), rs.getBoolean("project_completed"), rs.getBoolean("project_archived"), rs.getBoolean("project_intrash")));
         }
+        rs.close();
+        stmt.close();
+        connection.close();
         return projects;
     }
     
-    public void setUser(Integer user_id) {
-        this.user_id = user_id;
+    public void setUser(Integer userId) {
+        this.userId = userId;
     }
     
     /**
      * Get categories of the selected user's projects.
-     * @param user_id User_id of the selected user
+     * @param userId User_id of the selected user
      * @return List of categories of the users projects
      */
-    public ArrayList<String> categoriesOfUser(Integer user_id) {
+    public ArrayList<String> categoriesOfUser(Integer userId) {
         ArrayList<String> categories = new ArrayList<>();
         
         for (PaintProject p : this.projectsCache) {
-            if (!categories.contains(p.getProject_category())) {
-                categories.add(p.getProject_category());
+            if (!categories.contains(p.getProjectCategory()) && p.getUserId().intValue() == userId) {
+                categories.add(p.getProjectCategory());
             }
         }
         
@@ -237,7 +180,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
      * @return ArrayList<PaintProject> of the projects in a category
      */
     public ArrayList<PaintProject> projectsInCategory(String category) {
-        ArrayList<PaintProject> projectsInCategory = (ArrayList<PaintProject>) this.projectsCache.stream().filter(c -> c.getProject_category().equals(category)).collect(Collectors.toList());
+        ArrayList<PaintProject> projectsInCategory = (ArrayList<PaintProject>) this.projectsCache.stream().filter(c -> c.getProjectCategory().equals(category)).collect(Collectors.toList());
         
         return projectsInCategory;
     }

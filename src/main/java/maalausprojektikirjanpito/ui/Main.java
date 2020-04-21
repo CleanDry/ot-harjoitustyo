@@ -38,7 +38,7 @@ public class Main {
                 String password = lukija.nextLine();
                 if (!service.login(username, password)) {
                     continue;
-                };
+                }
                 System.out.println(service.getLoggedIn());
             } else if (input.equals("Q")) {
                 break;
@@ -63,7 +63,7 @@ public class Main {
                 } else if (service.getUserProjectsByCategory().keySet().contains(i)) {
                     System.out.println("PID  | Project name   | Completed | Archived | In Trash");
                     for (PaintProject project : service.getUserProjectsByCategory().get(i)) {
-                        System.out.println(project.getProject_id() + " | " + project.getProject_name() + " | " + project.getProject_completed() + " | " + project.getProject_archived() + " | " + project.getProject_intrash());
+                        System.out.println(project.getProjectId() + " | " + project.getProjectName() + " | " + project.getProjectCompleted() + " | " + project.getProjectArchived() + " | " + project.getProjectIntrash());
                     }
                 } else if (i.equals("C")) {
                     System.out.println("Project name: ");

@@ -50,7 +50,7 @@ public class UserDaoTest {
     }
     
     @Test
-    public void usersAreReadCorrectlyFromDb() {
+    public void usersAreReadCorrectlyFromDb() throws SQLException {
         List<User> users = testDao.list();
         assertEquals(1, users.size());
         User user = users.get(0);
@@ -60,7 +60,7 @@ public class UserDaoTest {
     }
     
     @Test
-    public void usersAreCanBeCreatedAndAreReturnedCorrectly() {
+    public void usersAreCanBeCreatedAndAreReturnedCorrectly() throws SQLException {
         User user = testDao.create(new User("user", "passphrase"));
         assertEquals("user", user.getUsername());
         assertEquals("passphrase", user.getPassword());
@@ -73,7 +73,7 @@ public class UserDaoTest {
     }
     
     @Test
-    public void usersAreReadSuccessfully() {
+    public void usersAreReadSuccessfully() throws SQLException {
         User user = testDao.read(1);
         assertEquals(1, user.getId().intValue());
         assertEquals("username", user.getUsername());
@@ -81,7 +81,7 @@ public class UserDaoTest {
     }
     
     @Test
-    public void updatedUsersReturnedMatchTheUpdate() {
+    public void updatedUsersReturnedMatchTheUpdate() throws SQLException {
         User user = testDao.update(new User(1, "user", "passphrase"));
         assertEquals(1, user.getId().intValue());
         assertEquals("user", user.getUsername());
@@ -89,7 +89,7 @@ public class UserDaoTest {
     }
     
     @Test
-    public void deletedUsersAreRemovedFromDb() {
+    public void deletedUsersAreRemovedFromDb() throws SQLException {
         User user = testDao.create(new User("user", "passphrase"));
         User userToDelete = testDao.read(1);
         testDao.delete(1);

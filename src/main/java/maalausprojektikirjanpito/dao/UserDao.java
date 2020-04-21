@@ -22,8 +22,8 @@ public class UserDao implements Dao<User, Integer> {
         return usersCache;
     }
     
-   @Override
-    public void init() {
+    @Override
+    public void init() throws SQLException {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users ("
                 + "id INTEGER, "
@@ -45,82 +45,63 @@ public class UserDao implements Dao<User, Integer> {
     }
 
     @Override
-    public User create(User user) {
+    public User create(User user) throws SQLException {
         int id = -1;
-        
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO Users "
-                    + "(username, password) "
-                    + " VALUES (?,?)",
-                    Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            
-            stmt.executeUpdate();
-            
-            ResultSet generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                id = generatedKeys.getInt(1);
-            }
-            
-            generatedKeys.close();
-            stmt.close();
-            connection.close();
-            
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+        PreparedStatement stmt = connection.prepareStatement("INSERT INTO Users "
+                + "(username, password) "
+                + " VALUES (?,?)",
+                Statement.RETURN_GENERATED_KEYS);
+        stmt.setString(1, user.getUsername());
+        stmt.setString(2, user.getPassword());
+        stmt.executeUpdate();
+        ResultSet generatedKeys = stmt.getGeneratedKeys();
+        if (generatedKeys.next()) {
+            id = generatedKeys.getInt(1);
         }
-        
-        if (id >= 0) {
-            return this.read(id);
-        } else {
-            return null;
-        }
+        generatedKeys.close();
+        stmt.close();
+        connection.close();
+        return this.read(id);
     }
 
     @Override
-    public User read(Integer key) {
+    public User read(Integer key) throws SQLException {
         User user = null;
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+        if (key != -1) {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Users WHERE id = (?)");
             stmt.setInt(1, key);
             ResultSet rs = stmt.executeQuery();
             user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
-            
+
             rs.close();
             stmt.close();
             connection.close();
-            
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
         }
         return user;
     }
 
     @Override
-    public User update(User user) {
+    public User update(User user) throws SQLException {
         User updatedUser = null;
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-            PreparedStatement stmt = connection.prepareStatement("UPDATE Users "
-                    + "SET username  = ?, password = ? "
-                    + "WHERE id = " + user.getId());
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            stmt.executeUpdate();
-            
-            updatedUser = this.read(user.getId());
-            
-            stmt.close();
-            connection.close();
-            
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+        PreparedStatement stmt = connection.prepareStatement("UPDATE Users "
+                + "SET username  = ?, password = ? "
+                + "WHERE id = " + user.getId());
+        stmt.setString(1, user.getUsername());
+        stmt.setString(2, user.getPassword());
+        stmt.executeUpdate();
+
+        updatedUser = this.read(user.getId());
+
+        stmt.close();
+        connection.close();
         return updatedUser;
     }
 
     @Override
-    public void delete(Integer key) {
+    public void delete(Integer key) throws SQLException {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM Users "
                     + "WHERE id = " + key);
@@ -135,25 +116,17 @@ public class UserDao implements Dao<User, Integer> {
     }
 
     @Override
-    public List<User> list() {
+    public List<User> list() throws SQLException {
         ArrayList<User> users = new ArrayList<>();
-        
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Users");
-            
-            ResultSet resultSet = stmt.executeQuery();
-            
-            while (resultSet.next()) {
-                users.add(new User(resultSet.getInt("id"), resultSet.getString("username"), resultSet.getString("password")));
-            }
-            
-            resultSet.close();
-            stmt.close();
-            connection.close();           
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.toString());
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Users");
+        ResultSet resultSet = stmt.executeQuery();
+        while (resultSet.next()) {
+            users.add(new User(resultSet.getInt("id"), resultSet.getString("username"), resultSet.getString("password")));
         }
+        resultSet.close();
+        stmt.close();
+        connection.close();
         return users;
-    }
-    
+    }   
 }
