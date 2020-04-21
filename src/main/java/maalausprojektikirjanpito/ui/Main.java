@@ -1,5 +1,6 @@
 package maalausprojektikirjanpito.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import maalausprojektikirjanpito.domain.ManagerService;
@@ -16,7 +17,7 @@ public class Main {
         System.out.println("Ohjelma kääntyy ja ajaa!");
         
         Scanner lukija = new Scanner(System.in);
-        ManagerService service = new ManagerService("db/example.db");
+        ManagerService service = new ManagerService("db" + File.separator + "example.db");
         service.init();
         
         while (true) {
