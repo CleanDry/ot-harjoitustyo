@@ -9,7 +9,7 @@ public class ConnectionManager {
     private static Connection connection = null;
     
     public static Connection getDbConnection(String databaseUrl) throws SQLException {
-        if (ConnectionManager.connection == null) {
+        if (ConnectionManager.connection == null || ConnectionManager.connection.isClosed()) {
             ConnectionManager.connection = DriverManager.getConnection("jdbc:sqlite:" + databaseUrl);
         } else {
             ConnectionManager.connection.close();
