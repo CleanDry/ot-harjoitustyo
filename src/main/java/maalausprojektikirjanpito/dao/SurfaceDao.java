@@ -21,6 +21,16 @@ public class SurfaceDao implements Dao<Surface, Integer> {
         this.subproject_id = subproject_id;
         this.databaseURL = databaseURL;
         
+        this.surfacesCache = (ArrayList<Surface>) this.list();
+    }
+    
+    @Override
+    public ArrayList<Surface> getCache() {
+        return this.surfacesCache;
+    }
+    
+    @Override
+    public void init() {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Surfaces ("
                 + "surface_id INTEGER, "

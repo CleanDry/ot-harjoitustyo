@@ -39,6 +39,7 @@ public class ManagerServiceTest {
         testDb = testFolder.newFile("test.db");
         
         service = new ManagerService(testDb.getAbsolutePath());
+        service.init();
     }
     
     @After

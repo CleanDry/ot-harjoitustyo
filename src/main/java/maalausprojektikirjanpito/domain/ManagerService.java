@@ -6,44 +6,48 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import maalausprojektikirjanpito.dao.PaintProjectDao;
+import maalausprojektikirjanpito.dao.SubProjectDao;
+import maalausprojektikirjanpito.dao.SurfaceDao;
 import maalausprojektikirjanpito.dao.UserDao;
 import static maalausprojektikirjanpito.domain.Utilities.*;
 
 
 public class ManagerService {
-    private String userDatabaseUrl;
+    private String databaseUrl;
     private User loggedIn;
     private UserDao userDao;
     private PaintProjectDao projectsDao;
-    private HashMap<String, User> users = new HashMap<>(); // Keys are usernames in lowercase to ensure uniqueness regardless of capitalization.
+    private SubProjectDao subprojectDao;
+    private SurfaceDao surfaceDao;
     private HashMap<String, ArrayList<PaintProject>> userProjectsByCategory;
 
     /**
      * Constructs a new ManagerService-object. UserDao-object inside ensures existence of a User table and database in the designated location.
-     * @param userDbUrl URL of the selected database as a String
+     * @param databaseUrl URL of the selected database as a String
      */
-    public ManagerService(String userDbUrl) {
-        userDatabaseUrl = userDbUrl;
-        userDao = new UserDao(userDatabaseUrl);
-        userDao.list().forEach((u) -> {
-            users.put(u.getUsername().toLowerCase(), u);
-        });
-        try {
-            this.dbInit();
-        } catch (IOException ex) {
-            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public ManagerService(String databaseUrl) {
+        this.databaseUrl = databaseUrl;
+        this.userDao = new UserDao(databaseUrl);
+        this.projectsDao = new PaintProjectDao(databaseUrl);
+        this.subprojectDao = new SubProjectDao(databaseUrl);
+        
     }
     
-    public void dbInit() throws IOException {
-        String relativePath = userDatabaseUrl;
+    public void init() throws IOException {
+        // Ensure database file exists
+        String relativePath = databaseUrl;
         File file = new File(relativePath);
         
         if (file.createNewFile()) {
-            System.out.println(relativePath + " File Created in /db directory");
+            System.out.println("File " + relativePath + " created in ./db/ directory");
         } else {
-            System.out.println("File "+relativePath+" already exists in the /db directory");
+            System.out.println("File " + relativePath + " already exists in the ./db/ directory");
         }
+        
+        // Initialize Dao-objects; ensure database's tables exist and dao's fetch their initial caches
+        this.userDao.init();
+        this.projectsDao.init();
+        this.subprojectDao.init();
     }
     
     /**
@@ -61,14 +65,14 @@ public class ManagerService {
             System.out.println("Password has to have 8-20 characters");
             return false;
         // Check if the given username in lowercase is unique
-        } else if (users.containsKey(username.toLowerCase())) {
+        } else if (this.userDao.getCache().containsKey(username.toLowerCase())) {
             System.out.println("Username taken.");
             return false;
         }
         
         User user = userDao.create(new User(username, password));
-        users.put(username.toLowerCase(), user);
-        System.out.println(userDatabaseUrl + ": " + user + " created successfully!");
+        this.userDao.getCache().put(username.toLowerCase(), user);
+        System.out.println(databaseUrl + ": " + user + " created successfully!");
         return true;
     }
     
@@ -113,14 +117,14 @@ public class ManagerService {
         if (username.isEmpty() || password.isEmpty()) {
             System.out.println("Either field was empty!");
             return false;
-        } else if (this.users.containsKey(usernameInLowerCase) 
-                && this.users.get(usernameInLowerCase).getUsername().equals(username) 
-                && this.users.get(usernameInLowerCase).getPassword().equals(password)) {
+        } else if (this.userDao.getCache().containsKey(usernameInLowerCase) 
+                && this.userDao.getCache().get(usernameInLowerCase).getUsername().equals(username) 
+                && this.userDao.getCache().get(usernameInLowerCase).getPassword().equals(password)) {
             
-            this.loggedIn = this.users.get(username.toLowerCase());
+            this.loggedIn = this.userDao.getCache().get(username.toLowerCase());
             System.out.println("Successfully logged in " + username + " " + password + "!");
             
-            this.projectsDao = new PaintProjectDao(this.loggedIn.getId(), this.userDatabaseUrl);
+            this.projectsDao.setUser(this.loggedIn.getId());
             this.userProjectsByCategory = this.returnUserProjectsByCategory();
             return true;
             
@@ -143,13 +147,13 @@ public class ManagerService {
     }
     
     /**
-     * Log out current user.
+     * Log out current user. Set PaintProjectDao's UserID to -1.
      */
     public void logout() {
         System.out.println("Logging out");
         this.loggedIn = null;
-        this.projectsDao = null;
         this.userProjectsByCategory = null;
+        this.projectsDao.setUser(-1);
         this.getLoggedIn();
     }
     

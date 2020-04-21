@@ -38,7 +38,9 @@ public class PaintProjectDaoTest {
         testUser_id = 1;
         testDb = testFolder.newFile("test.db");
         
-        testDao = new PaintProjectDao(testUser_id, testDb.getAbsolutePath());
+        testDao = new PaintProjectDao(testDb.getAbsolutePath());
+        testDao.setUser(testUser_id);
+        testDao.init();
         
         testDao.create(new PaintProject(testUser_id, "test_project", "test_category"));
     }

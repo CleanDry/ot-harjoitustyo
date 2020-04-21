@@ -14,13 +14,19 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
     
     /**
      * Constructs a new SubProjectDao-object. Checks the existence of a SubProjects table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
-     * @param project_id Project_id of the project currently being managed
      * @param databaseURL URL of the selected database as a String
      */
-    public SubProjectDao(Integer project_id, String databaseURL) {
-        this.project_id = project_id;
+    public SubProjectDao(String databaseURL) {
         this.databaseURL = databaseURL;
-        
+    }
+
+    @Override
+    public ArrayList<SubProject> getCache() {
+        return subProjectsCache;
+    }
+    
+    @Override
+    public void init() {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS SubProjects ("
                 + "subproject_id INTEGER, "
@@ -55,7 +61,7 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
                     + "VALUES (?,?,?,?,?);",
                     Statement.RETURN_GENERATED_KEYS);
                 
-                stmt.setInt(1, this.project_id);
+                stmt.setInt(1, subProject.getProject_id());
                 stmt.setString(2, subProject.getSubProject_name());
                 stmt.setBoolean(4, false);
                 stmt.setBoolean(5, false);
@@ -126,13 +132,13 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("UPDATE SubProjects "
                     + "SET project_id = ?, subproject_name = ?, subproject_completed = ?, subproject_intrash = ? "
-                    + "WHERE project_id = ?;");
+                    + "WHERE subproject_id = ?;");
                 
                 stmt.setInt(1, subProject.getProject_id());
                 stmt.setString(2, subProject.getSubProject_name());
                 stmt.setBoolean(3, subProject.isSubProject_completed());
                 stmt.setBoolean(4, subProject.isSubProject_isInTrash());
-                stmt.setInt(5, subProject.getProject_id());
+                stmt.setInt(5, subProject.getSubProject_id());
                 
                 stmt.executeUpdate();
                 

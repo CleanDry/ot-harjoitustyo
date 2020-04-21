@@ -6,6 +6,7 @@ import maalausprojektikirjanpito.domain.User;
 
 public class UserDao implements Dao<User, Integer> {
     String databaseURL;
+    HashMap<String, User> usersCache = new HashMap<>();
 
     /**
      * Constructs a new UserDao-object. Checks the existence of a Users table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
@@ -13,8 +14,17 @@ public class UserDao implements Dao<User, Integer> {
      */
     public UserDao(String url) {
         databaseURL = url;
-        
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+    }
+    
+
+    @Override
+    public HashMap<String, User> getCache() {
+        return usersCache;
+    }
+    
+   @Override
+    public void init() {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users ("
                 + "id INTEGER, "
                 + "username VARCHAR(20), "
@@ -29,9 +39,10 @@ public class UserDao implements Dao<User, Integer> {
             System.out.println("Error: " + e);
         }
         
-        Object users = this.list();
+        this.list().forEach((u) -> {
+            usersCache.put(u.getUsername().toLowerCase(), u);
+        });
     }
-    
 
     @Override
     public User create(User user) {
@@ -138,13 +149,11 @@ public class UserDao implements Dao<User, Integer> {
             
             resultSet.close();
             stmt.close();
-            connection.close();
-            
-            return users;            
+            connection.close();           
         } catch (SQLException e) {
             System.out.println("Error: " + e.toString());
         }
-        return null;
+        return users;
     }
     
 }

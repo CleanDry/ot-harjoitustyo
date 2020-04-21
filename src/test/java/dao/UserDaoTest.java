@@ -39,6 +39,7 @@ public class UserDaoTest {
         testDb = testFolder.newFile("test.db");
         
         testDao = new UserDao(testDb.getAbsolutePath());
+        testDao.init();
         
         testDao.create(new User("username", "password"));
     }

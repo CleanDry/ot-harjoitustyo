@@ -43,7 +43,7 @@ public class SubProjectDaoTest {
         testProject_id = 1;
         testDb = testFolder.newFile("test.db");
         
-        testDao = new SubProjectDao(testProject_id, testDb.getAbsolutePath());
+        testDao = new SubProjectDao(testDb.getAbsolutePath());
         
         testDao.create(new SubProject(testProject_id, "test_subproject"));
     }

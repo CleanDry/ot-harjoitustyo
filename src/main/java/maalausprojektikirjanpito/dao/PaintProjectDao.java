@@ -13,14 +13,20 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     
     /**
      * Constructs a new PaintProjectDao-object. Checks the existence of a PaintProjects table in the designated database and creates one if not present.SQLITE3 used creates the database if one does not exist.
-     * @param user_id User_id of the user currently logged in
      * @param databaseURL URL of the selected database as a String
      */
-    public PaintProjectDao(Integer user_id, String databaseURL) {
-        this.user_id = user_id;
+    public PaintProjectDao(String databaseURL) {
         this.databaseURL = databaseURL;
-        
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+    }
+
+    @Override
+    public ArrayList<PaintProject> getCache() {
+        return projectsCache;
+    }
+    
+    @Override
+    public void init() {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS PaintProjects ("
                 + "project_id INTEGER, "
                 + "user_id INTEGER, "
@@ -36,7 +42,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
 
             stmt.close();
             connection.close();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e);
         }
         
@@ -202,6 +208,10 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
             System.out.println("Error: " + e.toString());
         }
         return projects;
+    }
+    
+    public void setUser(Integer user_id) {
+        this.user_id = user_id;
     }
     
     /**

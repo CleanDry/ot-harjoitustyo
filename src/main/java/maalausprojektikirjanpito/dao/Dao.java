@@ -5,8 +5,21 @@ import java.util.*;
 
 public interface Dao<T, K> {
     
+    /**
+     * Method to access the Object's cache.
+     * @return a suitable cache object, an empty object if not initialized.
+     * @throws SQLException 
+     */
+    Object getCache() throws SQLException;
+    
+    /**
+     * Method to initialize current Object.
+     * @throws SQLException 
+     */
+    void init() throws SQLException;
+    
     /** 
-     * Interface for an object creation.
+     * Method to create an object  of type T.
      * @param object to be created
      * @return created object
      * @throws SQLException
@@ -14,7 +27,7 @@ public interface Dao<T, K> {
     T create(T object) throws SQLException;
     
     /**
-     * Interface for reading an object.
+     * Method for reading an object of type T of key K.
      * @param key integer to be read
      * @return object read, null if not found
      * @throws SQLException 
@@ -22,7 +35,7 @@ public interface Dao<T, K> {
     T read(K key) throws SQLException;
     
     /**
-     * Interface for updating an object.
+     * Method for updating an object of type T.
      * @param object to be updated
      * @return updated object, null if not found
      * @throws SQLException 
@@ -30,14 +43,14 @@ public interface Dao<T, K> {
     T update(T object) throws SQLException;
     
     /**
-     * Interface for deleting an object.
+     * Method for deleting an object of type T with the key K.
      * @param key of the object to be deleted
      * @throws SQLException 
      */
     void delete(K key) throws SQLException;
     
     /**
-     * Interface for returning a list of objects.
+     * Method for returning a list of objects of type T.
      * @return a list of objects in the database
      * @throws SQLException 
      */
