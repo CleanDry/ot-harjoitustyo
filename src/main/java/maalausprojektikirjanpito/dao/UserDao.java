@@ -10,10 +10,10 @@ public class UserDao implements Dao<User, Integer> {
 
     /**
      * Constructs a new UserDao-object. Checks the existence of a Users table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
-     * @param url URL of the selected database as a String
+     * @param databaseURL URL of the selected database as a String
      */
-    public UserDao(String url) {
-        databaseURL = url;
+    public UserDao(String databaseURL) {
+        this.databaseURL = databaseURL;
     }
     
 
@@ -24,20 +24,12 @@ public class UserDao implements Dao<User, Integer> {
     
     @Override
     public void init() throws SQLException {
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseURL)) {
-            PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users ("
-                + "id INTEGER, "
-                + "username VARCHAR(20), "
-                + "password VARCHAR(20), "
-                + "PRIMARY KEY (id)"
-                + ");");
-            stmt.executeUpdate();
-
-            stmt.close();
-            connection.close();
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
+        Connection connection = ConnectionManager.getDbConnection(this.databaseURL);
+        PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users ("
+            + "id INTEGER, username VARCHAR(20), password VARCHAR(20), PRIMARY KEY (id));");
+        stmt.executeUpdate();
+        stmt.close();
+        connection.close();
         
         this.list().forEach((u) -> {
             usersCache.put(u.getUsername().toLowerCase(), u);
@@ -118,7 +110,8 @@ public class UserDao implements Dao<User, Integer> {
     @Override
     public List<User> list() throws SQLException {
         ArrayList<User> users = new ArrayList<>();
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
+        Connection connection = ConnectionManager.getDbConnection(databaseURL);
+//        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Users");
         ResultSet resultSet = stmt.executeQuery();
         while (resultSet.next()) {
