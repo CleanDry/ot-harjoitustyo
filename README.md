@@ -48,5 +48,5 @@ mvn package
 ```
 Jar-tiedosto löytyy sijainnista /target/Maalausprojektikirjanpito-1.0-SNAPSHOT.jar. Tiedoston voi ajaa komennolla
 ```
-java -jar /target/Maalausprojektikirjanpito-1.0-SNAPSHOT.jar
+java -jar target/Maalausprojektikirjanpito-1.0-SNAPSHOT.jar
 ```
