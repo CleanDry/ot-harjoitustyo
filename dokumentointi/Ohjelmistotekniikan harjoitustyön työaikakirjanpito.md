@@ -14,4 +14,5 @@ PVM | Tunnit | Työ
 16.04.2020 | 2 | Tietokannan alustus ja Surface-luokan ja -Dao:n toteutus
 21.04.2020 | 8 | Refaktorointia, SurfaceDaon testausta ja kovaa yritystä saada ohjelma toimimaan linuxilla.
 22.04.2020 | 6 | Graafisen käyttöliittymän rakennuksen aloittaminen
-Yhteensä   | 46 |tuntia
+22.04.2020 | 4 | Kirjautumis- ja käyttäjien luomisnäkymän v1 ja seuraavien näkymien luonnosten tarkentaminen
+Yhteensä   | 50 |tuntia
