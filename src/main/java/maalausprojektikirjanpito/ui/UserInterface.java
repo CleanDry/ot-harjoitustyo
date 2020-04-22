@@ -1,6 +1,9 @@
 package maalausprojektikirjanpito.ui;
 
+import java.sql.SQLException;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -15,6 +18,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import maalausprojektikirjanpito.domain.ManagerService;
 import maalausprojektikirjanpito.domain.PaintProject;
+import static maalausprojektikirjanpito.domain.Utilities.stringLengthCheck;
 
 public class UserInterface extends Application {
     private ManagerService managerService;
@@ -38,6 +42,9 @@ public class UserInterface extends Application {
 //        FileUserDao userDao = new FileUserDao(userFile);
 //        FileTodoDao todoDao = new FileTodoDao(todoFile, userDao);
         managerService = new ManagerService("PaintProjectManager.db");
+        managerService.init();
+        
+        categoryNodes = new VBox(10);
     }
     
     public Node createCategoryNode(String category) {
@@ -153,6 +160,7 @@ public class UserInterface extends Application {
         loginPane.setHgap(10);
         
         // loginPane button actions
+        // Log on if credentials match, display loginMessage otherwise
         loginButton.setOnAction(event -> {
             String username = usernameInput.getText();
             String password = passwordInput.getText();
@@ -168,6 +176,7 @@ public class UserInterface extends Application {
             }      
         });
         
+        // Display newUserInputPane on event
         goToNewUserButton.setOnAction(event -> {
             loginMessage.setText("");
             usernameInput.setText("");
@@ -176,23 +185,64 @@ public class UserInterface extends Application {
             loginPane.add(newUserInputPane, 0, 1);
         });
         
+        // Verify new credentials, create a new user and log in if successful. Display messages otherwise.
         createNewUserButton.setOnAction(event -> {
-            String newUsername = newUsernameInput.getText();
-            String newPassword = newPasswordInput.getText();
-            String newPasswordVerified = verifyNewPasswordInput.getText();
-            if (!newPassword.equals(newPasswordVerified)) {
+            String newUsername = newUsernameInput.getText().trim();
+            String newPassword = newPasswordInput.getText().trim();
+            String verifiedNewPassword = verifyNewPasswordInput.getText().trim();
+            Boolean inputAcceptable = true;
+            if (!stringLengthCheck(newUsername, 3, 20)) {
+                newUsernameMessage.setText("Username must be 3-20 characters long");
+                newUsernameMessage.setTextFill(Color.RED);
+                newUsernameInput.setText("");
+                inputAcceptable = false;
+            };
+            if (!newUsername.matches("[A-Za-z0-9]*")) {
+                newUsernameMessage.setText("Username must contain only letters or numbers");
+                newUsernameMessage.setTextFill(Color.RED);
+                newUsernameInput.setText("");
+                inputAcceptable = false;
+            }
+            if (!stringLengthCheck(newPassword, 3, 20)) {
+                newPasswordInputMessage.setText("Password must be 3-20 characters long");
+                newPasswordInputMessage.setTextFill(Color.RED);
+                newPasswordInput.setText("");
+                inputAcceptable = false;
+            }
+            if (!newPassword.matches("[A-Za-z0-9]*")) {
+                newPasswordInputMessage.setText("Password must contain only letters or numbers");
+                newPasswordInputMessage.setTextFill(Color.RED);
+                newPasswordInput.setText("");
+                inputAcceptable = false;
+            }
+            if (!newPassword.equals(verifiedNewPassword)) {
                 verifyNewPasswordMessage.setText("Please make sure the passwords match!");
                 verifyNewPasswordMessage.setTextFill(Color.RED);
+                inputAcceptable = false;
+            }
+            
+            if (inputAcceptable) {
+                newUsernameInput.setText("");
+                newPasswordInput.setText("");
+                verifyNewPasswordInput.setText("");
+                try {
+                    managerService.createUser(newUsername, newPassword);
+                    managerService.login(newUsername, newPassword);
+                    redrawCategoriesList();
+                    primaryStage.setScene(mainScene); 
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         
         loginScene = new Scene(loginPane);
         
         
-        // browse project categories -scene
-        // rest of scenes?
         // Building the primary scene
+        Label mainSceneLabel = new Label("Main Scene");
         BorderPane mainPane = new BorderPane();
+        mainPane.setCenter(mainSceneLabel);
         mainScene = new Scene(mainPane, 1200, 700);
         
         // setup primary stage
