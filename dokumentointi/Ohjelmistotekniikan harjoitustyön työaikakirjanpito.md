@@ -13,4 +13,5 @@ PVM | Tunnit | Työ
 14.04.2020 | 4 | PaintProjectien luominen ja kirjaaminen käyttöliittymässä, aliprojektien alustava toteutus ja testaus
 16.04.2020 | 2 | Tietokannan alustus ja Surface-luokan ja -Dao:n toteutus
 21.04.2020 | 8 | Refaktorointia, SurfaceDaon testausta ja kovaa yritystä saada ohjelma toimimaan linuxilla.
-Yhteensä   | 40 |tuntia
+22.04.2020 | 6 | Graafisen käyttöliittymän rakennuksen aloittaminen
+Yhteensä   | 46 |tuntia
