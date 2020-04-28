@@ -17,6 +17,7 @@ public class ManagerService {
     private PaintProjectDao projectsDao;
     private SubProjectDao subprojectDao;
     private SurfaceDao surfaceDao;
+    private ArrayList<PaintProject> userProjects;
     private HashMap<String, ArrayList<PaintProject>> userProjectsByCategory;
 
     /**
@@ -184,5 +185,10 @@ public class ManagerService {
             userPaintProjectsByCategory.put(category, projectsDao.projectsInCategory(category));
         }
         return userPaintProjectsByCategory;
+    }
+    
+    public ArrayList<PaintProject> returnUserProjects() throws SQLException {
+        ArrayList<PaintProject> userProjectsToReturn = (ArrayList<PaintProject>) this.projectsDao.list();
+        return userProjectsToReturn;
     }
 }

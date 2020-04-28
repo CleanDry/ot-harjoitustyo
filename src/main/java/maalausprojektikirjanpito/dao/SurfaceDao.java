@@ -109,7 +109,7 @@ public class SurfaceDao implements Dao<Surface, Integer> {
                 + "WHERE surface_id = ?;");
             stmt.setInt(1, surface.getSubprojectId());
             stmt.setString(2, surface.getSurfaceName());
-            stmt.setBoolean(3, surface.getInTrash());
+            stmt.setBoolean(3, surface.getIsInTrash());
             stmt.setInt(4, surface.getSurfaceId());
             stmt.executeUpdate();
             stmt.close();

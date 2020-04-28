@@ -41,6 +41,7 @@ public class ManagerServiceTest {
         
         service = new ManagerService(testDb.getAbsolutePath());
         service.init();
+        service.createUser("testUser", "testPassword");
     }
     
     @After
@@ -91,5 +92,34 @@ public class ManagerServiceTest {
     public void loginSucceedsIfEntryCorrect() throws SQLException {
         service.createUser("username", "password");
         assertTrue(service.login("username", "password"));
+    }
+    
+    @Test
+    public void paintProjectNameIsProperLength() throws SQLException {
+        service.login("testUser", "testPassword");
+        assertFalse(service.createPaintProject("s", "projectCategory"));
+        assertFalse(service.createPaintProject("namethatislongerthanfortycharacterslongthatfails", "projectCategory"));
+        assertTrue(service.createPaintProject("projectName", "projectCategory"));
+    }
+    
+    @Test
+    public void paintProjectCategoryIsProperLength() throws SQLException {
+        service.login("testUser", "testPassword");
+        assertFalse(service.createPaintProject("projectName", "c"));
+        assertFalse(service.createPaintProject("projectName", "namethatislongerthanfortycharacterslongthatfails"));
+        assertTrue(service.createPaintProject("projectName", "projectCategory"));
+    }
+    
+    @Test
+    public void paintProjectCreateDoesNotAllowDuplicates() throws SQLException {
+        service.login("testUser", "testPassword");
+        service.createPaintProject("projectName", "projectCategory");
+        assertFalse(service.createPaintProject("projectName", "projectCategory"));
+    }
+    
+    @Test
+    public void getLoggedInReturnsUser() throws SQLException {
+        service.login("testUser", "testPassword");
+        assertEquals("testUser", service.getLoggedIn().getUsername());
     }
 }

@@ -6,7 +6,7 @@ public class Surface {
     Integer surfaceId;
     Integer subprojectId;
     String surfaceName;
-    Boolean inTrash;
+    Boolean isInTrash;
     ArrayList<TreatmentCombination> treamentCombinations = new ArrayList<>();
 
     /**
@@ -17,7 +17,7 @@ public class Surface {
     public Surface(Integer subprojectId, String surfaceName) {
         this.subprojectId = subprojectId;
         this.surfaceName = surfaceName;
-        this.inTrash = false;
+        this.isInTrash = false;
     }
     
     /**
@@ -25,13 +25,13 @@ public class Surface {
      * @param surfaceId of the surface.
      * @param subprojectId of the surface.
      * @param surfaceName of the surface.
-     * @param inTrash Boolean.
+     * @param isInTrash Boolean.
      */
-    public Surface(Integer surfaceId, Integer subprojectId, String surfaceName, boolean inTrash) {
+    public Surface(Integer surfaceId, Integer subprojectId, String surfaceName, boolean isInTrash) {
         this.surfaceId = surfaceId;
         this.subprojectId = subprojectId;
         this.surfaceName = surfaceName;
-        this.inTrash = inTrash;
+        this.isInTrash = isInTrash;
     }
 
     public Integer getSurfaceId() {
@@ -58,12 +58,12 @@ public class Surface {
         this.surfaceName = surfaceName;
     }
 
-    public Boolean getInTrash() {
-        return inTrash;
+    public Boolean getIsInTrash() {
+        return isInTrash;
     }
 
-    public void setInTrash(Boolean inTrash) {
-        this.inTrash = inTrash;
+    public void setIsInTrash(Boolean inTrash) {
+        this.isInTrash = inTrash;
     }
 
     public ArrayList<TreatmentCombination> getTreamentCombinations() {

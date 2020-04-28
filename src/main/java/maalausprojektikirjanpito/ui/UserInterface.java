@@ -1,6 +1,7 @@
 package maalausprojektikirjanpito.ui;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,12 +23,15 @@ import static maalausprojektikirjanpito.domain.Utilities.stringLengthCheck;
 
 public class UserInterface extends Application {
     private ManagerService managerService;
+    private TreeViewHelper treeViewHelper;
     
     private Scene loginScene;
-    private Scene createNewUserScene;
     private Scene mainScene;
     
+    Button loggedUserButton;
+    
     private VBox categoryNodes;
+    private TreeView<Node> projectTree = new TreeView<>();
     
 
     @Override
@@ -43,8 +47,10 @@ public class UserInterface extends Application {
 //        FileTodoDao todoDao = new FileTodoDao(todoFile, userDao);
         managerService = new ManagerService("PaintProjectManager.db");
         managerService.init();
+        treeViewHelper = new TreeViewHelper();
         
         categoryNodes = new VBox(10);
+        loggedUserButton = new Button("Username");
     }
     
     public Node createCategoryNode(String category) {
@@ -68,7 +74,7 @@ public class UserInterface extends Application {
         return box;
     }
     
-    public void redrawCategoriesList() {
+    public void redrawTreeView() {
         this.categoryNodes.getChildren().clear();
         Set<String> categoriesOfAUser = managerService.getUserProjectsByCategory().keySet();
         categoriesOfAUser.forEach(category -> {
@@ -164,9 +170,10 @@ public class UserInterface extends Application {
         loginButton.setOnAction(event -> {
             String username = usernameInput.getText();
             String password = passwordInput.getText();
-            if (managerService.login(username, password) ){
+            if ( managerService.login(username, password) ){
                 loginMessage.setText("");
-                redrawCategoriesList();
+//                redrawCategoriesList();
+                loggedUserButton.setText(username);
                 primaryStage.setScene(mainScene);  
                 usernameInput.setText("");
                 passwordInput.setText("");
@@ -228,7 +235,8 @@ public class UserInterface extends Application {
                 try {
                     managerService.createUser(newUsername, newPassword);
                     managerService.login(newUsername, newPassword);
-                    redrawCategoriesList();
+//                    redrawCategoriesList();
+                    loggedUserButton.setText(newUsername);
                     primaryStage.setScene(mainScene); 
                 } catch (SQLException ex) {
                     Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
@@ -238,11 +246,52 @@ public class UserInterface extends Application {
         
         loginScene = new Scene(loginPane);
         
+        // Nodes for the main scene
+        Label mainSceneHeader = new Label("Projects");
+        mainSceneHeader.setMinHeight(26);
+        mainSceneHeader.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
+        Label loggedInAsLabel = new Label("Logged in as:");
+        loggedInAsLabel.setMinHeight(26);
+        HBox loggedInUserBox = new HBox(10);
+        loggedInUserBox.getChildren().addAll(loggedInAsLabel, loggedUserButton);
         
-        // Building the primary scene
-        Label mainSceneLabel = new Label("Main Scene");
+        // Layout elements for main scene
+        BorderPane mainPaneHeaderPane = new BorderPane();
+        mainPaneHeaderPane.setLeft(mainSceneHeader);
+        mainPaneHeaderPane.setRight(loggedInUserBox);
+        mainPaneHeaderPane.setPadding(new Insets(24, 36, 0, 36));
+        
+
+        // Nodes for projects pane
+        TreeView projectsTree = new TreeView();
+        projectsTree.setStyle("-fx-border-color: white;");
+        TreeItem<String> rootItem = new TreeItem<>("All Projects");
+        TreeItem<String> activeProjectsRoot = new TreeItem<>("Active Projects");
+        activeProjectsRoot.setExpanded(true);
+        TreeItem<String> archivedProjectsRoot = new TreeItem<>("Archived Projects");
+        rootItem.getChildren().addAll(activeProjectsRoot, archivedProjectsRoot);
+        
+        projectsTree.setRoot(rootItem);
+        projectsTree.setShowRoot(false);
+        
+        Button goToNewProjectCreationButton = new Button("Create a new Project");
+        
+        BorderPane projectsPane = new BorderPane();
+        projectsPane.setCenter(projectsTree);
+        projectsPane.setBottom(goToNewProjectCreationButton);
+        BorderPane.setMargin(goToNewProjectCreationButton, new Insets(24, 0, 0, 0));
+        projectsPane.setPadding(new Insets(20, 50, 50, 50));
+        
+        // Nodes for individualProject pane
+        
+
+        
+        // Building the main scene
         BorderPane mainPane = new BorderPane();
-        mainPane.setCenter(mainSceneLabel);
+        mainPane.setTop(mainPaneHeaderPane);
+        mainPane.setCenter(projectsPane);
+        mainPane.setBackground(Background.EMPTY);
+        
         mainScene = new Scene(mainPane, 1200, 700);
         
         // setup primary stage
