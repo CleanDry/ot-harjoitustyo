@@ -15,4 +15,5 @@ PVM | Tunnit | Työ
 21.04.2020 | 8 | Refaktorointia, SurfaceDaon testausta ja kovaa yritystä saada ohjelma toimimaan linuxilla.
 22.04.2020 | 6 | Graafisen käyttöliittymän rakennuksen aloittaminen
 22.04.2020 | 4 | Kirjautumis- ja käyttäjien luomisnäkymän v1 ja seuraavien näkymien luonnosten tarkentaminen
-Yhteensä   | 50 |tuntia
+28.04.2020 | 8 | GUI jatkotyöstöä ja dokumentoinnin päivittäminen
+Yhteensä   | 58 |tuntia
