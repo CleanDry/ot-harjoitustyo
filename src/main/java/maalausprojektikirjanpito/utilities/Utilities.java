@@ -1,4 +1,4 @@
-package maalausprojektikirjanpito.domain;
+package maalausprojektikirjanpito.utilities;
 
 public class Utilities {
 

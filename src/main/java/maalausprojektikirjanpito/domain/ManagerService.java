@@ -7,7 +7,7 @@ import maalausprojektikirjanpito.dao.PaintProjectDao;
 import maalausprojektikirjanpito.dao.SubProjectDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
 import maalausprojektikirjanpito.dao.UserDao;
-import static maalausprojektikirjanpito.domain.Utilities.*;
+import static maalausprojektikirjanpito.utilities.Utilities.*;
 
 
 public class ManagerService {
