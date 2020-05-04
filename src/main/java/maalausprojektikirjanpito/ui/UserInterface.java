@@ -27,13 +27,13 @@ public class UserInterface extends Application {
     private ManagerService managerService;
     private TreeViewHelper treeViewHelper;
     
+    private Label loggedInAsLabel;
+
+    private TreeItem rootItem;
+    private TreeView projectsTree;
+    
     private Scene loginScene;
     private Scene mainScene;
-    
-    Label loggedInAsLabel;
-    
-    private VBox categoryNodes;
-    private TreeView<Node> projectTree = new TreeView<>();
     
 
     @Override
@@ -51,16 +51,10 @@ public class UserInterface extends Application {
         managerService.init();
         treeViewHelper = new TreeViewHelper();
         
-        categoryNodes = new VBox(10);
         loggedInAsLabel = new Label();
-    }
-    
-    public Node createCategoryNode(String category) {
-        Label categoryName = new Label(category);
-        Label categoryElements = new Label(String.valueOf(managerService.getUserProjectsByCategory().get(category).size()));
-        HBox categoryNode = new HBox(10);
-        categoryNode.getChildren().addAll(categoryName, categoryElements);
-        return categoryNode;
+        
+        rootItem = new TreeItem();
+        projectsTree = new TreeView<>();
     }
     
     public Node createProjectNode(PaintProject project) {
@@ -77,11 +71,8 @@ public class UserInterface extends Application {
     }
     
     public void redrawTreeView() {
-        this.categoryNodes.getChildren().clear();
-        Set<String> categoriesOfAUser = managerService.getUserProjectsByCategory().keySet();
-        categoriesOfAUser.forEach(category -> {
-            categoryNodes.getChildren().add(createCategoryNode(category));
-        });
+        rootItem = this.treeViewHelper.getTreeViewItems(this.managerService.fetchUserProjects());
+        projectsTree.setRoot(rootItem);
     }
     
     @Override
@@ -172,9 +163,9 @@ public class UserInterface extends Application {
         loginButton.setOnAction(event -> {
             String username = usernameInput.getText();
             String password = passwordInput.getText();
-            if ( managerService.login(username, password) ){
+            if (managerService.login(username, password) ){
                 loginMessage.setText("");
-//                redrawCategoriesList();
+                this.redrawTreeView();
                 loggedInAsLabel.setText("Logged in as: " + username);
                 primaryStage.setScene(mainScene);  
                 usernameInput.setText("");
@@ -234,14 +225,12 @@ public class UserInterface extends Application {
                 newUsernameInput.setText("");
                 newPasswordInput.setText("");
                 verifyNewPasswordInput.setText("");
-                try {
-                    managerService.createUser(newUsername, newPassword);
-                    managerService.login(newUsername, newPassword);
-//                    redrawCategoriesList();
+                if (managerService.createUser(newUsername, newPassword) && managerService.login(newUsername, newPassword)) {
+                    this.redrawTreeView();
                     loggedInAsLabel.setText("Logged in as: " + newUsername);
-                    primaryStage.setScene(mainScene); 
-                } catch (SQLException ex) {
-                    Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    primaryStage.setScene(mainScene);
+                } else {
+                    verifyNewPasswordInput.setText("Sorry, an error occurred while creating the user or logging in!");
                 }
             }
         });
@@ -278,26 +267,21 @@ public class UserInterface extends Application {
         
 
         // Nodes for projectsPane
-        TreeView projectsTree = new TreeView();
+        // projectsTree in class attributes
         projectsTree.setStyle("-fx-border-color: white;");
-        TreeItem<String> rootItem = new TreeItem<>("All Projects");
-        TreeItem<String> activeProjectsRoot = new TreeItem<>("Active Projects");
-        activeProjectsRoot.setExpanded(true);
-        TreeItem<String> archivedProjectsRoot = new TreeItem<>("Archived Projects");
-        rootItem.getChildren().addAll(activeProjectsRoot, archivedProjectsRoot);
-        
         projectsTree.setRoot(rootItem);
         projectsTree.setShowRoot(false);
         
         Button goToNewProjectCreationButton = new Button("Create a new Project");
         Label newProjectNameLabel = new Label("Project name");
-        TextArea newProjectNameInput = new TextArea();
+        TextField newProjectNameInput = new TextField();
         Label newProjectFactionLabel = new Label("Faction");
-        TextArea newProjectFactionInput = new TextArea();
+        TextField newProjectFactionInput = new TextField();
         Label newProjectCategoryLabel = new Label("Category");
-        TextArea newProjectCategoryInput = new TextArea();
+        TextField newProjectCategoryInput = new TextField();
         Button createNewProjectButton = new Button("Create a new Project");
         Label createNewProjectMessage = new Label();
+        createNewProjectMessage.setMinHeight(26);
         GridPane newProjectCreationPane = new GridPane();
         newProjectCreationPane.add(newProjectNameLabel, 0, 0);
         newProjectCreationPane.add(newProjectFactionLabel, 1, 0);
@@ -307,6 +291,13 @@ public class UserInterface extends Application {
         newProjectCreationPane.add(newProjectCategoryInput, 2, 1);
         newProjectCreationPane.add(createNewProjectButton, 0, 2);
         newProjectCreationPane.add(createNewProjectMessage, 1, 2);
+        newProjectCreationPane.setHgap(18);
+        newProjectCreationPane.setVgap(6);
+        newProjectCreationPane.setPadding(new Insets(18, 0, 0, 0));
+        GridPane.setColumnSpan(createNewProjectMessage, 3);
+        GridPane.setMargin(createNewProjectButton, new Insets(15, 0, 0, 0));
+        GridPane.setMargin(createNewProjectMessage, new Insets(15, 0, 0, 0));
+        
         
         // Layout elements for projectsPane
         BorderPane projectsPane = new BorderPane();
@@ -332,12 +323,11 @@ public class UserInterface extends Application {
                 createNewProjectMessage.setTextFill(Color.RED);
             } else {
                 try {
-                    // add faction!
-                    this.managerService.createPaintProject(newProjectName, newProjectCategory);
+                    this.managerService.createPaintProject(newProjectName, newProjectFaction, newProjectCategory);
+                    this.redrawTreeView();
                 } catch (SQLException ex) {
                     Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                // redraw TreeView!
                 newProjectNameInput.setText("");
                 newProjectFactionInput.setText("");
                 newProjectCategoryInput.setText("");

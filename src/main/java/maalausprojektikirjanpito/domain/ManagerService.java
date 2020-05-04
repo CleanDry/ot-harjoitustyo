@@ -3,6 +3,8 @@ package maalausprojektikirjanpito.domain;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import maalausprojektikirjanpito.dao.PaintProjectDao;
 import maalausprojektikirjanpito.dao.SubProjectDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
@@ -38,13 +40,12 @@ public class ManagerService {
      */
     public void init() throws Exception {
         // Ensure database file exists
-        String relativePath = databaseUrl;
-        File file = new File(relativePath);
+        File file = new File(databaseUrl);
         
         if (file.createNewFile()) {
-            System.out.println("File " + relativePath + " created in App root directory");
+            System.out.println("File " + databaseUrl + " created in App root directory");
         } else {
-            System.out.println("File " + relativePath + " already exists in the App root directory");
+            System.out.println("File " + databaseUrl + " already exists in the App root directory");
         }
         
         // Initialize Dao-objects; ensure database's tables exist and dao's fetch their initial caches
@@ -58,46 +59,52 @@ public class ManagerService {
      * @param username User's username, must be between 3 to 20 characters.
      * @param password User's password, must be between 8 to 20 characters.
      * @return returns false if username already taken, username.length is less than 3 or password.length is less than 8, otherwise true
-     * @throws SQLException
      */
-    public boolean createUser(String username, String password) throws SQLException {
-        // Check if the given pair meets the criterias for length
-        if (!stringLengthCheck(username, 3, 20)) {
-            System.out.println("Username has to have 3-20 characters");
-            return false;
-        } else if (!stringLengthCheck(password, 8, 20)) {
-            System.out.println("Password has to have 8-20 characters");
-            return false;
-        // Check if the given username in lowercase is unique
-        } else if (this.userDao.getCache().containsKey(username.toLowerCase())) {
-            System.out.println("Username taken.");
-            return false;
+    public boolean createUser(String username, String password) {
+        try {
+            // Check if the given pair meets the criterias for length
+            if (!stringLengthCheck(username, 3, 20)) {
+                System.out.println("Username has to have 3-20 characters");
+                return false;
+            } else if (!stringLengthCheck(password, 8, 20)) {
+                System.out.println("Password has to have 8-20 characters");
+                return false;
+                // Check if the given username in lowercase is unique
+            } else if (this.userDao.getCache().containsKey(username.toLowerCase())) {
+                System.out.println("Username taken.");
+                return false;
+            }
+            User user = userDao.create(new User(username, password));
+            this.userDao.getCache().put(username.toLowerCase(), user);
+            System.out.println(databaseUrl + ": " + user + " created successfully!");
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        User user = userDao.create(new User(username, password));
-        this.userDao.getCache().put(username.toLowerCase(), user);
-        System.out.println(databaseUrl + ": " + user + " created successfully!");
-        return true;
+        return false;
     }
     
     /**
      * Create a new PaintProject.
      * @param projectName for the project as String, must be 3-40 character long
+     * @param projectFaction for the project as String, must be 3-40 character long
      * @param projectCategory for the project as String, must be 3-40 character long
      * @return true if successful, false otherwise
      * @throws SQLException
      */
-    public boolean createPaintProject(String projectName, String projectCategory) throws SQLException {
+    public boolean createPaintProject(String projectName, String projectFaction, String projectCategory) throws SQLException {
         // Check if the given pair meets the criterias for length
         if (!stringLengthCheck(projectName, 3, 40)) {
             System.out.println("Project's name has to have 3-40 characters");
             return false;
+        } else if (!stringLengthCheck(projectFaction, 3, 40)) {
+            System.out.println("Faction's name has to have 3-40 characters");
+            return false;
         } else if (!stringLengthCheck(projectCategory, 3, 40)) {
             System.out.println("Category's name has to have 3-40 characters");
             return false;
-        
         }
-        PaintProject projectToBeCreated = new PaintProject(this.getLoggedIn().getId(), projectName, projectCategory);
+        PaintProject projectToBeCreated = new PaintProject(this.getLoggedIn().getId(), projectName, projectFaction, projectCategory);
         
         // Check if the given username in lowercase is unique
         if (this.getUserProjectsByCategory().containsKey(projectCategory) && 
@@ -129,7 +136,6 @@ public class ManagerService {
             this.loggedIn = this.userDao.getCache().get(username.toLowerCase());
             System.out.println("Successfully logged in " + username + " " + password + "!");
             
-            this.projectsDao.setUser(this.loggedIn.getId());
             this.userProjectsByCategory = this.returnUserProjectsByCategory();
             return true;
             
@@ -158,7 +164,6 @@ public class ManagerService {
         System.out.println("Logging out");
         this.loggedIn = null;
         this.userProjectsByCategory = null;
-        this.projectsDao.setUser(-1);
         this.getLoggedIn();
     }
 
@@ -187,8 +192,13 @@ public class ManagerService {
         return userPaintProjectsByCategory;
     }
     
-    public ArrayList<PaintProject> returnUserProjects() throws SQLException {
-        ArrayList<PaintProject> userProjectsToReturn = (ArrayList<PaintProject>) this.projectsDao.list();
+    public ArrayList<PaintProject> fetchUserProjects() {
+        ArrayList<PaintProject> userProjectsToReturn = new ArrayList<>();
+        try {
+            userProjectsToReturn = (ArrayList<PaintProject>) this.projectsDao.list();
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return userProjectsToReturn;
     }
 }

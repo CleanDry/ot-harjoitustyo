@@ -40,10 +40,9 @@ public class PaintProjectDaoTest {
         testDb = testFolder.newFile("test.db");
         
         testDao = new PaintProjectDao(testDb.getAbsolutePath());
-        testDao.setUser(testUser_id);
         testDao.init();
         
-        testDao.create(new PaintProject(testUser_id, "test_project", "test_category"));
+        testDao.create(new PaintProject(testUser_id, "test_project", "test_faction", "test_category"));
     }
     
     @After
@@ -59,6 +58,7 @@ public class PaintProjectDaoTest {
         assertEquals(1, project.getProjectId().intValue());
         assertEquals(1, project.getUserId().intValue());
         assertEquals("test_project", project.getProjectName());
+        assertEquals("test_faction", project.getProjectFaction());
         assertEquals("test_category", project.getProjectCategory());
         assertFalse(project.getProjectArchived());
         assertFalse(project.getProjectCompleted());
@@ -67,13 +67,14 @@ public class PaintProjectDaoTest {
     
     @Test
     public void projectsCanBeCreatedAndAreReturnedCorrectly() throws SQLException {
-        PaintProject project = testDao.create(new PaintProject(testUser_id, "test_otherProject", "test_category"));
+        PaintProject project = testDao.create(new PaintProject(testUser_id, "test_otherProject", "test_faction", "test_category"));
         List<PaintProject> projects = testDao.list();
         assertEquals(2, projects.size());
         PaintProject sameProject = projects.get(1);
         assertEquals(2, sameProject.getProjectId().intValue());
         assertEquals(1, sameProject.getUserId().intValue());
         assertEquals("test_otherProject", sameProject.getProjectName());
+        assertEquals("test_faction", sameProject.getProjectFaction());
         assertEquals("test_category", sameProject.getProjectCategory());
         assertFalse(sameProject.getProjectArchived());
         assertFalse(sameProject.getProjectCompleted());
@@ -81,11 +82,12 @@ public class PaintProjectDaoTest {
     }
     
     @Test
-    public void usersAreReadSuccessfully() throws SQLException {
+    public void projectsAreReadSuccessfully() throws SQLException {
         PaintProject project = testDao.read(1);
         assertEquals(1, project.getProjectId().intValue());
         assertEquals(1, project.getUserId().intValue());
         assertEquals("test_project", project.getProjectName());
+        assertEquals("test_faction", project.getProjectFaction());
         assertEquals("test_category", project.getProjectCategory());
         assertFalse(project.getProjectArchived());
         assertFalse(project.getProjectCompleted());
@@ -93,7 +95,7 @@ public class PaintProjectDaoTest {
     }
     
     @Test
-    public void updatedUsersReturnedMatchTheUpdate() throws SQLException {
+    public void updatedProjectsReturnedMatchTheUpdate() throws SQLException {
         PaintProject project = testDao.read(1);
         project.setProjectName("test_otherProject");
         PaintProject updatedProject = testDao.update(project);
@@ -101,6 +103,7 @@ public class PaintProjectDaoTest {
         assertEquals(1, project.getProjectId().intValue());
         assertEquals(1, project.getUserId().intValue());
         assertEquals("test_otherProject", project.getProjectName());
+        assertEquals("test_faction", project.getProjectFaction());
         assertEquals("test_category", project.getProjectCategory());
         assertFalse(project.getProjectArchived());
         assertFalse(project.getProjectCompleted());
@@ -108,14 +111,15 @@ public class PaintProjectDaoTest {
     }
     
     @Test
-    public void deletedUsersAreRemovedFromDb() throws SQLException {
-        testDao.create(new PaintProject(testUser_id, "test_otherProject", "test_category"));
+    public void deletedProjectsAreRemovedFromDb() throws SQLException {
+        testDao.create(new PaintProject(testUser_id, "test_otherProject", "test_faction", "test_category"));
         PaintProject projectToDelete = testDao.read(1);
         testDao.delete(1);
         PaintProject project = testDao.read(2);
         assertEquals(2, project.getProjectId().intValue());
         assertEquals(1, project.getUserId().intValue());
         assertEquals("test_otherProject", project.getProjectName());
+        assertEquals("test_faction", project.getProjectFaction());
         assertEquals("test_category", project.getProjectCategory());
         assertFalse(project.getProjectArchived());
         assertFalse(project.getProjectCompleted());

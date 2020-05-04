@@ -2,9 +2,7 @@ package domain;
 
 import java.io.File;
 import java.sql.SQLException;
-import maalausprojektikirjanpito.dao.UserDao;
 import maalausprojektikirjanpito.domain.ManagerService;
-import maalausprojektikirjanpito.domain.User;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -42,10 +40,12 @@ public class ManagerServiceTest {
         service = new ManagerService(testDb.getAbsolutePath());
         service.init();
         service.createUser("testUser", "testPassword");
+        service.login("testUser", "testPassword");
     }
     
     @After
     public void tearDown() {
+        service.logout();
         testDb.delete();
     }
     
@@ -97,24 +97,24 @@ public class ManagerServiceTest {
     @Test
     public void paintProjectNameIsProperLength() throws SQLException {
         service.login("testUser", "testPassword");
-        assertFalse(service.createPaintProject("s", "projectCategory"));
-        assertFalse(service.createPaintProject("namethatislongerthanfortycharacterslongthatfails", "projectCategory"));
-        assertTrue(service.createPaintProject("projectName", "projectCategory"));
+        assertFalse(service.createPaintProject("s", "projectFaction", "projectCategory"));
+        assertFalse(service.createPaintProject("namethatislongerthanfortycharacterslongthatfails", "projectFaction", "projectCategory"));
+        assertTrue(service.createPaintProject("projectName", "projectFaction", "projectCategory"));
     }
     
     @Test
     public void paintProjectCategoryIsProperLength() throws SQLException {
         service.login("testUser", "testPassword");
-        assertFalse(service.createPaintProject("projectName", "c"));
-        assertFalse(service.createPaintProject("projectName", "namethatislongerthanfortycharacterslongthatfails"));
-        assertTrue(service.createPaintProject("projectName", "projectCategory"));
+        assertFalse(service.createPaintProject("projectName", "projectFaction", "c"));
+        assertFalse(service.createPaintProject("projectName", "projectFaction", "namethatislongerthanfortycharacterslongthatfails"));
+        assertTrue(service.createPaintProject("projectName", "projectFaction", "projectCategory"));
     }
     
     @Test
     public void paintProjectCreateDoesNotAllowDuplicates() throws SQLException {
         service.login("testUser", "testPassword");
-        service.createPaintProject("projectName", "projectCategory");
-        assertFalse(service.createPaintProject("projectName", "projectCategory"));
+        service.createPaintProject("projectName", "projectFaction", "projectCategory");
+        assertFalse(service.createPaintProject("projectName", "projectFaction", "projectCategory"));
     }
     
     @Test

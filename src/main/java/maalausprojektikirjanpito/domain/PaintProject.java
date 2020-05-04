@@ -7,6 +7,7 @@ public class PaintProject {
     Integer projectId;
     Integer userId;
     String projectName;
+    String projectFaction;
     String projectCategory;
     Boolean projectCompleted;
     Boolean projectArchived;
@@ -17,12 +18,14 @@ public class PaintProject {
      * Create a new PaintProject-object.
      * @param userId User_id of the user whose projects are being managed as an Integer
      * @param projectName Project's name as a String
+     * @param projectFaction Project's faction as a String
      * @param projectCategory Project's category as a String
      */
-    public PaintProject(Integer userId, String projectName, String projectCategory) {
+    public PaintProject(Integer userId, String projectName, String projectFaction, String projectCategory) {
         this.userId = userId;
         this.projectName = projectName;
         this.projectCategory = projectCategory;
+        this.projectFaction = projectFaction;
         this.projectCompleted = false;
         this.projectArchived = false;
         this.projectIntrash = false;
@@ -33,15 +36,17 @@ public class PaintProject {
      * @param projectId Project_id of the project as an Integer
      * @param userId User_id of the user whose projects are being managed as an Integer
      * @param projectName Project's name as a String
+     * @param projectFaction Project's faction as a String
      * @param projectCategory Project's category as a String
      * @param projectCompleted Boolean
      * @param projectArchived Boolean
      * @param projectIntrash Boolean
      */
-    public PaintProject(Integer projectId, Integer userId, String projectName, String projectCategory, Boolean projectCompleted, Boolean projectArchived, Boolean projectIntrash) {
+    public PaintProject(Integer projectId, Integer userId, String projectName, String projectFaction, String projectCategory, Boolean projectCompleted, Boolean projectArchived, Boolean projectIntrash) {
         this.projectId = projectId;
         this.userId = userId;
         this.projectName = projectName;
+        this.projectFaction = projectFaction;
         this.projectCategory = projectCategory;
         this.projectCompleted = projectCompleted;
         this.projectArchived = projectArchived;
@@ -70,6 +75,14 @@ public class PaintProject {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getProjectFaction() {
+        return projectFaction;
+    }
+
+    public void setProjectFaction(String projectFaction) {
+        this.projectFaction = projectFaction;
     }
 
     public String getProjectCategory() {

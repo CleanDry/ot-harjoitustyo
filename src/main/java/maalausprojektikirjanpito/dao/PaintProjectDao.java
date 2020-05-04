@@ -8,7 +8,6 @@ import maalausprojektikirjanpito.domain.PaintProject;
 
 public class PaintProjectDao implements Dao<PaintProject, Integer> {
     String databaseURL;
-    Integer userId;
     ArrayList<PaintProject> projectsCache;
     
     /**
@@ -28,7 +27,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
     public void init() throws SQLException {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseURL)) {
             PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS PaintProjects ("
-                + "project_id INTEGER, user_id INTEGER, project_name VARCHAR(40), project_category VARCHAR(40), project_completed BOOLEAN DEFAULT false, project_archived BOOLEAN DEFAULT false, project_intrash BOOLEAN DEFAULT false, "
+                + "project_id INTEGER, user_id INTEGER, project_name VARCHAR(40), project_faction VARCHAR(40), project_category VARCHAR(40), project_completed BOOLEAN DEFAULT false, project_archived BOOLEAN DEFAULT false, project_intrash BOOLEAN DEFAULT false, "
                 + "PRIMARY KEY (project_id), FOREIGN KEY (user_id) REFERENCES Users(id));");
             stmt.executeUpdate();
             stmt.close();
@@ -48,12 +47,13 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
         } else {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL);
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO PaintProjects "
-                + "(user_id, project_name, project_category) "
-                + "VALUES (?,?,?);",
+                + "(user_id, project_name, project_faction, project_category) "
+                + "VALUES (?,?,?,?);",
                 Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, this.userId);
+            stmt.setInt(1, project.getUserId());
             stmt.setString(2, project.getProjectName());
-            stmt.setString(3, project.getProjectCategory());
+            stmt.setString(3, project.getProjectFaction());
+            stmt.setString(4, project.getProjectCategory());
             stmt.executeUpdate();
             ResultSet generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -78,7 +78,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
                 PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PaintProjects WHERE PaintProjects.project_id = (?);");
                 stmt.setInt(1, projectId);
                 ResultSet rs = stmt.executeQuery();
-                project = new PaintProject(rs.getInt("project_id"), rs.getInt("user_id"), rs.getString("project_name"), rs.getString("project_category"), rs.getBoolean("project_completed"), rs.getBoolean("project_archived"), rs.getBoolean("project_intrash"));
+                project = new PaintProject(rs.getInt("project_id"), rs.getInt("user_id"), rs.getString("project_name"), rs.getString("project_faction"), rs.getString("project_category"), rs.getBoolean("project_completed"), rs.getBoolean("project_archived"), rs.getBoolean("project_intrash"));
                 rs.close();
                 stmt.close();
                 connection.close();           
@@ -95,15 +95,16 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
         if (this.projectsCache.contains(project)) {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("UPDATE PaintProjects "
-                    + "SET user_id = ?, project_name = ?, project_category = ?, project_completed = ?, project_archived = ?, project_intrash = ? "
+                    + "SET user_id = ?, project_name = ?, project_faction, project_category = ?, project_completed = ?, project_archived = ?, project_intrash = ? "
                     + "WHERE project_id = ?;");
                 stmt.setInt(1, project.getUserId());
                 stmt.setString(2, project.getProjectName());
-                stmt.setString(3, project.getProjectCategory());
-                stmt.setBoolean(4, project.getProjectCompleted());
-                stmt.setBoolean(5, project.getProjectArchived());
-                stmt.setBoolean(6, project.getProjectIntrash());
-                stmt.setInt(7, project.getProjectId());
+                stmt.setString(3, project.getProjectFaction());
+                stmt.setString(4, project.getProjectCategory());
+                stmt.setBoolean(5, project.getProjectCompleted());
+                stmt.setBoolean(6, project.getProjectArchived());
+                stmt.setBoolean(7, project.getProjectIntrash());
+                stmt.setInt(8, project.getProjectId());
                 stmt.executeUpdate(); 
                 stmt.close(); 
                 connection.close();
@@ -144,17 +145,13 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PaintProjects;");
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            projects.add(new PaintProject(rs.getInt("project_id"), rs.getInt("user_id"), rs.getString("project_name"), 
+            projects.add(new PaintProject(rs.getInt("project_id"), rs.getInt("user_id"), rs.getString("project_name"), rs.getString("project_faction"),
                     rs.getString("project_category"), rs.getBoolean("project_completed"), rs.getBoolean("project_archived"), rs.getBoolean("project_intrash")));
         }
         rs.close();
         stmt.close();
         connection.close();
         return projects;
-    }
-    
-    public void setUser(Integer userId) {
-        this.userId = userId;
     }
     
     /**
