@@ -17,4 +17,5 @@ PVM | Tunnit | Työ
 22.04.2020 | 4 | Kirjautumis- ja käyttäjien luomisnäkymän v1 ja seuraavien näkymien luonnosten tarkentaminen
 28.04.2020 | 8 | GUI jatkotyöstöä ja dokumentoinnin päivittäminen
 30.04.2020 | 2 | GUI työstö
-Yhteensä   | 60 |tuntia
+04.05.2020 | 6 | TreeView-näkymän perustoteutus
+Yhteensä   | 66 |tuntia
