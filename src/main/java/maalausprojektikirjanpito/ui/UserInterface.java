@@ -29,6 +29,8 @@ public class UserInterface extends Application {
     
     private Label loggedInAsLabel;
 
+    private ComboBox<String> newProjectFactionInput;
+    private ComboBox<String> newProjectCategoryInput;
     private TreeItem rootItem;
     private TreeView projectsTree;
     
@@ -53,6 +55,8 @@ public class UserInterface extends Application {
         
         loggedInAsLabel = new Label();
         
+        newProjectFactionInput = new ComboBox();
+        newProjectCategoryInput = new ComboBox();
         rootItem = new TreeItem();
         projectsTree = new TreeView<>();
     }
@@ -71,8 +75,11 @@ public class UserInterface extends Application {
     }
     
     public void redrawTreeView() {
-        rootItem = this.treeViewHelper.getTreeViewItems(this.managerService.fetchUserProjects());
+        ArrayList<PaintProject> updatedProjects = this.managerService.fetchUserProjects();
+        rootItem = this.treeViewHelper.getTreeViewItems(updatedProjects);
         projectsTree.setRoot(rootItem);
+        newProjectFactionInput.getItems().addAll(treeViewHelper.factionsAsStrings(updatedProjects));
+        newProjectCategoryInput.getItems().addAll(treeViewHelper.categoriesAsStrings(updatedProjects));
     }
     
     @Override
@@ -267,7 +274,7 @@ public class UserInterface extends Application {
         
 
         // Nodes for projectsPane
-        // projectsTree in class attributes
+        // projectsTree is in class attributes
         projectsTree.setStyle("-fx-border-color: white;");
         projectsTree.setRoot(rootItem);
         projectsTree.setShowRoot(false);
@@ -276,9 +283,11 @@ public class UserInterface extends Application {
         Label newProjectNameLabel = new Label("Project name");
         TextField newProjectNameInput = new TextField();
         Label newProjectFactionLabel = new Label("Faction");
-        TextField newProjectFactionInput = new TextField();
+        // newProjectFactionInput is in class attributes
+        newProjectFactionInput.setEditable(true);
         Label newProjectCategoryLabel = new Label("Category");
-        TextField newProjectCategoryInput = new TextField();
+        // newProjectCategoryInput is in class attributes
+        newProjectCategoryInput.setEditable(true);
         Button createNewProjectButton = new Button("Create a new Project");
         Label createNewProjectMessage = new Label();
         createNewProjectMessage.setMinHeight(26);
@@ -313,8 +322,8 @@ public class UserInterface extends Application {
         
         createNewProjectButton.setOnAction(event -> {
             String newProjectName = newProjectNameInput.getText().trim();
-            String newProjectFaction = newProjectFactionInput.getText().trim();
-            String newProjectCategory = newProjectCategoryInput.getText().trim();
+            String newProjectFaction = newProjectFactionInput.getValue().trim();
+            String newProjectCategory = newProjectCategoryInput.getValue().trim();
             if (!(stringLengthCheck(newProjectName, 3, 40) && stringLengthCheck(newProjectFaction, 3, 40) && stringLengthCheck(newProjectCategory, 3, 40))) {
                 createNewProjectMessage.setText("Project name, faction and category must be 3-40 characters long");
                 createNewProjectMessage.setTextFill(Color.RED);
@@ -329,8 +338,8 @@ public class UserInterface extends Application {
                     Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 newProjectNameInput.setText("");
-                newProjectFactionInput.setText("");
-                newProjectCategoryInput.setText("");
+                newProjectFactionInput.setValue("");
+                newProjectCategoryInput.setValue("");
                 createNewProjectMessage.setText("");
                 projectsPane.setBottom(goToNewProjectCreationButton);
             }

@@ -34,8 +34,7 @@ public class TreeViewHelper {
     
     public ArrayList<TreeItem> categoriesAsTreeItems(ArrayList<PaintProject> projects) {
         ArrayList<TreeItem> categoryTreeItems = new ArrayList<>();
-        HashSet<String> categories = new HashSet<>();
-        projects.stream().forEach(p -> categories.add(p.getProjectCategory()));
+        HashSet<String> categories = this.categoriesAsStrings(projects);
         for (String category : categories) {
             TreeItem categoryItem = new TreeItem(category);
             ArrayList<PaintProject> projectsOfCategory = (ArrayList<PaintProject>) projects.stream().filter(p -> p.getProjectCategory().equals(category)).collect(Collectors.toList());
@@ -46,10 +45,15 @@ public class TreeViewHelper {
         return categoryTreeItems;
     }
     
+    public HashSet<String> categoriesAsStrings(ArrayList<PaintProject> projects) {
+        HashSet<String> categories = new HashSet<>();
+        projects.stream().forEach(p -> categories.add(p.getProjectCategory()));
+        return categories;
+    }
+    
     public ArrayList<TreeItem> factionsAsTreeItem(ArrayList<PaintProject> projects) {
         ArrayList<TreeItem> factionTreeItems = new ArrayList<>();
-        HashSet<String> factions = new HashSet<>();
-        projects.stream().forEach(p -> factions.add(p.getProjectFaction()));
+        HashSet<String> factions = this.factionsAsStrings(projects);
         for (String faction : factions) {
             TreeItem factionItem = new TreeItem(faction);
             ArrayList<PaintProject> projectsOfFaction = (ArrayList<PaintProject>) projects.stream().filter(p -> p.getProjectFaction().equals(faction)).collect(Collectors.toList());
@@ -60,11 +64,19 @@ public class TreeViewHelper {
         return factionTreeItems;
     }
     
+    public HashSet<String> factionsAsStrings(ArrayList<PaintProject> projects) {
+        HashSet<String> factions = new HashSet<>();
+        projects.stream().forEach(p -> factions.add(p.getProjectFaction()));
+        return factions;
+    }
+    
     public ArrayList<TreeItem> projectsAsNodes(ArrayList<PaintProject> projects) {
         ArrayList<TreeItem> projectsAsNodes = new ArrayList<>();
         projects.forEach(p -> projectsAsNodes.add(new TreeItem(p.getProjectName())));
         return projectsAsNodes;
     }
+    
+    
     
     public ArrayList<PaintProject> getProjects() {
         return projects;
