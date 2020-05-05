@@ -3,13 +3,22 @@ package maalausprojektikirjanpito.ui;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.layout.HBox;
 import maalausprojektikirjanpito.domain.PaintProject;
 
 
 public class TreeViewHelper {
-    private ArrayList<PaintProject> projects = new ArrayList<>();
+    private UserInterface UI;
 
+    public TreeViewHelper(UserInterface UI) {
+        this.UI = UI;
+    }
     
     public TreeItem getTreeViewItems(ArrayList<PaintProject> projects) {
         TreeItem newRootItem = new TreeItem("All Projects");
@@ -72,17 +81,40 @@ public class TreeViewHelper {
     
     public ArrayList<TreeItem> projectsAsNodes(ArrayList<PaintProject> projects) {
         ArrayList<TreeItem> projectsAsNodes = new ArrayList<>();
-        projects.forEach(p -> projectsAsNodes.add(new TreeItem(p.getProjectName())));
+//        projects.forEach(p -> projectsAsNodes.add(new TreeItem(p.getProjectName())));
+        projects.forEach(p -> projectsAsNodes.add(this.UI.projectNodeAsTreeItem(p)));
         return projectsAsNodes;
     }
     
+
     
+
     
-    public ArrayList<PaintProject> getProjects() {
-        return projects;
+//    private final class NodeTreeCellImp extends TreeCell<Node> {
+//        private PaintProject project;
+//
+//        public NodeTreeCellImp(PaintProject project) {
+//            this.project = project;
+//            
+//            Label projectName = new Label(project.getProjectName());
+//            CheckBox completed = new CheckBox();
+//            if (project.getProjectCompleted()) {
+//                completed.arm();
+//            }
+//            Button goToProjectViewerButton = new Button(">");
+//            goToProjectViewerButton.setOnAction(event -> {
+//                System.out.println(this.getParent());
+//            });
+//            
+//            VBox vBox = new VBox(projectName, completed, goToProjectViewerButton);
+//        }   
+//    }
+
+    public UserInterface getUI() {
+        return UI;
     }
 
-    public void setProjects(ArrayList<PaintProject> projects) {
-        this.projects = projects;
+    public void setUI(UserInterface UI) {
+        this.UI = UI;
     }
 }
