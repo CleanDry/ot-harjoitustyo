@@ -19,4 +19,5 @@ PVM | Tunnit | Työ
 30.04.2020 | 2 | GUI työstö
 04.05.2020 | 6 | TreeView-näkymän perustoteutus
 05.05.2020 | 8 | GUI jatkosuunnittelu ja projektinäkymän luonnostelu
-Yhteensä   | 74 |tuntia
+06.05.2020 | 4 | Subproject TreeView ja GUI:n rakennusta
+Yhteensä   | 78 |tuntia
