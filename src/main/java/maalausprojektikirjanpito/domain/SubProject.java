@@ -88,7 +88,6 @@ public class SubProject {
         this.surfaces = surfaces;
     }
 
-    
    
     /**
      * Sub projects are considered equal if either their subProject_id or subProject_name match.

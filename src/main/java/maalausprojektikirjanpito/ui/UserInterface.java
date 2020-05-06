@@ -21,6 +21,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import maalausprojektikirjanpito.domain.ManagerService;
 import maalausprojektikirjanpito.domain.PaintProject;
+import maalausprojektikirjanpito.domain.SubProject;
 import maalausprojektikirjanpito.domain.Surface;
 import static maalausprojektikirjanpito.utilities.Utilities.stringLengthCheck;
 
@@ -34,12 +35,15 @@ public class UserInterface extends Application {
 
     private ComboBox<String> newProjectFactionInput;
     private ComboBox<String> newProjectCategoryInput;
-    private TreeItem rootItem;
+    private TreeItem projectsTreeRootItem;
     private TreeView projectsTree;
     
     private Label viewProjectHeaderLabel;
     private Label viewProjectFactionLabel;
     private Label viewProjectCategoryLabel;
+    
+    private TreeItem surfacesTreeRootItem;
+    private TreeView surfacesTree;
     
     private Scene loginScene;
     private Scene mainScene;
@@ -66,25 +70,31 @@ public class UserInterface extends Application {
         
         newProjectFactionInput = new ComboBox();
         newProjectCategoryInput = new ComboBox();
-        rootItem = new TreeItem();
-        projectsTree = new TreeView<>();
+        projectsTree = new TreeView<>(new TreeItem());
         
         viewProjectHeaderLabel = new Label("Projects: No project selected");
         viewProjectFactionLabel = new Label("Faction");
         viewProjectCategoryLabel = new Label("Category");
+        
+        surfacesTree = new TreeView<>(new TreeItem("Subprojects"));
     }
     
-    public void redrawTreeView() {
+    public void redrawProjectsTree() {
         ArrayList<PaintProject> updatedProjects = this.managerService.fetchUserProjects();
-        rootItem = this.treeViewHelper.getTreeViewItems(updatedProjects);
-        projectsTree.setRoot(rootItem);
+        projectsTree.setRoot(this.treeViewHelper.getTreeViewItems(updatedProjects));
         newProjectFactionInput.getItems().addAll(treeViewHelper.factionsAsStrings(updatedProjects));
         newProjectCategoryInput.getItems().addAll(treeViewHelper.categoriesAsStrings(updatedProjects));
     }
     
-    public void redrawProjectView() {
-        
-        ArrayList<Surface> updatedSurfaces;
+    public void redrawProjectDetails() {
+        this.viewProjectHeaderLabel.setText("Project: " + this.currentlyViewedProject.getProjectName());
+        this.viewProjectFactionLabel.setText(this.currentlyViewedProject.getProjectFaction());
+        this.viewProjectCategoryLabel.setText(this.currentlyViewedProject.getProjectCategory());
+    }
+    
+    public void redrawSurfacesTree() {
+        ArrayList<SubProject> updatedSubProjects = this.managerService.fetchSubprojects(currentlyViewedProject);
+        surfacesTree.setRoot(this.treeViewHelper.getSubprojectTreeItems(updatedSubProjects));
     }
     
     public TreeItem projectNodeAsTreeItem(PaintProject project) {
@@ -99,9 +109,8 @@ public class UserInterface extends Application {
         goToProjectViewerButton.setStyle("-fx-font-size:7");
         goToProjectViewerButton.setOnAction(event -> {
             this.currentlyViewedProject = project;
-            this.viewProjectHeaderLabel.setText("Project: " + this.currentlyViewedProject.getProjectName());
-            this.viewProjectFactionLabel.setText(this.currentlyViewedProject.getProjectFaction());
-            this.viewProjectCategoryLabel.setText(this.currentlyViewedProject.getProjectCategory());
+            this.redrawProjectDetails();
+            
         });
         HBox projectAsNodeBox = new HBox(projectName, completed, goToProjectViewerButton);
         projectAsNodeBox.setSpacing(10);
@@ -113,7 +122,7 @@ public class UserInterface extends Application {
 //        if (newValue != null) {
 //            TreeItem newValueTreeItem = (TreeItem) newValue;
 //            if (newValueTreeItem.isLeaf()) {
-//                System.out.println(newValue);
+//                this.currentlyViewedSurface = (Surface) newValue;
 //            }
 //        } 
 //    }
@@ -208,7 +217,7 @@ public class UserInterface extends Application {
             String password = passwordInput.getText();
             if (managerService.login(username, password) ){
                 loginMessage.setText("");
-                this.redrawTreeView();
+                this.redrawProjectsTree();
                 loggedInAsLabel.setText("Logged in as: " + username);
                 primaryStage.setScene(mainScene);  
                 usernameInput.setText("");
@@ -269,7 +278,7 @@ public class UserInterface extends Application {
                 newPasswordInput.setText("");
                 verifyNewPasswordInput.setText("");
                 if (managerService.createUser(newUsername, newPassword) && managerService.login(newUsername, newPassword)) {
-                    this.redrawTreeView();
+                    this.redrawProjectsTree();
                     loggedInAsLabel.setText("Logged in as: " + newUsername);
                     primaryStage.setScene(mainScene);
                 } else {
@@ -312,9 +321,7 @@ public class UserInterface extends Application {
         // Nodes for projectsPane
         // projectsTree is in class attributes
         projectsTree.setStyle("-fx-border-color: white;");
-        projectsTree.setRoot(rootItem);
         projectsTree.setShowRoot(false);
-//        projectsTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> treeViewClickHandler(newValue));
         
         Button goToNewProjectCreationButton = new Button("Create a new Project");
         Label newProjectNameLabel = new Label("Project name");
@@ -322,29 +329,34 @@ public class UserInterface extends Application {
         Label newProjectFactionLabel = new Label("Faction");
         // newProjectFactionInput is in class attributes
         newProjectFactionInput.setEditable(true);
+        newProjectFactionInput.setValue("");
         Label newProjectCategoryLabel = new Label("Category");
         // newProjectCategoryInput is in class attributes
         newProjectCategoryInput.setEditable(true);
-        Button createNewProjectButton = new Button("Create a new Project");
+        newProjectCategoryInput.setValue("");
         Label createNewProjectMessage = new Label();
         createNewProjectMessage.setMinHeight(26);
+        createNewProjectMessage.setMaxWidth(240);
+        createNewProjectMessage.setWrapText(true);
+        Button createNewProjectButton = new Button("Create a new Project");
+        Button closeNewProjectCreationButton = new Button("Cancel");
+        HBox newProjectCreationButtonBox = new HBox(createNewProjectButton, closeNewProjectCreationButton);
+        newProjectCreationButtonBox.setSpacing(12);
         
         GridPane newProjectCreationPane = new GridPane();
         newProjectCreationPane.add(newProjectNameLabel, 0, 0);
-        newProjectCreationPane.add(newProjectFactionLabel, 1, 0);
-        newProjectCreationPane.add(newProjectCategoryLabel, 2, 0);
         newProjectCreationPane.add(newProjectNameInput, 0, 1);
-        newProjectCreationPane.add(newProjectFactionInput, 1, 1);
-        newProjectCreationPane.add(newProjectCategoryInput, 2, 1);
-        newProjectCreationPane.add(createNewProjectButton, 0, 2);
-        newProjectCreationPane.add(createNewProjectMessage, 1, 2);
-        newProjectCreationPane.setHgap(18);
+        newProjectCreationPane.add(newProjectFactionLabel, 0, 2);
+        newProjectCreationPane.add(newProjectFactionInput, 0, 3);
+        newProjectCreationPane.add(newProjectCategoryLabel, 0, 4);
+        newProjectCreationPane.add(newProjectCategoryInput, 0, 5);
+        newProjectCreationPane.add(createNewProjectMessage, 0, 6);
+        newProjectCreationPane.add(newProjectCreationButtonBox, 0, 7);
         newProjectCreationPane.setVgap(6);
         newProjectCreationPane.setPadding(new Insets(18, 0, 0, 0));
-        GridPane.setColumnSpan(createNewProjectMessage, 3);
-        GridPane.setMargin(createNewProjectButton, new Insets(15, 0, 0, 0));
-        GridPane.setMargin(createNewProjectMessage, new Insets(15, 0, 0, 0));
-        
+        GridPane.setColumnSpan(createNewProjectMessage, 2);
+        GridPane.setMargin(createNewProjectMessage, new Insets(8, 0, 0, 0));
+        GridPane.setMargin(newProjectCreationButtonBox, new Insets(8, 0, 0, 0));
         
         // Layout elements for projectsPane
         BorderPane projectsPane = new BorderPane();
@@ -354,8 +366,13 @@ public class UserInterface extends Application {
         projectsPane.setPadding(new Insets(20, 20, 50, 50));
         
         // projectsPane button actions
-        goToNewProjectCreationButton.setOnAction(event -> {
-            projectsPane.setBottom(newProjectCreationPane);
+        goToNewProjectCreationButton.setOnAction(event -> projectsPane.setBottom(newProjectCreationPane));
+        closeNewProjectCreationButton.setOnAction(event -> {
+            projectsPane.setBottom(goToNewProjectCreationButton);
+            newProjectNameInput.setText("");
+            newProjectFactionInput.setValue("");
+            newProjectCategoryInput.setValue("");
+            createNewProjectMessage.setText("");
         });
         
         createNewProjectButton.setOnAction(event -> {
@@ -371,7 +388,7 @@ public class UserInterface extends Application {
             } else {
                 try {
                     this.managerService.createPaintProject(newProjectName, newProjectFaction, newProjectCategory);
-                    this.redrawTreeView();
+                    this.redrawProjectsTree();
                 } catch (SQLException ex) {
                     Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -397,9 +414,9 @@ public class UserInterface extends Application {
         projectDetailsPane.setPadding(new Insets(0,0,12,0));
         
         // Nodes for subprojectsPane
-        TreeView subprojectsTreeView = new TreeView(new TreeItem("Subprojects"));
-        // implement TreeView
-        BorderPane.setMargin(subprojectsTreeView, new Insets(0, 0, 12, 0));
+        // SurfacesTree in class attributes
+//        surfacesTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> treeViewClickHandler(newValue));
+        BorderPane.setMargin(surfacesTree, new Insets(0, 0, 12, 0));
         
         Button goToCreateNewSubprojectButton = new Button("Create a new Subproject");
         Button goToCreateNewSurfaceButton = new Button("Create a new Surface");
@@ -408,22 +425,83 @@ public class UserInterface extends Application {
         
         Label newSubprojectLabel = new Label("Subproject name");
         TextField newSubprojectInput = new TextField();
+        Label newSubprojectMessage = new Label();
+        newSubprojectMessage.setTextFill(Color.RED);
+        newSubprojectMessage.setMaxWidth(240);
+        newSubprojectMessage.setWrapText(true);
         Button createNewSubprojectButton = new Button("Create");
-        VBox createNewSubprojectBox = new VBox(newSubprojectLabel, newSubprojectInput, createNewSubprojectButton);
+        Button closeNewSubprojectBox = new Button("Cancel");
+        VBox createNewSubprojectBox = new VBox(newSubprojectLabel, newSubprojectInput, newSubprojectMessage, createNewSubprojectButton, closeNewSubprojectBox);
+        createNewSubprojectBox.setSpacing(3);
         
         Label newSurfaceLabel = new Label("Surface name");
         TextField newSurfaceNameInput = new TextField();
         Label newSurfaceSubprojectLabel = new Label("Subproject of the surface");
-        ComboBox newSurfaceSubprojectInput = new ComboBox();
+        ComboBox<String> newSurfaceSubprojectInput = new ComboBox();
+        newSurfaceSubprojectInput.setValue("");
+        newSurfaceSubprojectInput.setEditable(true);
+        Label newSurfaceMessage = new Label();
+        newSurfaceMessage.setTextFill(Color.RED);
+        newSurfaceMessage.setMaxWidth(240);
+        newSurfaceMessage.setWrapText(true);
         Button createNewSurfaceButton = new Button("Create");
-        VBox createNewSurfaceBox = new VBox(newSubprojectLabel, newSubprojectInput, createNewSubprojectButton);
-
+        Button closeNewSurfaceButton = new Button("Cancel");
+        VBox createNewSurfaceBox = new VBox(newSurfaceLabel, newSurfaceNameInput, newSurfaceSubprojectLabel, newSurfaceSubprojectInput, newSurfaceMessage, createNewSurfaceButton, closeNewSurfaceButton);
+        createNewSurfaceBox.setSpacing(3);
+        
         // Layout for subprojectsPane
         BorderPane subprojectsPane = new BorderPane();
-        subprojectsPane.setCenter(subprojectsTreeView);
+        subprojectsPane.setCenter(surfacesTree);
         subprojectsPane.setBottom(goToNewElementCreationBox);
         
+        // Button actions for subprojectsPane
+        goToCreateNewSubprojectButton.setOnAction(event -> subprojectsPane.setBottom(createNewSubprojectBox));
+        goToCreateNewSurfaceButton.setOnAction(event -> subprojectsPane.setBottom(createNewSurfaceBox));
+        closeNewSubprojectBox.setOnAction(event -> {
+            subprojectsPane.setBottom(goToNewElementCreationBox);
+            newSubprojectInput.setText("");
+            newSubprojectMessage.setText("");
+        });
+        closeNewSurfaceButton.setOnAction(event -> {
+            subprojectsPane.setBottom(goToNewElementCreationBox);
+            newSurfaceNameInput.setText("");
+            newSurfaceSubprojectInput.setValue("");
+            newSurfaceMessage.setText("");
+        });
         
+        createNewSubprojectButton.setOnAction(event -> {
+            String newSubprojectName = newSubprojectInput.getText().trim();
+            if (!stringLengthCheck(newSubprojectName, 3, 40)) {
+                newSubprojectMessage.setText("Subproject name must be 3-40 characters long");
+            } else if (!newSubprojectName.matches("[A-Za-z0-9\\s]*")) {
+                newSubprojectMessage.setText("Project name, faction and category must only contain numbers and letters");
+            } else {
+                System.out.println("Create a new subproject!");
+                newSubprojectInput.setText("");
+                newSubprojectMessage.setText("");
+                this.redrawSurfacesTree();
+                subprojectsPane.setBottom(goToNewElementCreationBox);
+            }
+        });
+        
+        createNewSurfaceButton.setOnAction(event -> {
+            String newSurfaceName = newSurfaceNameInput.getText().trim();
+            String newSubprojectName = newSurfaceSubprojectInput.getValue().trim();
+            if (!(stringLengthCheck(newSurfaceName, 3, 40) && stringLengthCheck(newSubprojectName, 3, 40))) {
+                newSurfaceMessage.setText("Surface and Subproject names must be 3-40 characters long");
+            } else if (!(newSurfaceName.matches("[A-Za-z0-9\\s]*") && newSubprojectName.matches("[A-Za-z0-9\\s]*"))) {
+                newSurfaceMessage.setText("Project name, faction and category must only contain numbers and letters");
+            } else {
+                System.out.println("Create a new surface!");
+                newSurfaceNameInput.setText("");
+                newSurfaceSubprojectInput.setValue("");
+                newSurfaceMessage.setText("");
+                this.redrawSurfacesTree();
+                subprojectsPane.setBottom(goToNewElementCreationBox);
+            }
+        });
+        
+                
         // Nodes for surfacePane
         Label viewSurfacePaneHeader = new Label("Surface");
         Label viewSurfaceContent = new Label("Content");
@@ -459,7 +537,7 @@ public class UserInterface extends Application {
         primaryStage.setScene(loginScene);
         // debug view!
 //        this.managerService.login("Mikke", "KillerApp");
-//        this.redrawTreeView();
+//        this.redrawProjectsTree();
 //        loggedInAsLabel.setText("Logged in as: Debug");
 //        primaryStage.setScene(mainScene);
         // debug view end!

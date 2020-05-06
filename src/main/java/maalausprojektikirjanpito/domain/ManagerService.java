@@ -201,4 +201,10 @@ public class ManagerService {
         }
         return userProjectsToReturn;
     }
+    
+    public ArrayList<SubProject> fetchSubprojects(PaintProject project) {
+        ArrayList<SubProject> updatedSubprojects = (ArrayList<SubProject>) this.subprojectDao.list();
+        updatedSubprojects.stream().filter(sb -> Objects.equals(sb.projectId, project.projectId));
+        return updatedSubprojects;
+    }
 }

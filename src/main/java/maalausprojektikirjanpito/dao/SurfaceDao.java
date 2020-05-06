@@ -9,16 +9,13 @@ import maalausprojektikirjanpito.domain.Surface;
 
 public class SurfaceDao implements Dao<Surface, Integer> {
     String databaseURL;
-    Integer subprojectId;
     ArrayList<Surface> surfacesCache;
     
     /**
      * Constructs a new SurfaceDao-object. Checks the existence of a SurfaceDao table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
-     * @param subprojectId Sub project_id of the project currently being managed
      * @param databaseURL URL of the selected database as a String
      */
-    public SurfaceDao(Integer subprojectId, String databaseURL) {
-        this.subprojectId = subprojectId;
+    public SurfaceDao(String databaseURL) {
         this.databaseURL = databaseURL;
         
         this.surfacesCache = (ArrayList<Surface>) this.list();
@@ -56,7 +53,7 @@ public class SurfaceDao implements Dao<Surface, Integer> {
                 + "(subproject_id, surface_name, surface_intrash) "
                 + "VALUES (?,?,?);",
                 Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, this.subprojectId);
+            stmt.setInt(1, surface.getSubprojectId());
             stmt.setString(2, surface.getSurfaceName());
             stmt.setBoolean(3, false);
             stmt.executeUpdate();
@@ -154,4 +151,8 @@ public class SurfaceDao implements Dao<Surface, Integer> {
         }
         return surfaces;    
     }
+    
+//    public List<Surface> listOfSubprojectSurfaces(Integer subprojectId, Connection connection) {
+//        return new List<Surface>;
+//    }
 }

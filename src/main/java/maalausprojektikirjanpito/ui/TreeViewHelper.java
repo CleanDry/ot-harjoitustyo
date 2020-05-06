@@ -11,6 +11,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.HBox;
 import maalausprojektikirjanpito.domain.PaintProject;
+import maalausprojektikirjanpito.domain.SubProject;
 
 
 public class TreeViewHelper {
@@ -81,13 +82,22 @@ public class TreeViewHelper {
     
     public ArrayList<TreeItem> projectsAsNodes(ArrayList<PaintProject> projects) {
         ArrayList<TreeItem> projectsAsNodes = new ArrayList<>();
-//        projects.forEach(p -> projectsAsNodes.add(new TreeItem(p.getProjectName())));
         projects.forEach(p -> projectsAsNodes.add(this.UI.projectNodeAsTreeItem(p)));
         return projectsAsNodes;
     }
     
-
+    public TreeItem getSubprojectTreeItems(ArrayList<SubProject> subproject) {
+        TreeItem newRootItem = new TreeItem("Subprojects");
+        newRootItem.getChildren().addAll(this.subProjectsAsTreeItems(subproject));
+        newRootItem.setExpanded(true);
+        return newRootItem;
+    }
     
+    public ArrayList<TreeItem> subProjectsAsTreeItems(ArrayList<SubProject> subprojects) {
+        ArrayList<TreeItem> treeItems = new ArrayList<>();
+        subprojects.stream().forEach(sb -> treeItems.add(new TreeItem(sb.getSubProjectName())));
+        return treeItems;
+    }
 
     
 //    private final class NodeTreeCellImp extends TreeCell<Node> {

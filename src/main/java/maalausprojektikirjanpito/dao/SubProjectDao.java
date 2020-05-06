@@ -9,7 +9,7 @@ import maalausprojektikirjanpito.domain.SubProject;
 
 public class SubProjectDao implements Dao<SubProject, Integer> {
     String databaseURL;
-    Integer projectId;
+    SurfaceDao surfaceDao;
     ArrayList<SubProject> subProjectsCache;
     
     /**
@@ -18,6 +18,7 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
      */
     public SubProjectDao(String databaseURL) {
         this.databaseURL = databaseURL;
+        this.surfaceDao = new SurfaceDao(databaseURL);
     }
 
     @Override
@@ -152,5 +153,5 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
             System.out.println("Error: " + e.toString());
         }
         return subProjects;    
-    }    
+    }
 }

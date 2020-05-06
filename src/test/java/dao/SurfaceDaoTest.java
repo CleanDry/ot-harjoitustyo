@@ -38,7 +38,7 @@ public class SurfaceDaoTest {
         subprojectId = 1;
         testDb = testFolder.newFile("test.db");
         
-        testDao = new SurfaceDao(subprojectId, testDb.getAbsolutePath());
+        testDao = new SurfaceDao(testDb.getAbsolutePath());
         testDao.init();
         
         testDao.create(new Surface(subprojectId, "test_surface"));
