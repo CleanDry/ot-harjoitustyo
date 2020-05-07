@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import maalausprojektikirjanpito.dao.PaintProjectDao;
 import maalausprojektikirjanpito.dao.SubProjectDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
@@ -30,8 +31,8 @@ public class ManagerService {
         this.databaseUrl = databaseUrl;
         this.userDao = new UserDao(databaseUrl);
         this.projectsDao = new PaintProjectDao(databaseUrl);
-        this.subprojectDao = new SubProjectDao(databaseUrl);
-        
+        this.surfaceDao = new SurfaceDao(databaseUrl);
+        this.subprojectDao = new SubProjectDao(databaseUrl, this.surfaceDao);
     }
     
     /**
@@ -51,6 +52,7 @@ public class ManagerService {
         // Initialize Dao-objects; ensure database's tables exist and dao's fetch their initial caches
         this.userDao.init();
         this.projectsDao.init();
+        this.surfaceDao.init();
         this.subprojectDao.init();
     }
     
@@ -112,10 +114,23 @@ public class ManagerService {
             System.out.println("Project already exists.");
             return false;
         }
-        
         this.projectsDao.create(projectToBeCreated);
         this.userProjectsByCategory = this.returnUserProjectsByCategory();
         return true;
+    }
+    
+    public SubProject createSubproject(Integer projectId, String subprojectName) {
+        SubProject subprojectToBeCreated = new SubProject(projectId, subprojectName);
+        try {
+            return this.subprojectDao.create(subprojectToBeCreated);
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public boolean createSurface(Integer subprojectId, String surfaceName) {
+        return this.subprojectDao.createNewSurface(new Surface(subprojectId, surfaceName));
     }
     
     /**
@@ -204,7 +219,17 @@ public class ManagerService {
     
     public ArrayList<SubProject> fetchSubprojects(PaintProject project) {
         ArrayList<SubProject> updatedSubprojects = (ArrayList<SubProject>) this.subprojectDao.list();
-        updatedSubprojects.stream().filter(sb -> Objects.equals(sb.projectId, project.projectId));
+        updatedSubprojects = (ArrayList<SubProject>) updatedSubprojects.stream().filter(sb -> Objects.equals(sb.projectId, project.projectId)).collect(Collectors.toList());
         return updatedSubprojects;
+    }
+    
+    public boolean updateProject(PaintProject project) {
+        try {
+            this.projectsDao.update(project);
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 }

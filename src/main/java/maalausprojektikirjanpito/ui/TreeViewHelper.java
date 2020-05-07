@@ -3,13 +3,7 @@ package maalausprojektikirjanpito.ui;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.layout.HBox;
 import maalausprojektikirjanpito.domain.PaintProject;
 import maalausprojektikirjanpito.domain.SubProject;
 
@@ -88,14 +82,18 @@ public class TreeViewHelper {
     
     public TreeItem getSubprojectTreeItems(ArrayList<SubProject> subproject) {
         TreeItem newRootItem = new TreeItem("Subprojects");
-        newRootItem.getChildren().addAll(this.subProjectsAsTreeItems(subproject));
+        newRootItem.getChildren().addAll(this.subprojectsAsTreeItems(subproject));
         newRootItem.setExpanded(true);
         return newRootItem;
     }
     
-    public ArrayList<TreeItem> subProjectsAsTreeItems(ArrayList<SubProject> subprojects) {
+    public ArrayList<TreeItem> subprojectsAsTreeItems(ArrayList<SubProject> subprojects) {
         ArrayList<TreeItem> treeItems = new ArrayList<>();
-        subprojects.stream().forEach(sb -> treeItems.add(new TreeItem(sb.getSubProjectName())));
+        subprojects.stream().forEach(sb -> {
+            TreeItem subprojectTreeItem = new TreeItem(sb.getSubProjectName());
+            sb.getSurfaces().stream().forEach(s -> subprojectTreeItem.getChildren().add(this.UI.surfaceNodeAsTreeItem(s)));
+            treeItems.add(subprojectTreeItem);
+        });
         return treeItems;
     }
 

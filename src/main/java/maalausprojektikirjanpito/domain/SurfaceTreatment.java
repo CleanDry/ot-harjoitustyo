@@ -17,7 +17,21 @@ public class SurfaceTreatment {
         this.manufacturer = manufacturer;
         this.color = color;
     }
-
+    
+    /**
+     * Create a new SurfaceTreatment object.
+     * @param name of the surface treatment
+     * @param manufacturer of the surface treatment
+     * @param color of the surface treatment
+     * @param identifier of the surface treatment
+     */
+    public SurfaceTreatment(String name, String manufacturer, String color, int identifier) {
+        this.name = name;
+        this.manufacturer = manufacturer;
+        this.color = color;
+        this.identifier = identifier;
+    }
+    
     public String getName() {
         return name;
     }

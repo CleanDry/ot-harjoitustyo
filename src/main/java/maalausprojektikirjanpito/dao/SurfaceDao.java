@@ -152,7 +152,8 @@ public class SurfaceDao implements Dao<Surface, Integer> {
         return surfaces;    
     }
     
-//    public List<Surface> listOfSubprojectSurfaces(Integer subprojectId, Connection connection) {
-//        return new List<Surface>;
-//    }
+    public ArrayList<Surface> listOfSubprojectSurfaces(Integer subprojectId) {
+        ArrayList<Surface> surfacesToReturn = (ArrayList<Surface>) this.getCache().stream().filter(s -> s.getSubprojectId().equals(subprojectId)).collect(Collectors.toList());
+        return surfacesToReturn;
+    }
 }

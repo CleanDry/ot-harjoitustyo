@@ -95,7 +95,7 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
         if (this.projectsCache.contains(project)) {
             try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
                 PreparedStatement stmt = connection.prepareStatement("UPDATE PaintProjects "
-                    + "SET user_id = ?, project_name = ?, project_faction, project_category = ?, project_completed = ?, project_archived = ?, project_intrash = ? "
+                    + "SET user_id = ?, project_name = ?, project_faction = ?, project_category = ?, project_completed = ?, project_archived = ?, project_intrash = ? "
                     + "WHERE project_id = ?;");
                 stmt.setInt(1, project.getUserId());
                 stmt.setString(2, project.getProjectName());

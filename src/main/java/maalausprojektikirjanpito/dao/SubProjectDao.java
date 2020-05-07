@@ -3,8 +3,11 @@ package maalausprojektikirjanpito.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import maalausprojektikirjanpito.domain.SubProject;
+import maalausprojektikirjanpito.domain.Surface;
 
 
 public class SubProjectDao implements Dao<SubProject, Integer> {
@@ -13,12 +16,13 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
     ArrayList<SubProject> subProjectsCache;
     
     /**
-     * Constructs a new SubProjectDao-object. Checks the existence of a SubProjects table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
+     * Constructs a new SubProjectDao-object.Checks the existence of a SubProjects table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
      * @param databaseURL URL of the selected database as a String
+     * @param surfaceDao SurfaceDao-object injected
      */
-    public SubProjectDao(String databaseURL) {
+    public SubProjectDao(String databaseURL, SurfaceDao surfaceDao) {
         this.databaseURL = databaseURL;
-        this.surfaceDao = new SurfaceDao(databaseURL);
+        this.surfaceDao = surfaceDao;
     }
 
     @Override
@@ -39,7 +43,6 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
         } catch (SQLException e) {
             System.out.println("Error: " + e);
         }
-        
         this.subProjectsCache = (ArrayList<SubProject>) this.list();
     }
 
@@ -90,7 +93,8 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
                 subProject = new SubProject(rs.getInt("subproject_id"), rs.getInt("project_id"), rs.getString("subproject_name"), rs.getBoolean("subproject_completed"), rs.getBoolean("subproject_intrash"));
                 rs.close();
                 stmt.close();
-                connection.close();           
+                connection.close();
+                subProject.setSurfaces(this.surfaceDao.listOfSubprojectSurfaces(subProject.getSubProjectId()));
             } catch (SQLException e) {
                 System.out.println("Error: " + e.toString());
             }
@@ -148,10 +152,46 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
             }
             rs.close();
             stmt.close();
-            connection.close();           
+            connection.close();
+            for (SubProject subproject : subProjects) {
+                subproject.setSurfaces(this.surfaceDao.listOfSubprojectSurfaces(subproject.getSubProjectId()));
+            }
         } catch (SQLException e) {
             System.out.println("Error: " + e.toString());
         }
         return subProjects;    
+    }
+    
+    public boolean createNewSurface(Surface surface) {
+        try {
+            Surface newSurface = this.surfaceDao.create(surface);
+            this.subProjectsCache.stream().filter((sb) -> (sb.getSubProjectId().equals(newSurface.getSubprojectId()))).forEachOrdered((sb) -> {
+                sb.getSurfaces().add(surface);
+            });
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(SubProjectDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public boolean updateSurface(Surface surface) {
+        try {
+            Surface updatedSurface = this.surfaceDao.update(surface);
+            this.subProjectsCache.stream().filter((sb) -> (sb.getSubProjectId().equals(updatedSurface.getSubprojectId()))).forEachOrdered((sb) -> {
+                sb.getSurfaces().stream().filter((s) -> (s.getSurfaceId().equals(updatedSurface.getSurfaceId()))).forEachOrdered((s) -> s = updatedSurface);
+            });
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(SubProjectDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public void deleteSurface(Surface surface) {
+        this.surfaceDao.delete(surface.getSurfaceId());
+        this.subProjectsCache.stream().filter((sb) -> (sb.getSubProjectId().equals(surface.getSubprojectId()))).forEachOrdered((sb) -> {
+            sb.getSurfaces().remove(surface);
+        });
     }
 }
