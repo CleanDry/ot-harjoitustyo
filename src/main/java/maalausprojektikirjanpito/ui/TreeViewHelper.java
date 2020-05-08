@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import javafx.scene.control.TreeItem;
+import maalausprojektikirjanpito.domain.Layer;
 import maalausprojektikirjanpito.domain.PaintProject;
 import maalausprojektikirjanpito.domain.SubProject;
 
@@ -92,31 +93,22 @@ public class TreeViewHelper {
         subprojects.stream().forEach(sb -> {
             TreeItem subprojectTreeItem = new TreeItem(sb.getSubProjectName());
             sb.getSurfaces().stream().forEach(s -> subprojectTreeItem.getChildren().add(this.UI.surfaceNodeAsTreeItem(s)));
+            subprojectTreeItem.setExpanded(true);
             treeItems.add(subprojectTreeItem);
         });
         return treeItems;
     }
-
     
-//    private final class NodeTreeCellImp extends TreeCell<Node> {
-//        private PaintProject project;
-//
-//        public NodeTreeCellImp(PaintProject project) {
-//            this.project = project;
-//            
-//            Label projectName = new Label(project.getProjectName());
-//            CheckBox completed = new CheckBox();
-//            if (project.getProjectCompleted()) {
-//                completed.arm();
-//            }
-//            Button goToProjectViewerButton = new Button(">");
-//            goToProjectViewerButton.setOnAction(event -> {
-//                System.out.println(this.getParent());
-//            });
-//            
-//            VBox vBox = new VBox(projectName, completed, goToProjectViewerButton);
-//        }   
-//    }
+    public TreeItem getLayerTreeItems(String surface, ArrayList<Layer> layers) {
+        TreeItem newRootItem = new TreeItem(surface);
+        newRootItem.setExpanded(true);
+        ArrayList<TreeItem> treeItems = new ArrayList<>();
+        layers.stream().forEach(layer -> {
+            treeItems.add(this.UI.layerNodeAsTreeItem(layer));
+        });
+        newRootItem.getChildren().addAll(treeItems);
+        return newRootItem;
+    }
 
     public UserInterface getUI() {
         return UI;

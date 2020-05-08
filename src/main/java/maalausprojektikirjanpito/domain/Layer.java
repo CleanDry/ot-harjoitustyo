@@ -2,59 +2,59 @@ package maalausprojektikirjanpito.domain;
 
 import java.util.ArrayList;
 
-public class TreatmentCombination {
-    Integer combinationId;
-    String combinationName;
+public class Layer {
+    Integer layerId;
+    String layerName;
     ArrayList<SurfaceTreatment> treatments = new ArrayList<>();
-    String note;
+    String layerNote;
     
     /**
-     * Create a new treatment combination object.
-     * @param combinationName name given to this combination
-     * @param note attached to this combination
+     * Create a new layer combination object.
+     * @param layerName name given to this combination
+     * @param layerNote attached to this combination
      */
-    public TreatmentCombination(String combinationName, String note) {
-        this.combinationName = combinationName;
-        this.note = note;
+    public Layer(String layerName, String layerNote) {
+        this.layerName = layerName;
+        this.layerNote = layerNote;
     }
     
     /**
-     * Create a new treatment combination object.
-     * @param treatmentCombinationId Unique identifier of the treatmentCombination as Integer.
-     * @param combinationName name given to this combination
-     * @param note note attached to this combination
+     * Create a new layer object.
+     * @param layerId Unique identifier of the layer as Integer.
+     * @param layerName name given to this combination
+     * @param layerNote layerNote attached to this combination
      */
-    public TreatmentCombination(Integer treatmentCombinationId, String combinationName, String note) {
-        this.combinationId = treatmentCombinationId;
-        this.combinationName = combinationName;
-        this.note = note;
+    public Layer(Integer layerId, String layerName, String layerNote) {
+        this.layerId = layerId;
+        this.layerName = layerName;
+        this.layerNote = layerNote;
     }
 
-    public Integer getCombinationId() {
-        return combinationId;
+    public Integer getLayerId() {
+        return layerId;
     }
 
-    public void setTreatmentCombinationId(Integer treatmentCombinationId) {
-        this.combinationId = treatmentCombinationId;
+    public void setLayerId(Integer layerId) {
+        this.layerId = layerId;
     }
 
-    public String getCombinationName() {
-        return combinationName;
+    public String getLayerName() {
+        return layerName;
     }
 
-    public void setCombinationName(String combinationName) {
-        this.combinationName = combinationName;
+    public void setLayerName(String layerName) {
+        this.layerName = layerName;
     }
 
-    public String getNote() {
-        return note;
+    public String getLayerNote() {
+        return layerNote;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setLayerNote(String layerNote) {
+        this.layerNote = layerNote;
     }
 
-    public void setTreatments(ArrayList<SurfaceTreatment> treatments) {
+    public void setLayers(ArrayList<SurfaceTreatment> treatments) {
         this.treatments = treatments;
     }
 

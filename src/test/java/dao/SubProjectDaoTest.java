@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import maalausprojektikirjanpito.dao.LayerDao;
 import maalausprojektikirjanpito.dao.SubProjectDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
+import maalausprojektikirjanpito.dao.SurfaceTreatmentDao;
 import maalausprojektikirjanpito.domain.SubProject;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -26,6 +28,8 @@ public class SubProjectDaoTest {
     
     Integer testProjectId;
     File testDb;
+    SurfaceTreatmentDao surfaceTreatmentDao;
+    LayerDao layerDao;
     SurfaceDao surfaceDao;
     SubProjectDao testDao;
     
@@ -45,7 +49,9 @@ public class SubProjectDaoTest {
         testProjectId = 1;
         testDb = testFolder.newFile("test.db");
         
-        surfaceDao = new SurfaceDao(testDb.getAbsolutePath());
+        surfaceTreatmentDao = new SurfaceTreatmentDao(testDb.getAbsolutePath());
+        layerDao = new LayerDao(testDb.getAbsolutePath(), surfaceTreatmentDao);
+        surfaceDao = new SurfaceDao(testDb.getAbsolutePath(), layerDao);
         testDao = new SubProjectDao(testDb.getAbsolutePath(), surfaceDao);
         testDao.init();
         

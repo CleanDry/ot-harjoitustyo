@@ -6,9 +6,17 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.FontWeight;
+import maalausprojektikirjanpito.dao.LayerDao;
 import maalausprojektikirjanpito.dao.PaintProjectDao;
 import maalausprojektikirjanpito.dao.SubProjectDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
+import maalausprojektikirjanpito.dao.SurfaceTreatmentDao;
 import maalausprojektikirjanpito.dao.UserDao;
 import static maalausprojektikirjanpito.utilities.Utilities.*;
 
@@ -18,6 +26,8 @@ public class ManagerService {
     private User loggedIn;
     private UserDao userDao;
     private PaintProjectDao projectsDao;
+    private SurfaceTreatmentDao surfaceTreatmentDao;
+    private LayerDao layerDao;
     private SubProjectDao subprojectDao;
     private SurfaceDao surfaceDao;
     private ArrayList<PaintProject> userProjects;
@@ -31,8 +41,11 @@ public class ManagerService {
         this.databaseUrl = databaseUrl;
         this.userDao = new UserDao(databaseUrl);
         this.projectsDao = new PaintProjectDao(databaseUrl);
-        this.surfaceDao = new SurfaceDao(databaseUrl);
+        this.surfaceTreatmentDao = new SurfaceTreatmentDao(databaseUrl);
+        this.layerDao = new LayerDao(databaseUrl, this.surfaceTreatmentDao);
+        this.surfaceDao = new SurfaceDao(databaseUrl, this.layerDao);
         this.subprojectDao = new SubProjectDao(databaseUrl, this.surfaceDao);
+        
     }
     
     /**
@@ -52,6 +65,8 @@ public class ManagerService {
         // Initialize Dao-objects; ensure database's tables exist and dao's fetch their initial caches
         this.userDao.init();
         this.projectsDao.init();
+        this.surfaceTreatmentDao.init();
+        this.layerDao.init();
         this.surfaceDao.init();
         this.subprojectDao.init();
     }
@@ -133,6 +148,24 @@ public class ManagerService {
         return this.subprojectDao.createNewSurface(new Surface(subprojectId, surfaceName));
     }
     
+    public boolean createLayer(Integer surfaceId, String layerName, String layerNote) {
+        return this.surfaceDao.addLayerToSurface(surfaceId, new Layer(layerName, layerNote));
+    }
+    
+    public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
+        return this.layerDao.addTreatmentToLayer(layerId, surfaceTreatmentId);
+    }
+    
+    public boolean createTreatment(String treatmentName, String treatmentType, String treatmentManufacturer, Paint treatmentColour) {
+        try {
+            this.surfaceTreatmentDao.create(new SurfaceTreatment(treatmentName, treatmentType, treatmentManufacturer, treatmentColour));
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
     /**
      * login a user to the system.
      * @param username  User's username
@@ -149,7 +182,7 @@ public class ManagerService {
                 && this.userDao.getCache().get(usernameInLowerCase).getPassword().equals(password)) {
             
             this.loggedIn = this.userDao.getCache().get(username.toLowerCase());
-            System.out.println("Successfully logged in " + username + " " + password + "!");
+            System.out.println("Successfully logged in " + username + "!");
             
             this.userProjectsByCategory = this.returnUserProjectsByCategory();
             return true;
@@ -221,6 +254,31 @@ public class ManagerService {
         ArrayList<SubProject> updatedSubprojects = (ArrayList<SubProject>) this.subprojectDao.list();
         updatedSubprojects = (ArrayList<SubProject>) updatedSubprojects.stream().filter(sb -> Objects.equals(sb.projectId, project.projectId)).collect(Collectors.toList());
         return updatedSubprojects;
+    }
+    
+    public ArrayList<Layer> fetchLayers(Surface surface) {
+        if (surface.surfaceId == -1) {
+            return new ArrayList<>();
+        }
+        Surface updatedSurface = this.surfaceDao.read(surface.surfaceId);
+        return updatedSurface.getLayers();
+    }
+    
+    public ArrayList<Node> fetchAllSurfaceTreatments() {
+        ArrayList<Node> listOfAllTreatments = new ArrayList<>();
+        this.surfaceTreatmentDao.list().forEach(st -> listOfAllTreatments.add(this.surfaceTreatmentAsNode(st)));
+        return listOfAllTreatments;
+    }
+    
+    public Node surfaceTreatmentAsNode(SurfaceTreatment surfaceTreatment) {
+        Label treatmentNameLabel = new Label(surfaceTreatment.getTreatmentName());
+        treatmentNameLabel.setStyle("-fx-font-weight: bold;");
+        Circle treatmentColourCircle = new Circle(6, surfaceTreatment.getTreatmentColour());
+        Label treatmentColourLabel = new Label(surfaceTreatment.getTreatmentManufacturer());
+        Label treatmentManufacturerLabel = new Label(surfaceTreatment.getTreatmentType());
+        HBox treatmentBox = new HBox(treatmentNameLabel, treatmentColourCircle, treatmentColourLabel, treatmentManufacturerLabel);
+        treatmentBox.setSpacing(4);
+        return treatmentBox;
     }
     
     public boolean updateProject(PaintProject project) {

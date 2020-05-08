@@ -1,50 +1,81 @@
 package maalausprojektikirjanpito.domain;
 
+import javafx.scene.paint.Paint;
+
 public class SurfaceTreatment {
-    String name;
-    String manufacturer;
-    String color;
-    int identifier;
+    Integer treatmentId;
+    String treatmentName;
+    String treatmentType;
+    String treatmentManufacturer;
+    Paint treatmentColour;
 
     /**
      * Create a new SurfaceTreatment object.
      * @param name of the surface treatment
-     * @param manufacturer of the surface treatment
-     * @param color of the surface treatment
+     * @param type of the surface treatment
+     * @param manufacturer of of the surface treatment
+     * @param colour of the surface treatment
      */
-    public SurfaceTreatment(String name, String manufacturer, String color) {
-        this.name = name;
-        this.manufacturer = manufacturer;
-        this.color = color;
+    public SurfaceTreatment(String name, String type, String manufacturer, Paint colour) {
+        this.treatmentName = name;
+        this.treatmentType = type;
+        this.treatmentManufacturer = manufacturer;
+        this.treatmentColour = colour;
     }
     
     /**
      * Create a new SurfaceTreatment object.
+     * @param treatmentId of the surface treatment
      * @param name of the surface treatment
+     * @param type of the surface treatment
      * @param manufacturer of the surface treatment
-     * @param color of the surface treatment
-     * @param identifier of the surface treatment
+     * @param colour of the surface treatment
      */
-    public SurfaceTreatment(String name, String manufacturer, String color, int identifier) {
-        this.name = name;
-        this.manufacturer = manufacturer;
-        this.color = color;
-        this.identifier = identifier;
-    }
-    
-    public String getName() {
-        return name;
+    public SurfaceTreatment(Integer treatmentId, String name, String type, String manufacturer, Paint colour) {
+        this.treatmentId = treatmentId;
+        this.treatmentName = name;
+        this.treatmentType = type;
+        this.treatmentManufacturer = manufacturer;
+        this.treatmentColour = colour;
     }
 
-    public String getManufacturer() {
-        return manufacturer;
+    public Integer getTreatmentId() {
+        return treatmentId;
     }
 
-    public String getColor() {
-        return color;
+    public void setTreatmentId(Integer treatmentId) {
+        this.treatmentId = treatmentId;
     }
 
-    public int getIdentifier() {
-        return identifier;
+    public String getTreatmentName() {
+        return treatmentName;
+    }
+
+    public void setTreatmentName(String treatmentName) {
+        this.treatmentName = treatmentName;
+    }
+
+    public String getTreatmentType() {
+        return treatmentType;
+    }
+
+    public void setTreatmentType(String treatmentType) {
+        this.treatmentType = treatmentType;
+    }
+
+    public String getTreatmentManufacturer() {
+        return treatmentManufacturer;
+    }
+
+    public void setTreatmentManufacturer(String treatmentManufacturer) {
+        this.treatmentManufacturer = treatmentManufacturer;
+    }
+
+    public Paint getTreatmentColour() {
+        return treatmentColour;
+    }
+
+    public void setTreatmentColour(Paint treatmentColour) {
+        this.treatmentColour = treatmentColour;
     }
 }

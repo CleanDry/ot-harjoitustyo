@@ -7,7 +7,7 @@ public class Surface {
     Integer subprojectId;
     String surfaceName;
     Boolean isInTrash;
-    ArrayList<TreatmentCombination> treamentCombinations = new ArrayList<>();
+    ArrayList<Layer> layers = new ArrayList<>();
 
     /**
      * Create a new surface object.
@@ -66,16 +66,11 @@ public class Surface {
         this.isInTrash = inTrash;
     }
 
-    public ArrayList<TreatmentCombination> getTreamentCombinations() {
-        return treamentCombinations;
+    public ArrayList<Layer> getLayers() {
+        return layers;
     }
 
-    public void setTreamentCombinations(ArrayList<TreatmentCombination> treamentCombinations) {
-        this.treamentCombinations = treamentCombinations;
+    public void setLayers(ArrayList<Layer> layers) {
+        this.layers = layers;
     }
-
-    
-    
-    
-    
 }

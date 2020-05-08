@@ -3,21 +3,26 @@ package maalausprojektikirjanpito.dao;
 import java.sql.*;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import maalausprojektikirjanpito.domain.Layer;
 import maalausprojektikirjanpito.domain.Surface;
 
 
 public class SurfaceDao implements Dao<Surface, Integer> {
     String databaseURL;
+    LayerDao layerDao;
     ArrayList<Surface> surfacesCache;
     
     /**
-     * Constructs a new SurfaceDao-object. Checks the existence of a SurfaceDao table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
+     * Constructs a new SurfaceDao-object.Checks the existence of a SurfaceDao table in the designated database and creates one if not present. SQLITE3 used creates the database if one does not exist.
      * @param databaseURL URL of the selected database as a String
+     * @param layerDao injected for the object
      */
-    public SurfaceDao(String databaseURL) {
+    public SurfaceDao(String databaseURL, LayerDao layerDao) {
         this.databaseURL = databaseURL;
-        
+        this.layerDao = layerDao;
         this.surfacesCache = (ArrayList<Surface>) this.list();
     }
     
@@ -88,6 +93,7 @@ public class SurfaceDao implements Dao<Surface, Integer> {
                 surface = new Surface(rs.getInt("surface_id"), rs.getInt("subproject_id"), rs.getString("surface_name"), rs.getBoolean("surface_intrash"));
                 rs.close();
                 stmt.close();
+                surface.setLayers(this.layerDao.layersOfSurface(surface.getSurfaceId(), connection));
                 connection.close();           
             } catch (SQLException e) {
                 System.out.println("Error: " + e.toString());
@@ -145,6 +151,9 @@ public class SurfaceDao implements Dao<Surface, Integer> {
             }
             rs.close();
             stmt.close();
+            for (Surface surface : surfaces) {
+                surface.setLayers(this.layerDao.layersOfSurface(surface.getSurfaceId(), connection));
+            }
             connection.close();          
         } catch (SQLException e) {
             System.out.println("Error: " + e.toString());
@@ -155,5 +164,19 @@ public class SurfaceDao implements Dao<Surface, Integer> {
     public ArrayList<Surface> listOfSubprojectSurfaces(Integer subprojectId) {
         ArrayList<Surface> surfacesToReturn = (ArrayList<Surface>) this.getCache().stream().filter(s -> s.getSubprojectId().equals(subprojectId)).collect(Collectors.toList());
         return surfacesToReturn;
+    }
+    
+    public boolean addLayerToSurface(Integer surfaceId, Layer layer) {
+        Surface surface = this.read(surfaceId);
+        int surfaceIndex = this.surfacesCache.indexOf(surface);
+        if (!this.surfacesCache.get(surfaceIndex).getLayers().contains(layer)) {
+            try {
+                this.surfacesCache.get(surfaceIndex).getLayers().add(this.layerDao.create(layer));
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(SurfaceDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
     }
 }

@@ -3,7 +3,9 @@ package dao;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
+import maalausprojektikirjanpito.dao.LayerDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
+import maalausprojektikirjanpito.dao.SurfaceTreatmentDao;
 import maalausprojektikirjanpito.domain.Surface;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -20,6 +22,8 @@ public class SurfaceDaoTest {
     
     Integer subprojectId;
     File testDb;
+    SurfaceTreatmentDao surfaceTreatmentDao;
+    LayerDao layerDao;
     SurfaceDao testDao;
     
     public SurfaceDaoTest() {
@@ -38,7 +42,10 @@ public class SurfaceDaoTest {
         subprojectId = 1;
         testDb = testFolder.newFile("test.db");
         
-        testDao = new SurfaceDao(testDb.getAbsolutePath());
+        surfaceTreatmentDao = new SurfaceTreatmentDao(testDb.getAbsolutePath());
+        layerDao = new LayerDao(testDb.getAbsolutePath(), surfaceTreatmentDao);
+        testDao = new SurfaceDao(testDb.getAbsolutePath(), layerDao);
+        layerDao.init();
         testDao.init();
         
         testDao.create(new Surface(subprojectId, "test_surface"));
