@@ -137,6 +137,7 @@ public class SurfaceTreatmentDao implements Dao<SurfaceTreatment, Integer> {
                 stmt.close();
                 connection.close();
                 this.treatmentCache.remove(treatmentToRemove);
+                // implement removing connections in LayerTreatments!
             } catch (SQLException e) {
                 System.out.println("Error: " + e);
             }

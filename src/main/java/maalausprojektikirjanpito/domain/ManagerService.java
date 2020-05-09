@@ -148,21 +148,29 @@ public class ManagerService {
         return this.subprojectDao.createNewSurface(new Surface(subprojectId, surfaceName));
     }
     
-    public boolean createLayer(Integer surfaceId, String layerName, String layerNote) {
-        return this.surfaceDao.addLayerToSurface(surfaceId, new Layer(layerName, layerNote));
+    public boolean addLayerToSurface(Integer surfaceId, Integer layerId) {
+        return this.surfaceDao.addLayerToSurface(surfaceId, layerId);
+    }
+    
+    public Layer createLayer(String layerName, String layerNote) {
+        try {
+            return this.layerDao.create(new Layer(layerName, layerNote));
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
     
     public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
         return this.layerDao.addTreatmentToLayer(layerId, surfaceTreatmentId);
     }
     
-    public boolean createTreatment(String treatmentName, String treatmentType, String treatmentManufacturer, Paint treatmentColour) {
+    public SurfaceTreatment createTreatment(String treatmentName, String treatmentType, String treatmentManufacturer, Paint treatmentColour) {
         try {
-            this.surfaceTreatmentDao.create(new SurfaceTreatment(treatmentName, treatmentType, treatmentManufacturer, treatmentColour));
-            return true;
+            return this.surfaceTreatmentDao.create(new SurfaceTreatment(treatmentName, treatmentType, treatmentManufacturer, treatmentColour));
         } catch (SQLException ex) {
             Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            return null;
         }
     }
     
@@ -277,6 +285,7 @@ public class ManagerService {
         Label treatmentColourLabel = new Label(surfaceTreatment.getTreatmentManufacturer());
         Label treatmentManufacturerLabel = new Label(surfaceTreatment.getTreatmentType());
         HBox treatmentBox = new HBox(treatmentNameLabel, treatmentColourCircle, treatmentColourLabel, treatmentManufacturerLabel);
+        treatmentBox.setId(surfaceTreatment.getTreatmentId().toString());
         treatmentBox.setSpacing(4);
         return treatmentBox;
     }

@@ -166,12 +166,40 @@ public class SurfaceDao implements Dao<Surface, Integer> {
         return surfacesToReturn;
     }
     
-    public boolean addLayerToSurface(Integer surfaceId, Layer layer) {
+    public boolean addLayerToSurface(Integer surfaceId, Integer layerId) {
         Surface surface = this.read(surfaceId);
+        Layer layer = this.layerDao.read(layerId);
         int surfaceIndex = this.surfacesCache.indexOf(surface);
         if (!this.surfacesCache.get(surfaceIndex).getLayers().contains(layer)) {
-            try {
+            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO SurfaceLayers (surface_id, layer_id) VALUES (?,?);");
+                stmt.setInt(1, surfaceId);
+                stmt.setInt(2, layerId);
+                stmt.executeUpdate();
+                stmt.close();
+                connection.close();
                 this.surfacesCache.get(surfaceIndex).getLayers().add(this.layerDao.create(layer));
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(SurfaceDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+    }
+    
+    public boolean removeLayerFromSurface(Integer surfaceId, Integer layerId) {
+        Surface surface = this.read(surfaceId);
+        Layer layer = this.layerDao.read(layerId);
+        int surfaceIndex = this.surfacesCache.indexOf(surface);
+        if (this.surfacesCache.get(surfaceIndex).getLayers().contains(layer)) {
+            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM SurfaceLayers WHERE surface_id = ? AND layer_id = ?;");
+                stmt.setInt(1, surfaceId);
+                stmt.setInt(2, layerId);
+                stmt.executeUpdate();
+                stmt.close();
+                connection.close();
+                this.surfacesCache.get(surfaceIndex).getLayers().remove(layer);
                 return true;
             } catch (SQLException ex) {
                 Logger.getLogger(SurfaceDao.class.getName()).log(Level.SEVERE, null, ex);

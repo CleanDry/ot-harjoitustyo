@@ -139,6 +139,7 @@ public class LayerDao implements Dao<Layer, Integer> {
                 stmt.close();
                 connection.close();
                 this.layerCache.remove(layerToRemove);
+                // implement removing connections in SurfaceLayers!
             } catch (SQLException e) {
                 System.out.println("Error: " + e);
             }
@@ -193,6 +194,27 @@ public class LayerDao implements Dao<Layer, Integer> {
                 stmt.close();
                 connection.close();
                 this.layerCache.get(layerIndex).getTreatments().add(this.surfaceTreatmentDao.create(surfaceTreatment));
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(SurfaceDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+    }
+    
+    public boolean removeTreatmentFromLayer(Integer layerId, Integer surfaceTreatmentId) {
+        Layer layer = this.read(layerId);
+        SurfaceTreatment surfaceTreatment = this.surfaceTreatmentDao.read(surfaceTreatmentId);
+        int layerIndex = this.layerCache.indexOf(layer);
+        if (this.layerCache.get(layerIndex).getTreatments().contains(surfaceTreatment)) {
+            try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databaseURL)) {
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM SurfaceLayers WHERE layer_id = ? AND treatment_id = ?;");
+                stmt.setInt(1, layerId);
+                stmt.setInt(2, surfaceTreatmentId);
+                stmt.executeUpdate();
+                stmt.close();
+                connection.close();
+                this.layerCache.get(layerIndex).getTreatments().remove(surfaceTreatment);
                 return true;
             } catch (SQLException ex) {
                 Logger.getLogger(SurfaceDao.class.getName()).log(Level.SEVERE, null, ex);

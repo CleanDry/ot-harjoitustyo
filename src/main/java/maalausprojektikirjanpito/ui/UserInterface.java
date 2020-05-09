@@ -85,6 +85,7 @@ public class UserInterface extends Application {
         newSurfaceSubprojectInputBox = new ComboBox();
         layerInputBox = new ComboBox();
         layerTreatmentSelectionBox = new ComboBox();
+        layerTreatmentSelectionBox.setValue(new Label("0"));
         projectsTree = new TreeView<>(new TreeItem());
         viewProjectHeaderLabel = new Label("Projects: No project selected");
         viewProjectFactionLabel = new Label("Faction");
@@ -173,8 +174,8 @@ public class UserInterface extends Application {
         HBox treeItemHeaderBox = new HBox();
         treeItemHeaderBox.getChildren().add(new Label(layer.getLayerName()));
         for (SurfaceTreatment st : layer.getTreatments()) {
-            treeItemHeaderBox.getChildren().add(new Circle(10, st.getTreatmentColour()));
-            treeItemToReturn.getChildren().add(this.managerService.surfaceTreatmentAsNode(st));
+            treeItemHeaderBox.getChildren().add(new Circle(6, st.getTreatmentColour()));
+            treeItemToReturn.getChildren().add(new TreeItem(this.managerService.surfaceTreatmentAsNode(st)));
         }
         Label layerNote = new Label(layer.getLayerNote());
         layerNote.setMaxWidth(240);
@@ -787,15 +788,19 @@ public class UserInterface extends Application {
         createNewLayerButton.setOnAction(event -> {
             String newLayerName = layerInputBox.getValue().trim();
             String newLayerNote = createNewLayerNoteInput.getText().trim();
+            Integer treatmentId = Integer.parseInt(this.layerTreatmentSelectionBox.getItems().get(0).getId());
             if (!(stringLengthCheck(newLayerName, 3, 40) && stringLengthCheck(newLayerNote, 0, 60))) {
                 createNewLayerMessageLabel.setText("Layer name must be 3-40 and layer note must be 0-60 characters long");
             } else if (!(newLayerName.matches("[A-Za-z0-9\\s]*") && newLayerNote.matches("[A-Za-z0-9\\s]*"))) {
                 createNewLayerMessageLabel.setText("Layer name and note must only contain numbers and letters");
             } else {
-                this.managerService.createLayer(this.currentlyViewedSurface.getSurfaceId(), newLayerName, newLayerNote);
-                // implement connecting layer and surface .. this.managerService.addTreatmentToLayer();
+                Layer createdLayer = this.managerService.createLayer(newLayerName, newLayerNote);
+                this.managerService.addLayerToSurface(this.currentlyViewedSurface.getSurfaceId(), createdLayer.getLayerId());
+                if (treatmentId != 0) {
+                    this.managerService.addTreatmentToLayer(createdLayer.getLayerId(), treatmentId);
+                }
                 this.layerInputBox.setValue("");
-                this.layerTreatmentSelectionBox.setValue(new Label(""));
+                this.layerTreatmentSelectionBox.setValue(new Label("0"));
                 createNewLayerNoteInput.setText("");
                 createNewLayerMessageLabel.setText("");
                 this.redrawLayersTree();
