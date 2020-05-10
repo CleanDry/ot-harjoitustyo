@@ -2,20 +2,20 @@
 
 Sovelluksen avulla käyttäjät voivat pitää suojatusti kirjaa, organisoida ja arkistoida maalausprojektejaan. Sovellusta voi käyttää useampi käyttäjä, joiden projektit ovat tallessa henkilökohtaisen salasanan takana.
 
-Sovelluksen viimeisimmässä iteraatiossa toiminnassa ovat ominaisuudet:
-- Projektin on toiminnallisuuksiltaan pysynyt lähes samana, nyt sovelluksessa on graafinen käyttöliittymä. Kaikkia toiminnallisuuksia ei ole vielä yhdistetty graafiseen käyttöliittymään. Tällä hetkellä pystyy luomaan uuden käyttäjän ja kirjautumaan sisään. Projektinäkymä on rakenteilla.
+Sovelluksen loppupalautuksessa toiminnassa ovat ominaisuudet:
+- Projektin graafinen käyttöliittymä on peruselementeiltään olemassa ja toiminnallisuudet käytössä. Loppupalautukseen mennessä sain toimimaan lähinnä elementtien lisäyksen. Tietojen muokkaus ja poistaminen vaatii GUI:n elementtien rakennuksen ja logiikan viimeistelyn.
 - Projektin pystyy suorittamaan NetBeansista tai komentokehotteesta komennolla mvn compile exec:java -Dexec.mainClass=maalausprojektikirjanpito.ui.Main
   - HUOM. projektin Maven-liitännäiset täytyy ensin ladata ennen komennon käyttöä, onnistuu mm NetBeansista right-clickaamalla Dependencies ja valitsemalla "Download Declared Dependencies"
-- Testikattavuusraportin generointi onnistuu, sovelluksen testauksen rivikattavauus on yli 60% ja käytössä on mielekkäitä testejä alla mainitulla komennolla.
+- Testikattavuusraportin generointi onnistuu alla olevalla komennolla. Testikattavuuksien laajuus supistui osuudeltaan viimeiseen palautukseen, koska sovellus laajentui merkittävän nopeasti kurssin loppupuolella.
 - Checkstyle-toiminnallisuus on käytössä ja raportin generointi onnistuu alla mainitulla komennolla.
-- Ohjelmasta on tehty toinen release, mutta jostain syystä Linuxilla sen tietokantatiedosto lukkiutuu. Liittyneekö moniajoon tai vastaavaa? Omalla Windows-koneellani ongelmaa ei ole.
-- Ohjelman arkkitehtuurikuvaus ja käyttöohje löytyvät löytyy dokumentoinnista.
+- Ohjelmasta on tehty lopullinen release kurssia varten. Sovellusta on kuitenkin kehitetty käyttöä varten, joten mikäli aika vain riittää jatkan sen kehitystä vielä kurssin jälkeen. Tämän seurauksena sovelluksessa on joitain toiminnallisuuksia, jotka eivät vielä ole käytettävissä käyttöliittymän puitteissa.
+- Ohjelman dokumentaatio löytyy ko. kansiosta. Sovelluksen kehitys vei valtaosan työajasta, joten varsinkin arkkitehtuurikuvaus on vaatimaton. Käyttöohje, työaikakirjanpito, vaatimusmäärittely ja JavaDoc ovat halutulla tasolla.
 
 ## Dokumentaatio
 
 [Työaikakirjanpito](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/ty%C3%B6aikakirjanpito.md)
 
-[Alustava määrittelydokumentti](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/vaatimusm%C3%A4%C3%A4rittely.md)
+[Määrittelydokumentti](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/vaatimusm%C3%A4%C3%A4rittely.md)
 
 [Arkkitehtuuri](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/arkkitehtuuri.md)
 
@@ -23,7 +23,7 @@ Sovelluksen viimeisimmässä iteraatiossa toiminnassa ovat ominaisuudet:
 
 ## Viimeisin release
 
-[Release 0.2.0](https://github.com/CleanDry/ot-harjoitustyo/releases/tag/viikko6)
+[Loppupalautus (0.5.0)](https://github.com/CleanDry/ot-harjoitustyo/releases/tag/loppupalautus)
 
 ## Komentorivitoiminnot
 
