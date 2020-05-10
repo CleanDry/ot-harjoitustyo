@@ -22,4 +22,6 @@ PVM | Tunnit | Työ
 06.05.2020 | 4 | Subproject TreeView ja GUI:n rakennusta
 07.05.2020 | 10 | Subproject-näkymän viimeistely, projectDetails-näkymän viimeistely, Surface-näkymän ja Daojen työstö
 08.05.2020 | 12 | Surface-näkymän viimeistely, painikkeiden toiminnallisuudet, Layer ja SurfaceTreatment -Daojen työstö
-Yhteensä   | 100 |tuntia
+09.05.2020 | 6 | Liitostaulujen käyttöönotto ja käyttöliittymän näkymien erittämistä omiksi luokiksiin
+10.05.2020 | 12 | Näkymien erittely, luokkien ja metodien siistiminen, loppupalautuksen viimeistely
+Yhteensä   | 118 |tuntia
