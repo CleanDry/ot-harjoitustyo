@@ -186,7 +186,6 @@ public class LayerDao implements Dao<Layer, Integer> {
     }
     
     public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
-//        System.out.println("layerId " + layerId + "surfaceTreatmentId " + surfaceTreatmentId);
         Layer layer = this.read(layerId);
         SurfaceTreatment surfaceTreatment = this.surfaceTreatmentDao.read(surfaceTreatmentId);
         int layerIndex = this.layerCache.indexOf(layer);

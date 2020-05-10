@@ -97,7 +97,6 @@ public class ManagerService {
             }
             User user = userDao.create(new User(username, password));
             this.userDao.getCache().put(username.toLowerCase(), user);
-            System.out.println(databaseUrl + ": " + user + " created successfully!");
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);

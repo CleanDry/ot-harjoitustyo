@@ -2,6 +2,9 @@ package maalausprojektikirjanpito.domain;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Utilities {
 

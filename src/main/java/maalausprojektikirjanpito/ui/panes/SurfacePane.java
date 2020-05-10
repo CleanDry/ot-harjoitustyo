@@ -1,6 +1,7 @@
 package maalausprojektikirjanpito.ui.panes;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
@@ -42,7 +43,7 @@ public class SurfacePane extends BorderPane {
     private VBox goToNewLayerTreatmentButtonBox;
     
     // createNewLayerPane
-    private ComboBox<String> layerNameInputBox;
+    private TextField layerNameInputBox;
     private Label createNewLayerNameLabel;
     private ComboBox<SurfaceTreatment> layerTreatmentSelectionBoxOne;
     private ComboBox<SurfaceTreatment> layerTreatmentSelectionBoxTwo;
@@ -89,8 +90,7 @@ public class SurfacePane extends BorderPane {
         
         // createNewLayerPane
         createNewLayerNameLabel = new Label("Layer name");
-        layerNameInputBox = new ComboBox();
-        layerNameInputBox.setEditable(true);
+        layerNameInputBox = new TextField();
         layerNameInputBox.setStyle("-fx-font-size:10");
         layerTreatmentSelectionBoxOne = new ComboBox();
         layerTreatmentSelectionBoxOne.setCellFactory(param -> new SurfaceTreatmentCellFactory());
@@ -115,12 +115,13 @@ public class SurfacePane extends BorderPane {
         createNewLayerNoteInput.setStyle("-fx-font-size:10");
         createNewLayerMessageLabel = new Label();
         createNewLayerMessageLabel.setTextFill(Color.RED);
-        createNewLayerMessageLabel.setMaxWidth(240);
         createNewLayerMessageLabel.setWrapText(true);
+        createNewLayerMessageLabel.setMinHeight(26);
         createNewLayerButton = new Button("Create");
         cancelNewLayerButton = new Button("Cancel");
-        createNewLayerButtonBox = new HBox(createNewLayerButton, cancelNewLayerButton);
+        createNewLayerButtonBox = new HBox(createNewLayerButton, cancelNewLayerButton, createNewLayerMessageLabel);
         createNewLayerButtonBox.setSpacing(6);
+        GridPane.setColumnSpan(createNewLayerButtonBox, 3);
         createNewLayerPane = new GridPane();
         createNewLayerPane.add(createNewLayerNameLabel, 0, 0);
         createNewLayerPane.add(layerNameInputBox, 0, 1);
@@ -128,7 +129,6 @@ public class SurfacePane extends BorderPane {
         createNewLayerPane.add(createNewLayerNoteLabel, 0, 3);
         createNewLayerPane.add(createNewLayerNoteInput, 0, 4);
         createNewLayerPane.add(createNewLayerButtonBox, 0, 5);
-        createNewLayerPane.add(createNewLayerMessageLabel, 1, 5);
         createNewLayerPane.setVgap(6);
         createNewLayerPane.setHgap(6);
         
@@ -139,10 +139,12 @@ public class SurfacePane extends BorderPane {
         createNewTreatmentNameInput.setStyle("-fx-font-size:10");
         createNewTreatmentTypeLabel = new Label("Type");
         createNewTreatmentTypeInputBox = new ComboBox();
+        createNewTreatmentTypeInputBox.setValue("");
         createNewTreatmentTypeInputBox.setStyle("-fx-font-size:10");
         createNewTreatmentTypeInputBox.setEditable(true);
         createNewTreatmentManufacturerLabel = new Label("Manufacturer");
         createNewTreatmentManufacturerInputBox = new ComboBox();
+        createNewTreatmentManufacturerInputBox.setValue("");
         createNewTreatmentManufacturerInputBox.setStyle("-fx-font-size:10");
         createNewTreatmentManufacturerInputBox.setEditable(true);
         createNewTreatmentColourLabel = new Label("Colour");
@@ -189,7 +191,7 @@ public class SurfacePane extends BorderPane {
             }
         });
         createNewLayerButton.setOnAction(event -> {
-            String newLayerName = layerNameInputBox.getValue().trim();
+            String newLayerName = layerNameInputBox.getText().trim();
             String newLayerNote = createNewLayerNoteInput.getText().trim();
             ArrayList<Integer> treatmentsToAdd = new ArrayList();
             if (this.layerTreatmentSelectionBoxOne.getValue() != null) {
@@ -213,11 +215,11 @@ public class SurfacePane extends BorderPane {
                 Layer createdLayer = this.service.createLayer(newLayerName, newLayerNote);
                 this.service.addLayerToSurface(this.currentlyViewedSurface.getSurfaceId(), createdLayer.getLayerId());
                 treatmentsToAdd.forEach(t -> this.service.addTreatmentToLayer(createdLayer.getLayerId(), t));
-                this.layerNameInputBox.setValue("");
-                createNewLayerNoteInput.setText("");
-                createNewLayerMessageLabel.setText("");
+                this.layerNameInputBox.setText("");
+                this.createNewLayerNoteInput.setText("");
+                this.createNewLayerMessageLabel.setText("");
                 this.refresh();
-                surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
+                this.surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
             }
         });
         createNewTreatmentButton.setOnAction(event -> {
@@ -241,10 +243,17 @@ public class SurfacePane extends BorderPane {
             }
         });
         cancelNewLayerButton.setOnAction(event -> {
-            this.layerNameInputBox.setValue("");
-            surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
+            this.layerNameInputBox.setText("");
+            this.createNewLayerNoteInput.setText("");
+            this.createNewLayerMessageLabel.setText("");
+            this.surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
         });
         cancelNewTreatmentButton.setOnAction(event -> {
+            this.createNewTreatmentNameInput.setText("");
+            this.createNewTreatmentTypeInputBox.setValue("");
+            this.createNewTreatmentManufacturerInputBox.setValue("");
+            this.createNewTreatmentColourPicker.setValue(Color.WHITE);
+            this.createNewTreatmentMessage.setText("");
             surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
         });
         
@@ -258,17 +267,17 @@ public class SurfacePane extends BorderPane {
     public void refresh() {
         this.currentlyViewedSurface = this.service.getCurrentlyViewedSurface();
         ArrayList<Layer> updatedLayers = this.service.fetchLayers(this.currentlyViewedSurface);
-        currentlyViewedSurface.setLayers(updatedLayers);
-        layersTree.setRoot(this.getLayerTreeItems(this.currentlyViewedSurface.getSurfaceName(), updatedLayers));
-        layerNameInputBox.getItems().setAll(updatedLayers.stream().map(l -> l.getLayerName()).collect(Collectors.toList()));
-//        this.createNewTreatmentTypeInputBox.getItems().setAll(arg0);
-//        this.createNewTreatmentManufacturerInputBox.getItems().setAll(arg0);
+        this.currentlyViewedSurface.setLayers(updatedLayers);
+        this.layersTree.setRoot(this.getLayerTreeItems(this.currentlyViewedSurface.getSurfaceName(), updatedLayers));
+//        this.layerNameInputBox.getItems().setAll(updatedLayers.stream().map(l -> l.getLayerName()).collect(Collectors.toList()));
         ObservableList<SurfaceTreatment> updatedTreatments = FXCollections.observableArrayList();
         this.service.fetchAllSurfaceTreatments().forEach(st -> updatedTreatments.add(st));
-        layerTreatmentSelectionBoxOne.setItems(updatedTreatments);
-        layerTreatmentSelectionBoxTwo.setItems(updatedTreatments);
-        layerTreatmentSelectionBoxThree.setItems(updatedTreatments);
-        layerTreatmentSelectionBoxFour.setItems(updatedTreatments);
+        this.layerTreatmentSelectionBoxOne.setItems(updatedTreatments);
+        this.layerTreatmentSelectionBoxTwo.setItems(updatedTreatments);
+        this.layerTreatmentSelectionBoxThree.setItems(updatedTreatments);
+        this.layerTreatmentSelectionBoxFour.setItems(updatedTreatments);
+        this.createNewTreatmentTypeInputBox.getItems().setAll(surfaceTreatmentTypesAsStrings(updatedTreatments));
+        this.createNewTreatmentManufacturerInputBox.getItems().setAll(this.surfaceTreatmentManufacturersAsStrings(updatedTreatments));
     }
     
     public TreeItem getLayerTreeItems(String surface, ArrayList<Layer> layers) {
@@ -284,16 +293,16 @@ public class SurfacePane extends BorderPane {
     
     public TreeItem layerNodeAsTreeItem(Layer layer) {
         TreeItem treeItemToReturn = new TreeItem();
-        HBox layerColoursBox = new HBox();
-        Label layerNameLabel = new Label(layer.getLayerName());
+//        HBox layerColoursBox = new HBox();
+        Label layerNameLabel = new Label(layer.getLayerName() + ":");
         for (SurfaceTreatment st : layer.getTreatments()) {
-            layerColoursBox.getChildren().add(new Circle(6, st.getTreatmentColour()));
+//            layerColoursBox.getChildren().add(new Circle(6, st.getTreatmentColour()));
             treeItemToReturn.getChildren().add(new TreeItem(this.surfaceTreatmentAsNode(st)));
         }
         Label layerNoteLabel = new Label(layer.getLayerNote());
         layerNoteLabel.setMaxWidth(240);
         layerNoteLabel.setWrapText(true);
-        HBox layerBox = new HBox(layerNameLabel, layerColoursBox, layerNoteLabel);
+        HBox layerBox = new HBox(layerNameLabel, layerNoteLabel);
         layerBox.setSpacing(6);
         treeItemToReturn.setValue(layerBox);
         treeItemToReturn.setExpanded(true);
@@ -303,7 +312,7 @@ public class SurfacePane extends BorderPane {
     public Node surfaceTreatmentAsNode(SurfaceTreatment surfaceTreatment) {
         Label treatmentNameLabel = new Label(surfaceTreatment.getTreatmentName());
         treatmentNameLabel.setStyle("-fx-font-weight: bold;");
-        Circle treatmentColourCircle = new Circle(6, surfaceTreatment.getTreatmentColour());
+        Circle treatmentColourCircle = new Circle(5, surfaceTreatment.getTreatmentColour());
         Label treatmentManufacturerLabel = new Label(surfaceTreatment.getTreatmentManufacturer());
         Label treatmentTypeLabel = new Label(surfaceTreatment.getTreatmentType());
         HBox treatmentBox = new HBox(treatmentNameLabel, treatmentColourCircle, treatmentTypeLabel, treatmentManufacturerLabel);
@@ -311,6 +320,29 @@ public class SurfacePane extends BorderPane {
         treatmentBox.setSpacing(4);
 //        System.out.println(treatmentBox.getId() + treatmentNameLabel.getText() + treatmentColourCircle.toString() + treatmentManufacturerLabel.getText() + treatmentTypeLabel.getText());
         return treatmentBox;
+    }
+    
+        
+    public ObservableList<String> surfaceTreatmentTypesAsStrings(ObservableList<SurfaceTreatment> treatments) {
+        ObservableList<String> types = FXCollections.observableArrayList();
+        ArrayList<String> treatmentsAsString = (ArrayList<String>) treatments.stream().map(t -> t.getTreatmentType()).collect(Collectors.toList());
+        for (String treatmentType : treatmentsAsString) {
+            if (!types.contains(treatmentType)) {
+                types.add(treatmentType);
+            }
+        }
+        return types;
+    }
+    
+    public ObservableList<String> surfaceTreatmentManufacturersAsStrings(ObservableList<SurfaceTreatment> treatments) {
+        ObservableList<String> manufacturers = FXCollections.observableArrayList();
+        ArrayList<String> manufacturersAsString = (ArrayList<String>) treatments.stream().map(t -> t.getTreatmentManufacturer()).collect(Collectors.toList());
+        for (String manufacturer : manufacturersAsString) {
+            if (!manufacturers.contains(manufacturer)) {
+                manufacturers.add(manufacturer);
+            }
+        }
+        return manufacturers;
     }
     
     class SurfaceTreatmentCellFactory extends ListCell<SurfaceTreatment> {

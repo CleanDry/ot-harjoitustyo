@@ -71,34 +71,6 @@ public class TreeViewHelper {
         return projectsAsNodes;
     }
     
-    public TreeItem getSubprojectTreeItems(ArrayList<SubProject> subproject) {
-        TreeItem newRootItem = new TreeItem("Subprojects");
-        newRootItem.getChildren().addAll(this.subprojectsAsTreeItems(subproject));
-        newRootItem.setExpanded(true);
-        return newRootItem;
-    }
-    
-    public ArrayList<TreeItem> subprojectsAsTreeItems(ArrayList<SubProject> subprojects) {
-        ArrayList<TreeItem> treeItems = new ArrayList<>();
-        subprojects.stream().forEach(sb -> {
-            TreeItem subprojectTreeItem = new TreeItem(sb.getSubProjectName());
-            sb.getSurfaces().stream().forEach(s -> subprojectTreeItem.getChildren().add(this.UI.surfaceNodeAsTreeItem(s)));
-            subprojectTreeItem.setExpanded(true);
-            treeItems.add(subprojectTreeItem);
-        });
-        return treeItems;
-    }
-    
-    public TreeItem getLayerTreeItems(String surface, ArrayList<Layer> layers) {
-        TreeItem newRootItem = new TreeItem(surface);
-        newRootItem.setExpanded(true);
-        ArrayList<TreeItem> treeItems = new ArrayList<>();
-        layers.stream().forEach(layer -> {
-            treeItems.add(this.UI.layerNodeAsTreeItem(layer));
-        });
-        newRootItem.getChildren().addAll(treeItems);
-        return newRootItem;
-    }
 
     public UserInterface getUI() {
         return UI;
