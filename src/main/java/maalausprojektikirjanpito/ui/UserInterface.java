@@ -31,6 +31,7 @@ import static maalausprojektikirjanpito.domain.Utilities.categoriesAsStrings;
 import static maalausprojektikirjanpito.domain.Utilities.factionsAsStrings;
 import static maalausprojektikirjanpito.domain.Utilities.stringLengthCheck;
 import maalausprojektikirjanpito.ui.panes.ProjectDetailsPane;
+import maalausprojektikirjanpito.ui.panes.ProjectsPane;
 import maalausprojektikirjanpito.ui.panes.SubprojectsPane;
 import maalausprojektikirjanpito.ui.panes.SurfacePane;
 
@@ -39,11 +40,11 @@ public class UserInterface extends Application {
     private TreeViewHelper treeViewHelper;
     
     private Label loggedInAsLabel;
-    private ComboBox<String> newProjectFactionInputBox;
-    private ComboBox<String> newProjectCategoryInputBox;
+//    private ComboBox<String> newProjectFactionInputBox;
+//    private ComboBox<String> newProjectCategoryInputBox;
 //    private ComboBox<String> newSurfaceSubprojectInputBox;
     
-    private TreeView projectsTree;
+//    private TreeView projectsTree;
 //    private TreeView subprojectsTree;
 //    private TreeView layersTree;
     private Scene loginScene;
@@ -52,6 +53,7 @@ public class UserInterface extends Application {
     SurfacePane surfacePane;
     ProjectDetailsPane projectDetailsPane;
     SubprojectsPane subprojectsPane;
+    ProjectsPane projectsPane;
     
 
     @Override
@@ -71,53 +73,45 @@ public class UserInterface extends Application {
         
         
         loggedInAsLabel = new Label();
-        newProjectFactionInputBox = new ComboBox();
-        newProjectCategoryInputBox = new ComboBox();
-//        newSurfaceSubprojectInputBox = new ComboBox();
-        projectsTree = new TreeView<>(new TreeItem());
-//        subprojectsTree = new TreeView<>(new TreeItem("Subprojects"));
+//        newProjectFactionInputBox = new ComboBox();
+//        newProjectCategoryInputBox = new ComboBox();
+//        projectsTree = new TreeView<>(new TreeItem());
         
         surfacePane = new SurfacePane(this.managerService);
         projectDetailsPane = new ProjectDetailsPane(this.managerService);
         subprojectsPane = new SubprojectsPane(this.managerService, this.surfacePane);
+        projectsPane = new ProjectsPane(this.managerService, this.subprojectsPane, this.projectDetailsPane);
     }
     
-    public void redrawProjectsTree() {
-        ArrayList<PaintProject> updatedProjects = this.managerService.fetchUserProjects();
-        projectsTree.setRoot(this.treeViewHelper.getTreeViewItems(updatedProjects));
-        newProjectFactionInputBox.getItems().addAll(factionsAsStrings(updatedProjects));
-        newProjectCategoryInputBox.getItems().addAll(categoriesAsStrings(updatedProjects));
-    }
-    
-    
-//    public void redrawSubprojectsTree() {
-//        ArrayList<SubProject> updatedSubProjects = this.managerService.fetchSubprojects(this.managerService.getCurrentlyViewedProject());
-//        subprojectsTree.setRoot(this.treeViewHelper.getSubprojectTreeItems(updatedSubProjects));
-//        newSurfaceSubprojectInputBox.getItems().addAll(updatedSubProjects.stream().map(sb -> sb.getSubProjectName()).collect(Collectors.toList()));
+//    public void redrawProjectsTree() {
+//        ArrayList<PaintProject> updatedProjects = this.managerService.fetchUserProjects();
+//        projectsTree.setRoot(this.treeViewHelper.getTreeViewItems(updatedProjects));
+//        newProjectFactionInputBox.getItems().addAll(factionsAsStrings(updatedProjects));
+//        newProjectCategoryInputBox.getItems().addAll(categoriesAsStrings(updatedProjects));
 //    }
     
     
-    public TreeItem projectNodeAsTreeItem(PaintProject project) {
-        Label projectName = new Label(project.getProjectName());
-        HBox.setMargin(projectName, new Insets(0, 16, 0, 0));
-        CheckBox completed = new CheckBox();
-        if (project.getProjectCompleted()) {
-            completed.arm();
-        }
-        completed.setStyle("-fx-font-size:10");
-        Button goToProjectViewerButton = new Button(">");
-        goToProjectViewerButton.setStyle("-fx-font-size:7");
-        goToProjectViewerButton.setOnAction(event -> {
-            this.managerService.setCurrentlyViewedProject(project);
-            this.projectDetailsPane.refresh();
-            this.subprojectsPane.refresh();
-            
-        });
-        HBox projectAsNodeBox = new HBox(projectName, completed, goToProjectViewerButton);
-        projectAsNodeBox.setSpacing(10);
-        TreeItem projectAsTreeItem = new TreeItem(projectAsNodeBox);
-        return projectAsTreeItem;
-    }
+//    public TreeItem projectNodeAsTreeItem(PaintProject project) {
+//        Label projectName = new Label(project.getProjectName());
+//        HBox.setMargin(projectName, new Insets(0, 16, 0, 0));
+//        CheckBox completed = new CheckBox();
+//        if (project.getProjectCompleted()) {
+//            completed.arm();
+//        }
+//        completed.setStyle("-fx-font-size:10");
+//        Button goToProjectViewerButton = new Button(">");
+//        goToProjectViewerButton.setStyle("-fx-font-size:7");
+//        goToProjectViewerButton.setOnAction(event -> {
+//            this.managerService.setCurrentlyViewedProject(project);
+//            this.projectDetailsPane.refresh();
+//            this.subprojectsPane.refresh();
+//            
+//        });
+//        HBox projectAsNodeBox = new HBox(projectName, completed, goToProjectViewerButton);
+//        projectAsNodeBox.setSpacing(10);
+//        TreeItem projectAsTreeItem = new TreeItem(projectAsNodeBox);
+//        return projectAsTreeItem;
+//    }
     
     @Override
     public void start(Stage primaryStage) throws Exception { 
@@ -209,7 +203,7 @@ public class UserInterface extends Application {
             String password = passwordInput.getText();
             if (managerService.login(username, password) ){
                 loginMessage.setText("");
-                this.redrawProjectsTree();
+                this.projectsPane.refresh();
                 this.subprojectsPane.refresh();
                 loggedInAsLabel.setText("Logged in as: " + username);
                 primaryStage.setScene(mainScene);  
@@ -271,7 +265,7 @@ public class UserInterface extends Application {
                 newPasswordInput.setText("");
                 verifyNewPasswordInput.setText("");
                 if (managerService.createUser(newUsername, newPassword) && managerService.login(newUsername, newPassword)) {
-                    this.redrawProjectsTree();
+                    this.projectsPane.refresh();
                     this.subprojectsPane.refresh();
                     loggedInAsLabel.setText("Logged in as: " + newUsername);
                     primaryStage.setScene(mainScene);
@@ -312,87 +306,87 @@ public class UserInterface extends Application {
         });
         
 
-        // Nodes for projectsPane
-        // projectsTree is in class attributes
-        projectsTree.setStyle("-fx-border-color: white;");
-        projectsTree.setShowRoot(false);
-        
-        Button goToNewProjectCreationButton = new Button("Create a new Project");
-        Label newProjectNameLabel = new Label("Project name");
-        TextField newProjectNameInput = new TextField();
-        Label newProjectFactionLabel = new Label("Faction");
-        // newProjectFactionInput is in class attributes
-        newProjectFactionInputBox.setEditable(true);
-        newProjectFactionInputBox.setValue("");
-        Label newProjectCategoryLabel = new Label("Category");
-        // newProjectCategoryInput is in class attributes
-        newProjectCategoryInputBox.setEditable(true);
-        newProjectCategoryInputBox.setValue("");
-        Label createNewProjectMessage = new Label();
-        createNewProjectMessage.setMinHeight(26);
-        createNewProjectMessage.setMaxWidth(240);
-        createNewProjectMessage.setWrapText(true);
-        Button createNewProjectButton = new Button("Create a new Project");
-        Button closeNewProjectCreationButton = new Button("Cancel");
-        HBox newProjectCreationButtonBox = new HBox(createNewProjectButton, closeNewProjectCreationButton);
-        newProjectCreationButtonBox.setSpacing(12);
-        
-        GridPane newProjectCreationPane = new GridPane();
-        newProjectCreationPane.add(newProjectNameLabel, 0, 0);
-        newProjectCreationPane.add(newProjectNameInput, 0, 1);
-        newProjectCreationPane.add(newProjectFactionLabel, 0, 2);
-        newProjectCreationPane.add(newProjectFactionInputBox, 0, 3);
-        newProjectCreationPane.add(newProjectCategoryLabel, 0, 4);
-        newProjectCreationPane.add(newProjectCategoryInputBox, 0, 5);
-        newProjectCreationPane.add(createNewProjectMessage, 0, 6);
-        newProjectCreationPane.add(newProjectCreationButtonBox, 0, 7);
-        newProjectCreationPane.setVgap(6);
-        newProjectCreationPane.setPadding(new Insets(18, 0, 0, 0));
-        GridPane.setColumnSpan(createNewProjectMessage, 2);
-        GridPane.setMargin(createNewProjectMessage, new Insets(12, 0, 0, 0));
-        GridPane.setMargin(newProjectCreationButtonBox, new Insets(12, 0, 0, 0));
-        
-        // Layout elements for projectsPane
-        BorderPane projectsPane = new BorderPane();
-        projectsPane.setCenter(projectsTree);
-        projectsPane.setBottom(goToNewProjectCreationButton);
-        BorderPane.setMargin(projectsTree, new Insets(0, 0, 12, 0));
-        projectsPane.setPadding(new Insets(20, 20, 50, 50));
-        
-        // projectsPane button actions
-        goToNewProjectCreationButton.setOnAction(event -> projectsPane.setBottom(newProjectCreationPane));
-        closeNewProjectCreationButton.setOnAction(event -> {
-            projectsPane.setBottom(goToNewProjectCreationButton);
-            newProjectNameInput.setText("");
-            newProjectFactionInputBox.setValue("");
-            newProjectCategoryInputBox.setValue("");
-            createNewProjectMessage.setText("");
-        });
-        
-        createNewProjectButton.setOnAction(event -> {
-            String newProjectName = newProjectNameInput.getText().trim();
-            String newProjectFaction = newProjectFactionInputBox.getValue().trim();
-            String newProjectCategory = newProjectCategoryInputBox.getValue().trim();
-            if (!(stringLengthCheck(newProjectName, 3, 40) && stringLengthCheck(newProjectFaction, 3, 40) && stringLengthCheck(newProjectCategory, 3, 40))) {
-                createNewProjectMessage.setText("Project name, faction and category must be 3-40 characters long");
-                createNewProjectMessage.setTextFill(Color.RED);
-            } else if (!(newProjectName.matches("[A-Za-z0-9\\s]*") && newProjectFaction.matches("[A-Za-z0-9\\s]*") && newProjectCategory.matches("[A-Za-z0-9\\s]*"))) {
-                createNewProjectMessage.setText("Project name, faction and category must only contain numbers and letters");
-                createNewProjectMessage.setTextFill(Color.RED);
-            } else {
-                try {
-                    this.managerService.createPaintProject(newProjectName, newProjectFaction, newProjectCategory);
-                    this.redrawProjectsTree();
-                } catch (SQLException ex) {
-                    Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                newProjectNameInput.setText("");
-                newProjectFactionInputBox.setValue("");
-                newProjectCategoryInputBox.setValue("");
-                createNewProjectMessage.setText("");
-                projectsPane.setBottom(goToNewProjectCreationButton);
-            }
-        });
+//        // Nodes for projectsPane
+//        // projectsTree is in class attributes
+//        projectsTree.setStyle("-fx-border-color: white;");
+//        projectsTree.setShowRoot(false);
+//        
+//        Button goToNewProjectCreationButton = new Button("Create a new Project");
+//        Label newProjectNameLabel = new Label("Project name");
+//        TextField newProjectNameInput = new TextField();
+//        Label newProjectFactionLabel = new Label("Faction");
+//        // newProjectFactionInput is in class attributes
+//        newProjectFactionInputBox.setEditable(true);
+//        newProjectFactionInputBox.setValue("");
+//        Label newProjectCategoryLabel = new Label("Category");
+//        // newProjectCategoryInput is in class attributes
+//        newProjectCategoryInputBox.setEditable(true);
+//        newProjectCategoryInputBox.setValue("");
+//        Label createNewProjectMessage = new Label();
+//        createNewProjectMessage.setMinHeight(26);
+//        createNewProjectMessage.setMaxWidth(240);
+//        createNewProjectMessage.setWrapText(true);
+//        Button createNewProjectButton = new Button("Create a new Project");
+//        Button closeNewProjectCreationButton = new Button("Cancel");
+//        HBox newProjectCreationButtonBox = new HBox(createNewProjectButton, closeNewProjectCreationButton);
+//        newProjectCreationButtonBox.setSpacing(12);
+//        
+//        GridPane newProjectCreationPane = new GridPane();
+//        newProjectCreationPane.add(newProjectNameLabel, 0, 0);
+//        newProjectCreationPane.add(newProjectNameInput, 0, 1);
+//        newProjectCreationPane.add(newProjectFactionLabel, 0, 2);
+//        newProjectCreationPane.add(newProjectFactionInputBox, 0, 3);
+//        newProjectCreationPane.add(newProjectCategoryLabel, 0, 4);
+//        newProjectCreationPane.add(newProjectCategoryInputBox, 0, 5);
+//        newProjectCreationPane.add(createNewProjectMessage, 0, 6);
+//        newProjectCreationPane.add(newProjectCreationButtonBox, 0, 7);
+//        newProjectCreationPane.setVgap(6);
+//        newProjectCreationPane.setPadding(new Insets(18, 0, 0, 0));
+//        GridPane.setColumnSpan(createNewProjectMessage, 2);
+//        GridPane.setMargin(createNewProjectMessage, new Insets(12, 0, 0, 0));
+//        GridPane.setMargin(newProjectCreationButtonBox, new Insets(12, 0, 0, 0));
+//        
+//        // Layout elements for projectsPane
+//        BorderPane projectsPane = new BorderPane();
+//        projectsPane.setCenter(projectsTree);
+//        projectsPane.setBottom(goToNewProjectCreationButton);
+//        BorderPane.setMargin(projectsTree, new Insets(0, 0, 12, 0));
+//        projectsPane.setPadding(new Insets(20, 20, 50, 50));
+//        
+//        // projectsPane button actions
+//        goToNewProjectCreationButton.setOnAction(event -> projectsPane.setBottom(newProjectCreationPane));
+//        closeNewProjectCreationButton.setOnAction(event -> {
+//            projectsPane.setBottom(goToNewProjectCreationButton);
+//            newProjectNameInput.setText("");
+//            newProjectFactionInputBox.setValue("");
+//            newProjectCategoryInputBox.setValue("");
+//            createNewProjectMessage.setText("");
+//        });
+//        
+//        createNewProjectButton.setOnAction(event -> {
+//            String newProjectName = newProjectNameInput.getText().trim();
+//            String newProjectFaction = newProjectFactionInputBox.getValue().trim();
+//            String newProjectCategory = newProjectCategoryInputBox.getValue().trim();
+//            if (!(stringLengthCheck(newProjectName, 3, 40) && stringLengthCheck(newProjectFaction, 3, 40) && stringLengthCheck(newProjectCategory, 3, 40))) {
+//                createNewProjectMessage.setText("Project name, faction and category must be 3-40 characters long");
+//                createNewProjectMessage.setTextFill(Color.RED);
+//            } else if (!(newProjectName.matches("[A-Za-z0-9\\s]*") && newProjectFaction.matches("[A-Za-z0-9\\s]*") && newProjectCategory.matches("[A-Za-z0-9\\s]*"))) {
+//                createNewProjectMessage.setText("Project name, faction and category must only contain numbers and letters");
+//                createNewProjectMessage.setTextFill(Color.RED);
+//            } else {
+//                try {
+//                    this.managerService.createPaintProject(newProjectName, newProjectFaction, newProjectCategory);
+//                    this.redrawProjectsTree();
+//                } catch (SQLException ex) {
+//                    Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                newProjectNameInput.setText("");
+//                newProjectFactionInputBox.setValue("");
+//                newProjectCategoryInputBox.setValue("");
+//                createNewProjectMessage.setText("");
+//                projectsPane.setBottom(goToNewProjectCreationButton);
+//            }
+//        });
         
         // Layout for viewProjectPane
         BorderPane viewProjectPane = new BorderPane();
@@ -404,7 +398,7 @@ public class UserInterface extends Application {
         // Building the main scene
         BorderPane mainPane = new BorderPane();
         mainPane.setTop(mainPaneHeaderPane);
-        mainPane.setLeft(projectsPane);
+        mainPane.setLeft(this.projectsPane.getProjectsPane());
         mainPane.setCenter(viewProjectPane);
         mainPane.setPadding(new Insets(20));
         BorderPane.setMargin(viewProjectPane, new Insets(20, 50, 20, 0));
@@ -417,7 +411,7 @@ public class UserInterface extends Application {
         primaryStage.setScene(loginScene);
         // debug view!
         this.managerService.login("Mikke", "KillerApp");
-        this.redrawProjectsTree();
+        this.projectsPane.refresh();
         loggedInAsLabel.setText("Logged in as: Debug");
         primaryStage.setScene(mainScene);
         // debug view end!
