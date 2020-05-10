@@ -4,18 +4,18 @@
 
 ## Käyttöliittymä
 
-Käyttöliittymän sisältää neljä erilaista näkymää
-- kirjautuminen
-- uuden käyttäjän luominen
-- projektien selaus ja arkistointi
-- yksittäisen projektin tarkastelu ja aliprojektien käsittely
+Käyttöliittymän sisältää kaksi erilaista näkymää
+- kirjautuminen ja uuden käyttäjän luominen
+- projektien selaus ja käsittely
 
 Jokainen näistä on toteutettu omana Scene-oliona. Näkymistä yksi kerrallaan on näkyvänä eli sijoitettuna sovelluksen stageen.
-Käyttöliittymä on rakennettu luokassa maalausprojektikirjanpito.ui.UserInterface. TreeView-komponentin apuluokka TreeViewHelper on totetettu omana luokkanaan ui-pakkauksessa.
+Kumpikin elementti sisältää muita elementtejä, esimerkiksi kirjautuminen ja uuden käyttäjän luomisnäkymän välillä vaihto tapahtuu näkymän sisäisiä elementtejä manipuloimalla.
+
+Käyttöliittymä on rakennettu luokassa maalausprojektikirjanpito.ui.UserInterface. Osa käyttöliittymän elementeistä on eriytetty omiksi luokiksiin selkeyden vuoksi. 
 
 Käyttöliittymä on pyritty eristämään sovelluslogiikasta. Käyttöliittymä kutsuu ServiceManager-luokan olion metodeja toimintojen toteuttamiseksi.
 
-Projektien tarkasteluun on käytössä TreeView-olio ja sillä apuna TreeViewHelper-luokka, joka toteuttaa erilaisia toiminnallisuuksia TreeView-puuhun. Projekteja lisättäessä ja käsiteltäessa käytetään TreeView:n tapahtumia puun päivittämiseen.
+Projektien tarkasteluun on käytössä TreeView-olio. Projekteja lisättäessä ja käsiteltäessa käytetään näkymäelementtien refresh-metodeja tietojen päivittämiseen.
 
 ## Sovelluslogiikka
 
@@ -42,14 +42,8 @@ Luokat noudattavat Data Access Object -suunnittelumallia ja toteuttavat geneeris
 
 Käytetyn tietokannan kaavio löytyy aiemmin olleesta luokka- ja tietokantakaavioista.
 
-## Päätoiminnallisuudet
-
-### Käyttäjän kirjautuminen
-
-### Uuden käyttäjän luominen
-
-### Uuden projektin luominen
-
 ![Image of the sequence diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Attachments/Initial%20sequence%20diagram.jpg)
 
 ## Ohjelman rakenteeseen jääneet heikkoudet
+Tietokantasyötteet ovat lähes täysin sanitoitu, mutta sanitointisääntöja pitäisi järkevöittää ja keskittää vaikkapa Utilities-luokkaan.
+Tietojen muokkaus ja poistotoiminnallisuudet ovat vielä keskeneräisiä, osin GUI:n elemenettien puutteen takia ja muutamilta osin sovelluslogiikan takia.
