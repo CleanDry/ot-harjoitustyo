@@ -42,8 +42,6 @@ Luokat noudattavat Data Access Object -suunnittelumallia ja toteuttavat geneeris
 
 Käytetyn tietokannan kaavio löytyy aiemmin olleesta luokka- ja tietokantakaavioista.
 
-![Image of the sequence diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Attachments/Initial%20sequence%20diagram.jpg)
-
 ## Ohjelman rakenteeseen jääneet heikkoudet
 Tietokantasyötteet ovat lähes täysin sanitoitu, mutta sanitointisääntöja pitäisi järkevöittää ja keskittää vaikkapa Utilities-luokkaan.
 Tietojen muokkaus ja poistotoiminnallisuudet ovat vielä keskeneräisiä, osin GUI:n elemenettien puutteen takia ja muutamilta osin sovelluslogiikan takia.
