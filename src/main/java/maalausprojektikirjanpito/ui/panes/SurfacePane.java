@@ -56,20 +56,20 @@ public class SurfacePane extends BorderPane {
     private GridPane createNewLayerPane;
     
     // createNewTreatmentPane
-    Label createNewTreatmentHeaderLabel;
-    Label createNewTreatmentNameLabel;
-    TextField createNewTreatmentNameInput;
-    Label createNewTreatmentTypeLabel;
-    ComboBox<String> createNewTreatmentTypeInputBox;
-    Label createNewTreatmentManufacturerLabel;
-    ComboBox<String> createNewTreatmentManufacturerInputBox;
-    Label createNewTreatmentColourLabel;
-    ColorPicker createNewTreatmentColourPicker;
-    Button createNewTreatmentButton;
-    Button cancelNewTreatmentButton;
-    HBox createNewTreatmentButtonBox;
-    Label createNewTreatmentMessage;
-    GridPane createNewTreatmentPane;
+    private Label createNewTreatmentHeaderLabel;
+    private Label createNewTreatmentNameLabel;
+    private TextField createNewTreatmentNameInput;
+    private Label createNewTreatmentTypeLabel;
+    private ComboBox<String> createNewTreatmentTypeInputBox;
+    private Label createNewTreatmentManufacturerLabel;
+    private ComboBox<String> createNewTreatmentManufacturerInputBox;
+    private Label createNewTreatmentColourLabel;
+    private ColorPicker createNewTreatmentColourPicker;
+    private Button createNewTreatmentButton;
+    private Button cancelNewTreatmentButton;
+    private HBox createNewTreatmentButtonBox;
+    private Label createNewTreatmentMessage;
+    private GridPane createNewTreatmentPane;
     
 
     public SurfacePane(ManagerService service) {
@@ -83,7 +83,7 @@ public class SurfacePane extends BorderPane {
         goToCreateNewTreatmentButton = new Button("Create a new treatment");
         goToNewLayerTreatmentButtonBox = new VBox(goToCreateNewLayerButton, goToCreateNewTreatmentButton);
         goToNewLayerTreatmentButtonBox.setSpacing(6);
-        GridPane.setMargin(goToNewLayerTreatmentButtonBox, new Insets(6,0,0,0));
+        GridPane.setMargin(goToNewLayerTreatmentButtonBox, new Insets(6, 0, 0, 0));
         
         // createNewLayerPane
         createNewLayerNameLabel = new Label("Layer name");
@@ -346,9 +346,9 @@ public class SurfacePane extends BorderPane {
         @Override
         protected void updateItem(SurfaceTreatment surfaceTreatment, boolean empty) {
             super.updateItem(surfaceTreatment, empty);
-            if (surfaceTreatment == null || empty)
+            if (surfaceTreatment == null || empty) {
                 setGraphic(null);
-            else {
+            } else {
                 Label treatmentNameLabel = new Label(surfaceTreatment.getTreatmentName());
                 treatmentNameLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: black;");
                 Circle treatmentColourCircle = new Circle(6, surfaceTreatment.getTreatmentColour());

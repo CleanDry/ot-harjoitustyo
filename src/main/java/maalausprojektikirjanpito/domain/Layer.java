@@ -76,28 +76,28 @@ public class Layer {
     }
     
     /**
-     * Push given treatment up in the queue
-     * @param treatment
+     * Push given treatment up in the queue.
+     * @param treatment to be adjusted
      * @return true if successful, false otherwise
      */
     public boolean pushTreatmentUp(SurfaceTreatment treatment) {
         Integer currentIndex = this.treatments.indexOf(treatment);
         if (currentIndex >= 1) {
-            this.treatments.set(currentIndex-1, treatment);
+            this.treatments.set(currentIndex - 1, treatment);
             return true;
         }
         return false;
     }
     
     /**
-     * Push given treatment down in the queue
-     * @param treatment
+     * Push given treatment down in the queue.
+     * @param treatment to be adjusted
      * @return true if successful, false otherwise
      */
     public boolean pushTreatmentDown(SurfaceTreatment treatment) {
         Integer currentIndex = this.treatments.indexOf(treatment);
-        if (currentIndex < this.treatments.size()-1) {
-            this.treatments.set(currentIndex+1, treatment);
+        if (currentIndex < this.treatments.size() - 1) {
+            this.treatments.set(currentIndex + 1, treatment);
             return true;
         }
         return false;

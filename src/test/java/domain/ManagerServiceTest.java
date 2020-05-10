@@ -39,7 +39,7 @@ public class ManagerServiceTest {
         
         service = new ManagerService(testDb.getAbsolutePath());
         service.init();
-        service.createUser("testUser", "testPassword");
+        service.createUser("testUser", "testPassword", "testPassword");
         service.login("testUser", "testPassword");
     }
     
@@ -51,27 +51,27 @@ public class ManagerServiceTest {
     
     @Test
     public void userCreationSucceedsIfUnique() throws SQLException {
-        assertTrue(service.createUser("username", "password"));
+        assertEquals("success", service.createUser("username", "password", "password"));
     }
     
     @Test
     public void userCreationFailsIfNotUnique() throws SQLException {
-        service.createUser("username", "password");
-        assertFalse(service.createUser("username", "password"));
-        assertFalse(service.createUser("UsErNaMe", "password"));
+        service.createUser("username", "password", "password");
+        assertEquals("Sorry, the username is taken!", service.createUser("username", "password", "password"));
+        assertEquals("Sorry, the username is taken!", service.createUser("UsErNaMe", "password", "password"));
     }
     
     @Test
     public void userCreationFailsIfNameOrPwNotLongEnoughAndSucceedsOtherwise() throws SQLException {
         // System.out.println("Test begun");
-        assertFalse(service.createUser("username", "pass"));
+        assertEquals("Username must be 3-20 characters long and password 8-20", service.createUser("username", "pass", "pass"));
         // System.out.println("1st fails");
-        assertFalse(service.createUser("us", "password"));
+        assertEquals("Username must be 3-20 characters long and password 8-20", service.createUser("us", "password", "password"));
         // System.out.println("2st fails");
-        assertFalse(service.createUser("us", "pass"));
+        assertEquals("Username must be 3-20 characters long and password 8-20", service.createUser("us", "pass", "pass"));
         // System.out.println("3st fails");
-        assertFalse(service.createUser("usernamethatiswaytoolongandcomplex", "entirewholepassphrasethatisalsotoolong"));
-        assertTrue(service.createUser("username", "password"));
+        assertEquals("Username must be 3-20 characters long and password 8-20", service.createUser("usernamethatiswaytoolongandcomplex", "entirewholepassphrasethatisalsotoolong", "entirewholepassphrasethatisalsotoolong"));
+        assertEquals("success", service.createUser("username", "password", "password"));
         // System.out.println("4st succeeds");
     }
     
@@ -82,7 +82,7 @@ public class ManagerServiceTest {
     
     @Test
     public void loginfFailsIfPairNotMatching() throws SQLException {
-        assertTrue(service.createUser("username", "password"));
+        assertEquals("success", service.createUser("username", "password", "password"));
         assertFalse(service.login("username", "pass"));
         assertFalse(service.login("user", "password"));
         assertFalse(service.login("user", "pass"));
@@ -90,7 +90,7 @@ public class ManagerServiceTest {
     
     @Test
     public void loginSucceedsIfEntryCorrect() throws SQLException {
-        service.createUser("username", "password");
+        service.createUser("username", "password", "password");
         assertTrue(service.login("username", "password"));
     }
     

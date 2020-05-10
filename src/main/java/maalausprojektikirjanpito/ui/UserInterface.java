@@ -57,6 +57,7 @@ public class UserInterface extends Application {
         Button loginButton = new Button("Log in");
         Label loginMessage = new Label("");
         loginMessage.setMinHeight(26);
+        loginMessage.setTextFill(Color.RED);
         Label goToNewUserLabel = new Label("or");
         goToNewUserLabel.setMinHeight(26);
         Button goToNewUserButton = new Button("Create a new user");
@@ -79,13 +80,14 @@ public class UserInterface extends Application {
         userCreationHeader.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         Label newUsernameLabel = new Label("Enter a username:");
         TextField newUsernameInput = new TextField();
-        Label newUsernameMessage = new Label();
         Label newPasswordLabel = new Label("Enter a password:");
         PasswordField newPasswordInput = new PasswordField();
-        Label newPasswordInputMessage = new Label();
         Label verifyNewPasswordLabel = new Label("Please enter the same password again:");
         PasswordField verifyNewPasswordInput = new PasswordField();
-        Label verifyNewPasswordMessage = new Label();
+        Label newCreateUserMessage = new Label();
+        newCreateUserMessage.setTextFill(Color.RED);
+        newCreateUserMessage.setMaxWidth(250);
+        newCreateUserMessage.setWrapText(true);
         Button createNewUserButton = new Button("Create");
         // Layout elements for newUserInputPane
         GridPane newUserInputPane = new GridPane();
@@ -93,16 +95,14 @@ public class UserInterface extends Application {
         GridPane.setMargin(newUsernameLabel, new Insets(12, 0, 0, 0));
         newUserInputPane.add(newUsernameLabel, 0, 1);
         newUserInputPane.add(newUsernameInput, 0, 2);
-        newUserInputPane.add(newUsernameMessage, 1, 2);
         GridPane.setMargin(newPasswordLabel, new Insets(6, 0, 0, 0));
         newUserInputPane.add(newPasswordLabel, 0, 3);
         newUserInputPane.add(newPasswordInput, 0, 4);
-        newUserInputPane.add(newPasswordInputMessage, 1, 4);
         GridPane.setMargin(verifyNewPasswordLabel, new Insets(6, 0, 0, 0));
         newUserInputPane.add(verifyNewPasswordLabel, 0, 5);
         newUserInputPane.add(verifyNewPasswordInput, 0, 6);
-        newUserInputPane.add(verifyNewPasswordMessage, 1, 6);
         newUserInputPane.add(createNewUserButton, 0, 7);
+        newUserInputPane.add(newCreateUserMessage, 0, 8);
         GridPane.setMargin(createNewUserButton, new Insets(18, 0, 0, 0));
         newUserInputPane.setPadding(new Insets(0, 20, 0, 20));
         newUserInputPane.setHgap(10);
@@ -116,6 +116,7 @@ public class UserInterface extends Application {
         loginPane.setAlignment(Pos.CENTER);
         loginPane.setVgap(30);
         loginPane.setHgap(10);
+        loginScene = new Scene(loginPane);
         
         // loginPane button actions
         // Log on if credentials match, display loginMessage otherwise
@@ -132,7 +133,6 @@ public class UserInterface extends Application {
                 passwordInput.setText("");
             } else {
                 loginMessage.setText("Sorry! Username or password incorrect");
-                loginMessage.setTextFill(Color.RED);
             }      
         });
         goToNewUserButton.setOnAction(event -> {
@@ -146,52 +146,19 @@ public class UserInterface extends Application {
         createNewUserButton.setOnAction(event -> {
             String newUsername = newUsernameInput.getText().trim();
             String newPassword = newPasswordInput.getText().trim();
-            String verifiedNewPassword = verifyNewPasswordInput.getText().trim();
-            Boolean inputAcceptable = true;
-            if (!stringLengthCheck(newUsername, 3, 20)) {
-                newUsernameMessage.setText("Username must be 3-20 characters long");
-                newUsernameMessage.setTextFill(Color.RED);
-                newUsernameInput.setText("");
-                inputAcceptable = false;
-            }
-            if (!newUsername.matches("[A-Za-z0-9]*")) {
-                newUsernameMessage.setText("Username must contain only letters or numbers");
-                newUsernameMessage.setTextFill(Color.RED);
-                newUsernameInput.setText("");
-                inputAcceptable = false;
-            }
-            if (!stringLengthCheck(newPassword, 3, 20)) {
-                newPasswordInputMessage.setText("Password must be 3-20 characters long");
-                newPasswordInputMessage.setTextFill(Color.RED);
-                newPasswordInput.setText("");
-                inputAcceptable = false;
-            }
-            if (!newPassword.matches("[A-Za-z0-9]*")) {
-                newPasswordInputMessage.setText("Password must contain only letters or numbers");
-                newPasswordInputMessage.setTextFill(Color.RED);
-                newPasswordInput.setText("");
-                inputAcceptable = false;
-            }
-            if (!newPassword.equals(verifiedNewPassword)) {
-                verifyNewPasswordMessage.setText("Please make sure the passwords match!");
-                verifyNewPasswordMessage.setTextFill(Color.RED);
-                inputAcceptable = false;
-            }
-            if (inputAcceptable) {
+            String newPasswordAgain = verifyNewPasswordInput.getText().trim();
+            String userCreateResult  = managerService.createUser(newUsername, newPassword, newPasswordAgain);
+            if (userCreateResult.equals("success")) {
+                loginPane.getChildren().remove(newUserInputPane);
+                loginPane.add(loginInputBox, 0, 1);
                 newUsernameInput.setText("");
                 newPasswordInput.setText("");
                 verifyNewPasswordInput.setText("");
-                if (managerService.createUser(newUsername, newPassword) && managerService.login(newUsername, newPassword)) {
-                    this.projectsTreePane.refresh();
-                    this.subprojectsTreePane.refresh();
-                    loggedInAsLabel.setText("Logged in as: " + newUsername);
-                    primaryStage.setScene(appMainScene);
-                } else {
-                    verifyNewPasswordInput.setText("Sorry, an error occurred while creating the user or logging in!");
-                }
+            } else {
+                newCreateUserMessage.setText(userCreateResult);
             }
         });
-        loginScene = new Scene(loginPane);
+        
         
         
         // Elements for appMainViewPane
@@ -242,10 +209,10 @@ public class UserInterface extends Application {
         primaryStage.setTitle("Paint Project Manager");
         primaryStage.setScene(loginScene);
         // debug view!
-        this.managerService.login("Mikke", "KillerApp");
-        this.projectsTreePane.refresh();
-        loggedInAsLabel.setText("Logged in as: Debug");
-        primaryStage.setScene(appMainScene);
+//        this.managerService.login("Mikke", "KillerApp");
+//        this.projectsTreePane.refresh();
+//        loggedInAsLabel.setText("Logged in as: Debug");
+//        primaryStage.setScene(appMainScene);
         // debug view end!
         primaryStage.show();
         primaryStage.setOnCloseRequest(e->{

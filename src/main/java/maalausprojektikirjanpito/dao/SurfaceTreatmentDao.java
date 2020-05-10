@@ -43,7 +43,6 @@ public class SurfaceTreatmentDao implements Dao<SurfaceTreatment, Integer> {
             stmt2.close();
             connection.close();
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
         }
         this.treatmentCache = (ArrayList<SurfaceTreatment>) this.list();
     }
@@ -160,8 +159,15 @@ public class SurfaceTreatmentDao implements Dao<SurfaceTreatment, Integer> {
             System.out.println("Error: " + e.toString());
         }
         return treatments;    
-        }
+    }
     
+    /**
+     * Connects to the database and returns SurfaceTreatments of a Layer. Uses an injected Connection and does not close it.
+     * @param layerId of the Layer whose treatments are required
+     * @param connection injected to the method. Method does not close the connection.
+     * @return ArrayList of SurfaceTreatments
+     * @throws SQLException 
+     */
     public ArrayList<SurfaceTreatment> treatmentsOfLayer(Integer layerId, Connection connection) throws SQLException {
         ArrayList<SurfaceTreatment> treatmentsToReturn = new ArrayList<>();
         PreparedStatement stmt = connection.prepareStatement("SELECT SurfaceTreatments.treatment_id, SurfaceTreatments.treatment_name, SurfaceTreatments.treatment_type, SurfaceTreatments.treatment_manufacturer, SurfaceTreatments.treatment_colour "

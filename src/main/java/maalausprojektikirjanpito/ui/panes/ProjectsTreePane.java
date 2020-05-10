@@ -31,16 +31,16 @@ public class ProjectsTreePane extends BorderPane {
     private ManagerService managerService;
     private SubprojectsTreePane subprojectsPane;
     private ProjectDetailsPane projectDetailsPane;
+
+    private TreeView projectsTree;
     
     private ComboBox<String> newProjectFactionInputBox;
     private ComboBox<String> newProjectCategoryInputBox;
     
-    private TreeView projectsTree;
-    
-    Button goToNewProjectCreationButton;
-    HBox newProjectCreationButtonBox;
-    
-    GridPane newProjectCreationPane;
+    private Button goToNewProjectCreationButton;
+    private HBox newProjectCreationButtonBox;
+    private GridPane newProjectCreationPane;
+    private Label createNewProjectMessage;
 
     public ProjectsTreePane(ManagerService managerService, SubprojectsTreePane subprojectsPane, ProjectDetailsPane projectDetailsPane) {
         this.managerService = managerService;
@@ -62,7 +62,7 @@ public class ProjectsTreePane extends BorderPane {
         newProjectCategoryInputBox = new ComboBox();
         newProjectCategoryInputBox.setEditable(true);
         newProjectCategoryInputBox.setValue("");
-        Label createNewProjectMessage = new Label();
+        createNewProjectMessage = new Label();
         createNewProjectMessage.setMinHeight(26);
         createNewProjectMessage.setMaxWidth(240);
         createNewProjectMessage.setWrapText(true);
@@ -117,7 +117,9 @@ public class ProjectsTreePane extends BorderPane {
                 createNewProjectMessage.setTextFill(Color.RED);
             } else {
                 try {
-                    this.managerService.createPaintProject(newProjectName, newProjectFaction, newProjectCategory);
+                    if (!this.managerService.createPaintProject(newProjectName, newProjectFaction, newProjectCategory)) {
+                        this.createNewProjectMessage.setText("Oops, dentical project already exists!");
+                    }
                     this.refresh();
                 } catch (SQLException ex) {
                     Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
@@ -142,7 +144,7 @@ public class ProjectsTreePane extends BorderPane {
         newProjectCategoryInputBox.getItems().addAll(categoriesAsStrings(updatedProjects));
     }
     
-        public TreeItem getTreeViewItems(ArrayList<PaintProject> projects) {
+    public TreeItem getTreeViewItems(ArrayList<PaintProject> projects) {
         TreeItem newRootItem = new TreeItem("All Projects");
         TreeItem activeProjectsRoot = new TreeItem<>("Active Projects");
         activeProjectsRoot.getChildren().addAll(activeProjectsAsTreeItems(projects));

@@ -43,7 +43,7 @@ public class ManagerService {
         this.surfaceDao = new SurfaceDao(databaseUrl, this.layerDao);
         this.subprojectDao = new SubProjectDao(databaseUrl, this.surfaceDao);
         
-        currentlyViewedProject = new PaintProject(-1,-1,"No project selected", "-", "-", false, false, false);
+        currentlyViewedProject = new PaintProject(-1, -1, "No project selected", "-", "-", false, false, false);
         currentlyViewedSurface = new Surface(-1, -1, "No surface selected", false);
     }
     
@@ -57,8 +57,6 @@ public class ManagerService {
         
         if (file.createNewFile()) {
             System.out.println("File " + databaseUrl + " created in App root directory");
-        } else {
-            System.out.println("File " + databaseUrl + " already exists in the App root directory");
         }
         
         // Initialize Dao-objects; ensure database's tables exist and dao's fetch their initial caches
@@ -74,29 +72,31 @@ public class ManagerService {
      * Create a user to the system.
      * @param username User's username, must be between 3 to 20 characters.
      * @param password User's password, must be between 8 to 20 characters.
+     * @param passwordAgain User's password to verify it is the inteded password
      * @return returns false if username already taken, username.length is less than 3 or password.length is less than 8, otherwise true
      */
-    public boolean createUser(String username, String password) {
+    public String createUser(String username, String password, String passwordAgain) {
         try {
-            // Check if the given pair meets the criterias for length
-            if (!stringLengthCheck(username, 3, 20)) {
-                System.out.println("Username has to have 3-20 characters");
-                return false;
-            } else if (!stringLengthCheck(password, 8, 20)) {
-                System.out.println("Password has to have 8-20 characters");
-                return false;
-                // Check if the given username in lowercase is unique
-            } else if (this.userDao.getCache().containsKey(username.toLowerCase())) {
-                System.out.println("Username taken.");
-                return false;
+            if (!(stringLengthCheck(username, 3, 20) && stringLengthCheck(password, 8, 20))) {
+                return "Username must be 3-20 characters long and password 8-20";
+            }
+            if (!(username.matches("[A-Za-z0-9]*") && password.matches("[A-Za-z0-9]*"))) {
+                return "Username and password must contain only letters or numbers";
+            }
+            if (!password.equals(passwordAgain)) {
+                return "Please make sure the passwords match!";
+            }
+            // Check if the given username in lowercase is unique
+            if (this.userDao.getCache().containsKey(username.toLowerCase())) {
+                return "Sorry, the username is taken!";
             }
             User user = userDao.create(new User(username, password));
             this.userDao.getCache().put(username.toLowerCase(), user);
-            return true;
+            return "success";
         } catch (SQLException ex) {
             Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+            return "Sorry, something went wrong with the database!";
         }
-        return false;
     }
     
     /**
@@ -130,9 +130,6 @@ public class ManagerService {
      * @return logged in user, null if no user logged in
      */
     public User getLoggedIn() {
-        if (this.loggedIn == null) {
-            System.out.println("Nobody logged in!");
-        }
         return loggedIn;
     }
     
@@ -140,7 +137,6 @@ public class ManagerService {
      * Log out current user. Set PaintProjectDao's UserID to -1.
      */
     public void logout() {
-        System.out.println("Logging out");
         this.loggedIn = null;
         this.userProjectsByCategory = null;
         this.getLoggedIn();
@@ -171,7 +167,6 @@ public class ManagerService {
         // Check if the given username in lowercase is unique
         if (this.getUserProjectsByCategory().containsKey(projectCategory) && 
                 this.getUserProjectsByCategory().get(projectCategory).contains(projectToBeCreated)) {
-            System.out.println("Project already exists.");
             return false;
         }
         this.projectsDao.create(projectToBeCreated);
@@ -181,7 +176,7 @@ public class ManagerService {
     
     /**
      * Returns Logged User's projects sorted by category.
-     * @return HashMap<String, ArrayList<PaintProject>>
+     * @return HashMap with Strings as keys and ArrayLists of PaintProject as values
      */
     public HashMap<String, ArrayList<PaintProject>> returnUserProjectsByCategory() {
         ArrayList<String> userProjectCategeories = projectsDao.categoriesOfUser(loggedIn.getId());
@@ -192,6 +187,10 @@ public class ManagerService {
         return userPaintProjectsByCategory;
     }
     
+    /**
+     * Fetch current usersProjects.
+     * @return ArrayList of PaintProjects
+     */
     public ArrayList<PaintProject> fetchUserProjects() {
         ArrayList<PaintProject> userProjectsToReturn = new ArrayList<>();
         try {
@@ -199,9 +198,15 @@ public class ManagerService {
         } catch (SQLException ex) {
             Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
         }
+        userProjectsToReturn = (ArrayList<PaintProject>) userProjectsToReturn.stream().filter(p -> p.userId.equals(this.loggedIn.getId())).collect(Collectors.toList());
         return userProjectsToReturn;
     }
     
+    /**
+     * Use this object's PaintProjectDao-object to update a PaintProject.
+     * @param project to be updated
+     * @return true if successful, false otherwise
+     */
     public boolean updateProject(PaintProject project) {
         try {
             this.projectsDao.update(project);
@@ -212,7 +217,12 @@ public class ManagerService {
         }
     }
     
-    
+    /**
+     * Use this object's SubProjectDao-object to create a new SubProject.
+     * @param projectId of currently selected project
+     * @param subprojectName of the new SubProject
+     * @return New SubProject or already existing one if identical is found
+     */
     public SubProject createSubproject(Integer projectId, String subprojectName) {
         SubProject subprojectToBeCreated = new SubProject(projectId, subprojectName);
         try {
@@ -223,18 +233,33 @@ public class ManagerService {
         return null;
     }
     
+    /**
+     * Use this object's SubProjectDao-object to fetch SubProjects of a PaintProject.
+     * @param project PaintProject of which SubProjects are required
+     * @return ArrayList of SubProjects
+     */
     public ArrayList<SubProject> fetchSubprojects(PaintProject project) {
         ArrayList<SubProject> updatedSubprojects = (ArrayList<SubProject>) this.subprojectDao.list();
         updatedSubprojects = (ArrayList<SubProject>) updatedSubprojects.stream().filter(sb -> Objects.equals(sb.projectId, project.projectId)).collect(Collectors.toList());
         return updatedSubprojects;
     }
     
-    
+    /**
+     * Use this object's SubProjectDao-object to create a new Surface-object and attach it to associated SubProject-object.
+     * @param subprojectId of currently selected SubProject
+     * @param surfaceName of the new Surface
+     * @return true if successful, false otherwise
+     */
     public boolean createSurface(Integer subprojectId, String surfaceName) {
         return this.subprojectDao.createNewSurface(new Surface(subprojectId, surfaceName));
     }
     
-    
+    /**
+     * Use this object's LayerDao-object to create a new Layer-object.
+     * @param layerName of the new layer
+     * @param layerNote of the new layer
+     * @return Created Layer-object, or null if failed
+     */
     public Layer createLayer(String layerName, String layerNote) {
         try {
             return this.layerDao.create(new Layer(layerName, layerNote));
@@ -244,10 +269,31 @@ public class ManagerService {
         }
     }
     
+    /**
+     * Use this object's LayerDao-object to add relation between a SurfaceTreatment and a Layer.
+     * @param layerId of the Layer to add the Treatment to
+     * @param surfaceTreatmentId of the Treatment to add
+     * @return true if successful, false otherwise
+     */
+    public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
+        return this.layerDao.addTreatmentToLayer(layerId, surfaceTreatmentId);
+    }
+    
+    /**
+     * Use this object's SurfaceDao-object to add a relation between a Layer and a Surface.
+     * @param surfaceId of the surface to be attached
+     * @param layerId of the layer to be attached
+     * @return true if successful, false if exception occurred
+     */
     public boolean addLayerToSurface(Integer surfaceId, Integer layerId) {
         return this.surfaceDao.addLayerToSurface(surfaceId, layerId);
     }
     
+    /**
+     * Use this object's SurfaceDao-object to fetch Layer related to a Surface.
+     * @param surface of which Layers are required
+     * @return ArrayList of Layers, except when surface.surfaceId is -1. Then an empty ArrayList is returned.
+     */
     public ArrayList<Layer> fetchLayers(Surface surface) {
         if (surface.surfaceId == -1) {
             return new ArrayList<>();
@@ -256,7 +302,14 @@ public class ManagerService {
         return updatedSurface.getLayers();
     }
     
-    
+    /**
+     * Use this object's SurfaceTreatmentDao-object to create a new SurfaceTreatment.
+     * @param treatmentName of the new SurfaceTreatment
+     * @param treatmentType of the new SurfaceTreatment
+     * @param treatmentManufacturer of the new SurfaceTreatment
+     * @param treatmentColour of the new SurfaceTreatment as Paint
+     * @return Created SurfaceTreatment, an existing one if identical is found, or null if exception occurred.
+     */
     public SurfaceTreatment createTreatment(String treatmentName, String treatmentType, String treatmentManufacturer, Paint treatmentColour) {
         try {
             return this.surfaceTreatmentDao.create(new SurfaceTreatment(treatmentName, treatmentType, treatmentManufacturer, treatmentColour));
@@ -265,11 +318,11 @@ public class ManagerService {
             return null;
         }
     }
-      
-    public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
-        return this.layerDao.addTreatmentToLayer(layerId, surfaceTreatmentId);
-    }
     
+    /**
+     * Use this object's SurfaceTreatmentDao-object to fetch all SurfaceTreatments in the database.
+     * @return ArrayList of SurfaceTreatments
+     */
     public ArrayList<SurfaceTreatment> fetchAllSurfaceTreatments() {
         ArrayList<SurfaceTreatment> listOfAllTreatments = new ArrayList<>();
         this.surfaceTreatmentDao.list().forEach(st -> listOfAllTreatments.add(st));

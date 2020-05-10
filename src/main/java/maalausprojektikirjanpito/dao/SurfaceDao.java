@@ -41,7 +41,6 @@ public class SurfaceDao implements Dao<Surface, Integer> {
             stmt.close();
             connection.close();
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
         }
         this.surfacesCache = (ArrayList<Surface>) this.list();
     }
@@ -161,11 +160,22 @@ public class SurfaceDao implements Dao<Surface, Integer> {
         return surfaces;    
     }
     
+    /**
+     * Returns Surfaces of a SubProject.
+     * @param subprojectId SubProject whose Surfaces are required
+     * @return ArrayList of Surfaces
+     */
     public ArrayList<Surface> listOfSubprojectSurfaces(Integer subprojectId) {
         ArrayList<Surface> surfacesToReturn = (ArrayList<Surface>) this.getCache().stream().filter(s -> s.getSubprojectId().equals(subprojectId)).collect(Collectors.toList());
         return surfacesToReturn;
     }
     
+    /**
+     * Adds a relation between designated Surface and Layer to SurfaceLayers-table if one does not already exist in. Also adds the Layer to Surface in the cache.
+     * @param surfaceId of the surface to be related
+     * @param layerId of the layer to be related
+     * @return true if successful, false otherwise
+     */
     public boolean addLayerToSurface(Integer surfaceId, Integer layerId) {
         Surface surface = this.read(surfaceId);
         Layer layer = this.layerDao.read(layerId);
@@ -187,6 +197,12 @@ public class SurfaceDao implements Dao<Surface, Integer> {
         return false;
     }
     
+    /**
+     * Removes a relation between designated surface and layer in the LayerTreatments-table, and removes if from the Surface in this object's cache.
+     * @param surfaceId of the surface to be detached
+     * @param layerId of the layer to be detached
+     * @return true if successful, false otherwise
+     */
     public boolean removeLayerFromSurface(Integer surfaceId, Integer layerId) {
         Surface surface = this.read(surfaceId);
         Layer layer = this.layerDao.read(layerId);

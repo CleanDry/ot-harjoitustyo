@@ -33,7 +33,6 @@ public class PaintProjectDao implements Dao<PaintProject, Integer> {
             stmt.close();
             connection.close();
         } catch (Exception e) {
-            System.out.println("Error: " + e);
         }
         this.projectsCache = (ArrayList<PaintProject>) this.list();
     }

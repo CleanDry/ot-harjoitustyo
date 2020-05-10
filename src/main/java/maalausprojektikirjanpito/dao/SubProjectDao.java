@@ -41,7 +41,6 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
             stmt.close();
             connection.close();
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
         }
         this.subProjectsCache = (ArrayList<SubProject>) this.list();
     }
@@ -162,6 +161,11 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
         return subProjects;    
     }
     
+    /**
+     * Add a new Surface in the database with this object's surfaceDao, and add it to the related SubProject-object in the cache.
+     * @param surface to be added to the database.
+     * @return true if successful, false otherwise
+     */
     public boolean createNewSurface(Surface surface) {
         try {
             Surface newSurface = this.surfaceDao.create(surface);
@@ -175,6 +179,11 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
         return false;
     }
     
+    /**
+     * Update a Surface's details in the database with this object's surfaceDao, and replace old Surface in the related SubProject in the cache.
+     * @param surface new Surface
+     * @return true if successful, false otherwise
+     */
     public boolean updateSurface(Surface surface) {
         try {
             Surface updatedSurface = this.surfaceDao.update(surface);
@@ -188,6 +197,10 @@ public class SubProjectDao implements Dao<SubProject, Integer> {
         return false;
     }
     
+    /**
+     * Remove a Surface from the database with this object's surfaceDao, and this objects cache.
+     * @param surface 
+     */
     public void deleteSurface(Surface surface) {
         this.surfaceDao.delete(surface.getSurfaceId());
         this.subProjectsCache.stream().filter((sb) -> (sb.getSubProjectId().equals(surface.getSubprojectId()))).forEachOrdered((sb) -> {

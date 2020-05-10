@@ -2,9 +2,6 @@ package maalausprojektikirjanpito.domain;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.stream.Collectors;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class Utilities {
 
@@ -26,12 +23,22 @@ public class Utilities {
         return string.length() >= minLength && string.length() <= maxLength;
     }
     
+    /**
+     * Returns the set of factions of a list of PaintProjects.
+     * @param projects PaintProjects to go through
+     * @return HashSet of factions as Strings
+     */
     public static HashSet<String> factionsAsStrings(ArrayList<PaintProject> projects) {
         HashSet<String> factions = new HashSet<>();
         projects.stream().forEach(p -> factions.add(p.getProjectFaction()));
         return factions;
     }
     
+    /**
+     * Returns the set of categories of a list of PaintProjects.
+     * @param projects PaintProjects to go through
+     * @return HashSet of categories as Strings
+     */
     public static HashSet<String> categoriesAsStrings(ArrayList<PaintProject> projects) {
         HashSet<String> categories = new HashSet<>();
         projects.stream().forEach(p -> categories.add(p.getProjectCategory()));

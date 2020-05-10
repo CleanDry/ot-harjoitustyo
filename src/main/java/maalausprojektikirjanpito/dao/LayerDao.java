@@ -48,7 +48,6 @@ public class LayerDao implements Dao<Layer, Integer> {
             stmt2.close();
             connection.close();
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
         }
         this.layerCache = (ArrayList<Layer>) this.list();
     }
@@ -167,6 +166,13 @@ public class LayerDao implements Dao<Layer, Integer> {
         return layers;    
     }
     
+    /**
+     * Connects to the database and fetches all Layers related to the designated surfaceId. Uses injected Connection-object and does not close it.
+     * @param surfaceId of the Surface whose Layers are required
+     * @param connection injected Connection object. Is not closed during method.
+     * @return ArrayList of Layers
+     * @throws SQLException 
+     */
     public ArrayList<Layer> layersOfSurface(Integer surfaceId, Connection connection) throws SQLException {
         ArrayList<Layer> layersToReturn = new ArrayList<>();
         PreparedStatement stmt = connection.prepareStatement("SELECT Layers.layer_id, Layers.layer_name, Layers.layer_note "
@@ -185,6 +191,12 @@ public class LayerDao implements Dao<Layer, Integer> {
         return layersToReturn;
     }
     
+    /**
+     * Adds a relation between designated layer and surface treatment to LayerTreatments-table.
+     * @param layerId of the layer to be related
+     * @param surfaceTreatmentId of the surface to be related
+     * @return true if successful, false otherwise
+     */
     public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
         Layer layer = this.read(layerId);
         SurfaceTreatment surfaceTreatment = this.surfaceTreatmentDao.read(surfaceTreatmentId);
@@ -206,6 +218,12 @@ public class LayerDao implements Dao<Layer, Integer> {
         return false;
     }
     
+    /**
+     * Removes a relation between designated layer and surface treatment in the LayerTreatments-table.
+     * @param layerId of the layer to be detached
+     * @param surfaceTreatmentId of the surface to be detached
+     * @return true if successful, false otherwise
+     */
     public boolean removeTreatmentFromLayer(Integer layerId, Integer surfaceTreatmentId) {
         Layer layer = this.read(layerId);
         SurfaceTreatment surfaceTreatment = this.surfaceTreatmentDao.read(surfaceTreatmentId);

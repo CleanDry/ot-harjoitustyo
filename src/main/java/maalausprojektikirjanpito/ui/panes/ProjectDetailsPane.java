@@ -41,7 +41,7 @@ public class ProjectDetailsPane extends GridPane {
     private ComboBox<String> editProjectCategoryInputBox;
     GridPane editProjectDetailsPane;
 
-    public ProjectDetailsPane (ManagerService service) {
+    public ProjectDetailsPane(ManagerService service) {
         this.service = service;
         this.currentlyViewedProject = this.service.getCurrentlyViewedProject();
         
@@ -117,7 +117,7 @@ public class ProjectDetailsPane extends GridPane {
         projectDetailsPane.add(projectBooleanDetailsBox, 1, 0);
         projectDetailsPane.add(goToEditProjectDetailsButton, 2, 0);
         projectDetailsPane.setHgap(42);
-        GridPane.setMargin(projectBooleanDetailsBox, new Insets(3,0,0,0));
+        GridPane.setMargin(projectBooleanDetailsBox, new Insets(3, 0, 0, 0));
         
         
         // Button actions for projectDetailsPane
