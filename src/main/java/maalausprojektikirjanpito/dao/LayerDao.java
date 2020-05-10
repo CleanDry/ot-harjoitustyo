@@ -186,6 +186,7 @@ public class LayerDao implements Dao<Layer, Integer> {
     }
     
     public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
+//        System.out.println("layerId " + layerId + "surfaceTreatmentId " + surfaceTreatmentId);
         Layer layer = this.read(layerId);
         SurfaceTreatment surfaceTreatment = this.surfaceTreatmentDao.read(surfaceTreatmentId);
         int layerIndex = this.layerCache.indexOf(layer);
@@ -197,7 +198,7 @@ public class LayerDao implements Dao<Layer, Integer> {
                 stmt.executeUpdate();
                 stmt.close();
                 connection.close();
-                this.layerCache.get(layerIndex).getTreatments().add(this.surfaceTreatmentDao.create(surfaceTreatment));
+                this.layerCache.get(layerIndex).getTreatments().add(surfaceTreatment);
                 return true;
             } catch (SQLException ex) {
                 Logger.getLogger(SurfaceDao.class.getName()).log(Level.SEVERE, null, ex);
