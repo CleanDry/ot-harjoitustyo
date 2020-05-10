@@ -19,7 +19,7 @@ import maalausprojektikirjanpito.domain.Surface;
 import static maalausprojektikirjanpito.domain.Utilities.stringLengthCheck;
 
 
-public class SubprojectsPane extends BorderPane {
+public class SubprojectsTreePane extends BorderPane {
     private BorderPane subprojectsPane;
     private ManagerService service;
     private SurfacePane surfacePane;
@@ -39,7 +39,7 @@ public class SubprojectsPane extends BorderPane {
     VBox createNewSurfaceBox;
 
     
-    public SubprojectsPane(ManagerService service, SurfacePane surfacePane) {
+    public SubprojectsTreePane(ManagerService service, SurfacePane surfacePane) {
         this.service = service;
         this.surfacePane = surfacePane;
         

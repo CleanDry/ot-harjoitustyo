@@ -26,10 +26,10 @@ import static maalausprojektikirjanpito.domain.Utilities.stringLengthCheck;
 import maalausprojektikirjanpito.ui.UserInterface;
 
 
-public class ProjectsPane extends BorderPane {
+public class ProjectsTreePane extends BorderPane {
     private BorderPane projectsPane;
     private ManagerService managerService;
-    private SubprojectsPane subprojectsPane;
+    private SubprojectsTreePane subprojectsPane;
     private ProjectDetailsPane projectDetailsPane;
     
     private ComboBox<String> newProjectFactionInputBox;
@@ -42,7 +42,7 @@ public class ProjectsPane extends BorderPane {
     
     GridPane newProjectCreationPane;
 
-    public ProjectsPane(ManagerService managerService, SubprojectsPane subprojectsPane, ProjectDetailsPane projectDetailsPane) {
+    public ProjectsTreePane(ManagerService managerService, SubprojectsTreePane subprojectsPane, ProjectDetailsPane projectDetailsPane) {
         this.managerService = managerService;
         this.subprojectsPane = subprojectsPane;
         this.projectDetailsPane = projectDetailsPane;
@@ -181,18 +181,12 @@ public class ProjectsPane extends BorderPane {
         HashSet<String> factions = factionsAsStrings(projects);
         for (String faction : factions) {
             TreeItem factionItem = new TreeItem(faction);
-            ArrayList<PaintProject> projectsOfFaction = (ArrayList<PaintProject>) projects.stream().filter(p -> p.getProjectFaction().equals(faction)).collect(Collectors.toList());
-            factionItem.getChildren().addAll(projectsAsNodes(projectsOfFaction));
+            ArrayList<TreeItem> projectsOfFactionAsTreeItems = (ArrayList<TreeItem>) projects.stream().filter(p -> p.getProjectFaction().equals(faction)).map(p -> this.projectNodeAsTreeItem(p)).collect(Collectors.toList());
+            factionItem.getChildren().addAll(projectsOfFactionAsTreeItems);
             factionItem.setExpanded(true);
             factionTreeItems.add(factionItem);
         }
         return factionTreeItems;
-    }
-    
-    public ArrayList<TreeItem> projectsAsNodes(ArrayList<PaintProject> projects) {
-        ArrayList<TreeItem> projectsAsNodes = new ArrayList<>();
-        projects.forEach(p -> projectsAsNodes.add(this.projectNodeAsTreeItem(p)));
-        return projectsAsNodes;
     }
     
     public TreeItem projectNodeAsTreeItem(PaintProject project) {

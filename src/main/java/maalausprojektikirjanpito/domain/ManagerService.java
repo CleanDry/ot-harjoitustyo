@@ -6,12 +6,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.FontWeight;
 import maalausprojektikirjanpito.dao.LayerDao;
 import maalausprojektikirjanpito.dao.PaintProjectDao;
 import maalausprojektikirjanpito.dao.SubProjectDao;
@@ -105,79 +100,6 @@ public class ManagerService {
     }
     
     /**
-     * Create a new PaintProject.
-     * @param projectName for the project as String, must be 3-40 character long
-     * @param projectFaction for the project as String, must be 3-40 character long
-     * @param projectCategory for the project as String, must be 3-40 character long
-     * @return true if successful, false otherwise
-     * @throws SQLException
-     */
-    public boolean createPaintProject(String projectName, String projectFaction, String projectCategory) throws SQLException {
-        // Check if the given pair meets the criterias for length
-        if (!stringLengthCheck(projectName, 3, 40)) {
-            System.out.println("Project's name has to have 3-40 characters");
-            return false;
-        } else if (!stringLengthCheck(projectFaction, 3, 40)) {
-            System.out.println("Faction's name has to have 3-40 characters");
-            return false;
-        } else if (!stringLengthCheck(projectCategory, 3, 40)) {
-            System.out.println("Category's name has to have 3-40 characters");
-            return false;
-        }
-        PaintProject projectToBeCreated = new PaintProject(this.getLoggedIn().getId(), projectName, projectFaction, projectCategory);
-        
-        // Check if the given username in lowercase is unique
-        if (this.getUserProjectsByCategory().containsKey(projectCategory) && 
-                this.getUserProjectsByCategory().get(projectCategory).contains(projectToBeCreated)) {
-            System.out.println("Project already exists.");
-            return false;
-        }
-        this.projectsDao.create(projectToBeCreated);
-        this.userProjectsByCategory = this.returnUserProjectsByCategory();
-        return true;
-    }
-    
-    public SubProject createSubproject(Integer projectId, String subprojectName) {
-        SubProject subprojectToBeCreated = new SubProject(projectId, subprojectName);
-        try {
-            return this.subprojectDao.create(subprojectToBeCreated);
-        } catch (SQLException ex) {
-            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    
-    public boolean createSurface(Integer subprojectId, String surfaceName) {
-        return this.subprojectDao.createNewSurface(new Surface(subprojectId, surfaceName));
-    }
-    
-    public boolean addLayerToSurface(Integer surfaceId, Integer layerId) {
-        return this.surfaceDao.addLayerToSurface(surfaceId, layerId);
-    }
-    
-    public Layer createLayer(String layerName, String layerNote) {
-        try {
-            return this.layerDao.create(new Layer(layerName, layerNote));
-        } catch (SQLException ex) {
-            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-    
-    public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
-        return this.layerDao.addTreatmentToLayer(layerId, surfaceTreatmentId);
-    }
-    
-    public SurfaceTreatment createTreatment(String treatmentName, String treatmentType, String treatmentManufacturer, Paint treatmentColour) {
-        try {
-            return this.surfaceTreatmentDao.create(new SurfaceTreatment(treatmentName, treatmentType, treatmentManufacturer, treatmentColour));
-        } catch (SQLException ex) {
-            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-    
-    /**
      * login a user to the system.
      * @param username  User's username
      * @param password  User's password
@@ -210,9 +132,7 @@ public class ManagerService {
     public User getLoggedIn() {
         if (this.loggedIn == null) {
             System.out.println("Nobody logged in!");
-            return null;
         }
-        System.out.println("Logged in: " + loggedIn.getUsername());
         return loggedIn;
     }
     
@@ -225,17 +145,38 @@ public class ManagerService {
         this.userProjectsByCategory = null;
         this.getLoggedIn();
     }
-
-    public HashMap<String, ArrayList<PaintProject>> getUserProjectsByCategory() {
-        return userProjectsByCategory;
-    }
-
-    public void setUserProjectsByCategory(HashMap<String, ArrayList<PaintProject>> userProjectsByCategory) {
-        this.userProjectsByCategory = userProjectsByCategory;
-    }
-
-    public PaintProjectDao getProjectsDao() {
-        return projectsDao;
+    
+    /**
+     * Create a new PaintProject.
+     * @param projectName for the project as String, must be 3-40 character long
+     * @param projectFaction for the project as String, must be 3-40 character long
+     * @param projectCategory for the project as String, must be 3-40 character long
+     * @return true if successful, false otherwise
+     * @throws SQLException
+     */
+    public boolean createPaintProject(String projectName, String projectFaction, String projectCategory) throws SQLException {
+        // Check if the given pair meets the criterias for length
+        if (!stringLengthCheck(projectName, 3, 40)) {
+            System.out.println("Project's name has to have 3-40 characters");
+            return false;
+        } else if (!stringLengthCheck(projectFaction, 3, 40)) {
+            System.out.println("Faction's name has to have 3-40 characters");
+            return false;
+        } else if (!stringLengthCheck(projectCategory, 3, 40)) {
+            System.out.println("Category's name has to have 3-40 characters");
+            return false;
+        }
+        PaintProject projectToBeCreated = new PaintProject(this.getLoggedIn().getId(), projectName, projectFaction, projectCategory);
+        
+        // Check if the given username in lowercase is unique
+        if (this.getUserProjectsByCategory().containsKey(projectCategory) && 
+                this.getUserProjectsByCategory().get(projectCategory).contains(projectToBeCreated)) {
+            System.out.println("Project already exists.");
+            return false;
+        }
+        this.projectsDao.create(projectToBeCreated);
+        this.userProjectsByCategory = this.returnUserProjectsByCategory();
+        return true;
     }
     
     /**
@@ -261,10 +202,50 @@ public class ManagerService {
         return userProjectsToReturn;
     }
     
+    public boolean updateProject(PaintProject project) {
+        try {
+            this.projectsDao.update(project);
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    
+    public SubProject createSubproject(Integer projectId, String subprojectName) {
+        SubProject subprojectToBeCreated = new SubProject(projectId, subprojectName);
+        try {
+            return this.subprojectDao.create(subprojectToBeCreated);
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
     public ArrayList<SubProject> fetchSubprojects(PaintProject project) {
         ArrayList<SubProject> updatedSubprojects = (ArrayList<SubProject>) this.subprojectDao.list();
         updatedSubprojects = (ArrayList<SubProject>) updatedSubprojects.stream().filter(sb -> Objects.equals(sb.projectId, project.projectId)).collect(Collectors.toList());
         return updatedSubprojects;
+    }
+    
+    
+    public boolean createSurface(Integer subprojectId, String surfaceName) {
+        return this.subprojectDao.createNewSurface(new Surface(subprojectId, surfaceName));
+    }
+    
+    
+    public Layer createLayer(String layerName, String layerNote) {
+        try {
+            return this.layerDao.create(new Layer(layerName, layerNote));
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    public boolean addLayerToSurface(Integer surfaceId, Integer layerId) {
+        return this.surfaceDao.addLayerToSurface(surfaceId, layerId);
     }
     
     public ArrayList<Layer> fetchLayers(Surface surface) {
@@ -275,32 +256,33 @@ public class ManagerService {
         return updatedSurface.getLayers();
     }
     
+    
+    public SurfaceTreatment createTreatment(String treatmentName, String treatmentType, String treatmentManufacturer, Paint treatmentColour) {
+        try {
+            return this.surfaceTreatmentDao.create(new SurfaceTreatment(treatmentName, treatmentType, treatmentManufacturer, treatmentColour));
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+      
+    public boolean addTreatmentToLayer(Integer layerId, Integer surfaceTreatmentId) {
+        return this.layerDao.addTreatmentToLayer(layerId, surfaceTreatmentId);
+    }
+    
     public ArrayList<SurfaceTreatment> fetchAllSurfaceTreatments() {
         ArrayList<SurfaceTreatment> listOfAllTreatments = new ArrayList<>();
         this.surfaceTreatmentDao.list().forEach(st -> listOfAllTreatments.add(st));
         return listOfAllTreatments;
     }
     
-    public Node surfaceTreatmentAsNode(SurfaceTreatment surfaceTreatment) {
-        Label treatmentNameLabel = new Label(surfaceTreatment.getTreatmentName());
-        treatmentNameLabel.setStyle("-fx-font-weight: bold;");
-        Circle treatmentColourCircle = new Circle(6, surfaceTreatment.getTreatmentColour());
-        Label treatmentColourLabel = new Label(surfaceTreatment.getTreatmentManufacturer());
-        Label treatmentManufacturerLabel = new Label(surfaceTreatment.getTreatmentType());
-        HBox treatmentBox = new HBox(treatmentNameLabel, treatmentColourCircle, treatmentColourLabel, treatmentManufacturerLabel);
-        treatmentBox.setId(surfaceTreatment.getTreatmentId().toString());
-        treatmentBox.setSpacing(4);
-        return treatmentBox;
-    }
     
-    public boolean updateProject(PaintProject project) {
-        try {
-            this.projectsDao.update(project);
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public HashMap<String, ArrayList<PaintProject>> getUserProjectsByCategory() {
+        return userProjectsByCategory;
+    }
+
+    public void setUserProjectsByCategory(HashMap<String, ArrayList<PaintProject>> userProjectsByCategory) {
+        this.userProjectsByCategory = userProjectsByCategory;
     }
 
     public PaintProject getCurrentlyViewedProject() {

@@ -25,6 +25,7 @@ public class ProjectDetailsPane extends GridPane {
     public GridPane projectDetailsPane;
     private ManagerService service;
     private PaintProject currentlyViewedProject;
+    private ProjectsTreePane projectsPane;
     
     // Nodes for projectNameDetailsBox
     private Label viewProjectHeaderLabel;
@@ -168,7 +169,9 @@ public class ProjectDetailsPane extends GridPane {
                 this.editProjectCategoryInputBox.setValue("");
                 projectDetailsPane.getChildren().remove(editProjectDetailsPane);
                 projectDetailsPane.add(goToEditProjectDetailsButton, 2, 0);
-//                this.service.redrawProjectsTree();
+                if (this.projectsPane != null) {
+                    this.projectsPane.refresh();
+                }
                 this.refresh();
             }
         });
@@ -186,7 +189,14 @@ public class ProjectDetailsPane extends GridPane {
     public GridPane getProjectDetailsPane() {
         return this.projectDetailsPane;
     }
-    
+
+    public ProjectsTreePane getProjectsPane() {
+        return projectsPane;
+    }
+
+    public void setProjectsPane(ProjectsTreePane projectsPane) {
+        this.projectsPane = projectsPane;
+    }
     
     public void refresh() {
         this.currentlyViewedProject = this.service.getCurrentlyViewedProject();
