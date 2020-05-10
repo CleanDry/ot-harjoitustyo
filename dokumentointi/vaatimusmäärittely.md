@@ -4,43 +4,41 @@
 Sovelluksen avulla käyttäjä voi organisoida ja pitää kirjaa pienoismalliensa maalausprojekteista ja niissä käytetyistä maali- ja käsittely-yhdistelmistä. 
 
 ## Käyttäjät
-Sovelluksessa on aluksi vain yksi käyttäjärooli eli normaali käyttäjä. Käyttäjiä on aluksi vain yksi projektien tietojen muokkauksen suojaamiseksi. Myöhemmin sovellukseen saatetaan lisätä suuremmilla oikeuksilla varustettu pääkäyttäjä, ja mahdollisuus useampien käyttäjien lisäämiseen.
+Sovelluksessa on aluksi vain yksi käyttäjärooli eli normaali käyttäjä. Sovelluksessa on mahdollisuus useampien käyttäjien lisäämiseen.
 
-## Yksinkertainen käyttöliittymä painikkeilla
+## Automaattisesti päivittyvä graafinen käyttöliittymä painikkeilla
 Sovelluksessa voi navigoida käyttöliittymän avulla toimivilla otsikoiduilla painikkeilla. 
-Sovellus koostuu ainakin kolmesta näkymästä: Kirjautuminäkymä, käyttäjätunnuksen luomisnäkymä ja sovelluksen projektinäkymä.
+Sovellus koostuu kolmesta näkymästä: Kirjautuminäkymä, käyttäjätunnuksen luomisnäkymä ja sovelluksen työskentelynäkymä.
 
-## Suunnitellut toiminnallisuudet
+## Toiminnallisuudet
 
 ### Ennen kirjautumista
     • Käyttäjä voi luoda uuden tunnuksen ja salasanan
-        ◦ Käyttäjatunnuksen täytyy olla uniikki ja pituudeltaan vähintään 3 merkkiä
+        ◦ Käyttäjatunnuksen täytyy olla uniikki, pituudeltaan 3-20 merkkiä ja sisältää vain kirjaimia 
+          tai numeroja.
+        ◦ Salasanan täytyy olla pituudeltaan 8-20 merkkiä ja sisältää vain kirjaimia tai numeroja.
+        ◦ Salasana syötetään kahdesti oikeellisuuden varmentamiseksi.
     • Käyttäjä voi kirjautua järjestelmään
         ◦ Kirjautuminen onnistuu syötettäessä olemassaoleva käyttäjätunnus ja salasana 
           kirjautumislomakkeelle
         ◦ Jos käyttäjää ei ole olemassa tai salasana on virheellinen, ilmoittaa järjestelmä tästä
 ### Kirjautumisen jälkeen
-    • Käyttäjä voi lisätä ja poistaa tyhjiä projektikategorioita (esim. Warhammer, BFG, Sekalaiset)
-    • Kategorioihin voi lisätä ja poistaa tyhjiä projekteja (esim yksikkö, ajoneuvo, maastonkappale). 
-      Kategoriat ovat ryhmiteltynä projektiin liittyvän organisaation mukaan (esim Astra Militarum, maasto)
-    • Projekteihin voi lisätä ja poistaa alaprojekteja (esim. rivisotilas, kersantti, maastonkappaleen 
+    • Käyttäjä voi tarkastella ja muokata omia projektejaan, sekä kirjautua ulos.
+      Tiedot haetaan tietokannasta, jossa ne ovat pitkäaikaistalletuksessa.
+    • Käyttäjä voi lisätä uusia projekteja. Projekteille annetaan kategoria (esim. Warhammer 40k), 
+      faktio (esim. Imperial Guard) ja nimi.
+    • Projekteihin voi lisätä alaprojekteja (esim. rivisotilas, kersantti, maastonkappaleen 
       elementti). 
-      Projekteja voi merkitä valmistuneiksi ja valmistuneeksi merkityt projektit voi siirtää arkisto-osioon
-      Poistetut projektit siirtyvät poistetut-osioon, josta projekteja voi siirtää takaisin varsinaisiin 
-      tai poistaa kokonaan.
-    • Alaprojekteihin voi lisätä ja poistaa maalipintoja (esim. metalliset osat, vaatteet, jalusta).
-    • Maalipinnoille voi lisätä ja poistaa maaleja ja käsittelyjä (esim. puuliima, hiekka, pohjamaali, 
-      wash, lakkaus). 
-      Käsittelyillä ja maaleilla on järjestys jota voi muokata. 
-    • Käsittelyillä ja maaleilla on nimi, tyyppi, väritieto, valmistaja ja tunnistenumero. Ne tallentuvat 
+    • Alaprojekteihin voi lisätä maalipintoja (esim. metalliset osat, vaatteet, jalusta).
+    • Maalipinnoille voi lisätä maaleja ja käsittelyjä (esim. puuliima, hiekka, pohjamaali, 
+      wash, lakkaus), sekä näiden yhdistelmiä. 
+    • Käsittelyillä ja maaleilla on nimi, tyyppi, väritieto ja valmistaja. Ne tallentuvat 
       järjestelmään, ja tallennettuja tietoja voi valita muille maalipinnoille.
 
 ## Jatkokehitysideoita
     • Käyttöliittymän laajentaminen:
-        ◦ Pudotuslistaus
+        ◦ Tietojen editointimahdollisuuksien laajetaminen
+        ◦ tietojen poistamisen GUI-toteutus
+        ◦ Tietojen muokkauksen GUI-toteutus
         ◦ Listojen järjestyksen muokkaaminen
-        ◦ Maalien väritiedon tarkentaminen ja näyttäminen käyttöliittymässä
-        ◦ Maalien tietojen editointi
-    • Hakuominaisuus
-    • Artikkelien nimien muokkaaminen
-    • Maalipintojen kopioiminen projektista toiseen
+    • Automaattisen testauksen viimeistely
