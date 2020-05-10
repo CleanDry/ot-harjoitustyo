@@ -21,7 +21,7 @@ Projektien tarkasteluun on käytössä TreeView-olio ja sillä apuna TreeViewHel
 
 Sovelluksen rakentuu seuraavan luokkakaavion mukaisista luokista. Sovelluksen tietojen pysyväistallennus tapahtuu kuvan tietokantakaavion mukaiseen tietokantaan.
 
-![Image of the class diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Ohjelmistotekniikan%20harjoitysty%C3%B6n%20luokkakaavioluonnos.jpg)
+![Image of the class diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Attachments/Ohjelmistotekniikan%20harjoitysty%C3%B6n%20luokkakaavioluonnos.jpg)
 
 Toiminnallisista kokonaisuuksista vastaa luokan ServiceManager-olio UserInterface-luokassa. Luokka tarjoaa käyttöliittymälle kaikki sen tarvitsemat palvelut, kuten:
 - boolean login(String username, String password)
@@ -32,7 +32,7 @@ ManagerService pääsee käsiksi käyttäjiin ja projekteihin tietojen tallenuks
 
 ManagerServicen ja ohjelman muiden osien suhdetta kuvaava luokka ja pakkauskaavio:
 
-![Image of the package diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/package%20diagram.jpg)
+![Image of the package diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Attachments/package%20diagram.jpg)
 
 ## Tietojen pysyväistallennus
 
@@ -50,6 +50,6 @@ Käytetyn tietokannan kaavio löytyy aiemmin olleesta luokka- ja tietokantakaavi
 
 ### Uuden projektin luominen
 
-![Image of the sequence diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Initial%20sequence%20diagram.jpg)
+![Image of the sequence diagram](https://github.com/CleanDry/ot-harjoitustyo/blob/master/dokumentointi/Attachments/Initial%20sequence%20diagram.jpg)
 
 ## Ohjelman rakenteeseen jääneet heikkoudet
