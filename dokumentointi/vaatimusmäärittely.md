@@ -23,8 +23,7 @@ Sovellus koostuu kolmesta näkymästä: Kirjautuminäkymä, käyttäjätunnuksen
           kirjautumislomakkeelle
         ◦ Jos käyttäjää ei ole olemassa tai salasana on virheellinen, ilmoittaa järjestelmä tästä
 ### Kirjautumisen jälkeen
-    • Käyttäjä voi tarkastella ja muokata omia projektejaan, alaprojekteja, pintoja jne., 
-      sekä kirjautua ulos.
+    • Käyttäjä voi tarkastella ja muokata omia projektejaan, sekä kirjautua ulos.
       Tiedot haetaan tietokannasta, jossa ne ovat pitkäaikaistalletuksessa.
     • Käyttäjä voi lisätä uusia projekteja. Projekteille annetaan kategoria (esim. Warhammer 40k), 
       faktio (esim. Imperial Guard) ja nimi.
@@ -32,7 +31,7 @@ Sovellus koostuu kolmesta näkymästä: Kirjautuminäkymä, käyttäjätunnuksen
       elementti). 
     • Alaprojekteihin voi lisätä maalipintoja (esim. metalliset osat, vaatteet, jalusta).
     • Maalipinnoille voi lisätä maaleja ja käsittelyjä (esim. puuliima, hiekka, pohjamaali, 
-      wash, lakkaus). 
+      wash, lakkaus), sekä näiden yhdistelmiä. 
     • Käsittelyillä ja maaleilla on nimi, tyyppi, väritieto ja valmistaja. Ne tallentuvat 
       järjestelmään, ja tallennettuja tietoja voi valita muille maalipinnoille.
 
