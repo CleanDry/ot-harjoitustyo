@@ -166,7 +166,7 @@ public class SurfaceTreatmentDao implements Dao<SurfaceTreatment, Integer> {
         ArrayList<SurfaceTreatment> treatmentsToReturn = new ArrayList<>();
         PreparedStatement stmt = connection.prepareStatement("SELECT SurfaceTreatments.treatment_id, SurfaceTreatments.treatment_name, SurfaceTreatments.treatment_type, SurfaceTreatments.treatment_manufacturer, SurfaceTreatments.treatment_colour "
                 + "FROM Layers, LayerTreatments, SurfaceTreatments "
-                + "WHERE Layers.layerId = ? AND Layers.layerId = LayerTreatments.layerId AND LayerTreatments.treatment_id = SurfaceTreatments.treatment_id;");
+                + "WHERE Layers.layer_id = ? AND Layers.layer_id = LayerTreatments.layer_id AND LayerTreatments.treatment_id = SurfaceTreatments.treatment_id;");
         stmt.setInt(1, layerId);
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {

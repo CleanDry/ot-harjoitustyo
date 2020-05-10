@@ -54,7 +54,7 @@ public class Layer {
         this.layerNote = layerNote;
     }
 
-    public void setLayers(ArrayList<SurfaceTreatment> treatments) {
+    public void setTreatments(ArrayList<SurfaceTreatment> treatments) {
         this.treatments = treatments;
     }
 

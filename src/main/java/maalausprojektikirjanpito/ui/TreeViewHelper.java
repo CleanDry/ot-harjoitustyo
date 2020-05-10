@@ -7,6 +7,8 @@ import javafx.scene.control.TreeItem;
 import maalausprojektikirjanpito.domain.Layer;
 import maalausprojektikirjanpito.domain.PaintProject;
 import maalausprojektikirjanpito.domain.SubProject;
+import static maalausprojektikirjanpito.domain.Utilities.categoriesAsStrings;
+import static maalausprojektikirjanpito.domain.Utilities.factionsAsStrings;
 
 
 public class TreeViewHelper {
@@ -39,7 +41,7 @@ public class TreeViewHelper {
     
     public ArrayList<TreeItem> categoriesAsTreeItems(ArrayList<PaintProject> projects) {
         ArrayList<TreeItem> categoryTreeItems = new ArrayList<>();
-        HashSet<String> categories = this.categoriesAsStrings(projects);
+        HashSet<String> categories = categoriesAsStrings(projects);
         for (String category : categories) {
             TreeItem categoryItem = new TreeItem(category);
             ArrayList<PaintProject> projectsOfCategory = (ArrayList<PaintProject>) projects.stream().filter(p -> p.getProjectCategory().equals(category)).collect(Collectors.toList());
@@ -50,15 +52,9 @@ public class TreeViewHelper {
         return categoryTreeItems;
     }
     
-    public HashSet<String> categoriesAsStrings(ArrayList<PaintProject> projects) {
-        HashSet<String> categories = new HashSet<>();
-        projects.stream().forEach(p -> categories.add(p.getProjectCategory()));
-        return categories;
-    }
-    
     public ArrayList<TreeItem> factionsAsTreeItem(ArrayList<PaintProject> projects) {
         ArrayList<TreeItem> factionTreeItems = new ArrayList<>();
-        HashSet<String> factions = this.factionsAsStrings(projects);
+        HashSet<String> factions = factionsAsStrings(projects);
         for (String faction : factions) {
             TreeItem factionItem = new TreeItem(faction);
             ArrayList<PaintProject> projectsOfFaction = (ArrayList<PaintProject>) projects.stream().filter(p -> p.getProjectFaction().equals(faction)).collect(Collectors.toList());
@@ -67,12 +63,6 @@ public class TreeViewHelper {
             factionTreeItems.add(factionItem);
         }
         return factionTreeItems;
-    }
-    
-    public HashSet<String> factionsAsStrings(ArrayList<PaintProject> projects) {
-        HashSet<String> factions = new HashSet<>();
-        projects.stream().forEach(p -> factions.add(p.getProjectFaction()));
-        return factions;
     }
     
     public ArrayList<TreeItem> projectsAsNodes(ArrayList<PaintProject> projects) {

@@ -27,37 +27,29 @@ import maalausprojektikirjanpito.domain.SubProject;
 import maalausprojektikirjanpito.domain.Surface;
 import maalausprojektikirjanpito.domain.Layer;
 import maalausprojektikirjanpito.domain.SurfaceTreatment;
-import static maalausprojektikirjanpito.utilities.Utilities.stringLengthCheck;
+import static maalausprojektikirjanpito.domain.Utilities.categoriesAsStrings;
+import static maalausprojektikirjanpito.domain.Utilities.factionsAsStrings;
+import static maalausprojektikirjanpito.domain.Utilities.stringLengthCheck;
+import maalausprojektikirjanpito.ui.panes.ProjectDetailsPane;
+import maalausprojektikirjanpito.ui.panes.SurfacePane;
 
 public class UserInterface extends Application {
     private ManagerService managerService;
     private TreeViewHelper treeViewHelper;
-    private PaintProject currentlyViewedProject;
-    private Surface currentlyViewedSurface;
     
     private Label loggedInAsLabel;
     private ComboBox<String> newProjectFactionInputBox;
     private ComboBox<String> newProjectCategoryInputBox;
-    private ComboBox<String> editProjectFactionInputBox;
-    private ComboBox<String> editProjectCategoryInputBox;
     private ComboBox<String> newSurfaceSubprojectInputBox;
-    private ComboBox<String> layerInputBox;
-    private ComboBox<Node> layerTreatmentSelectionBox;
     
     private TreeView projectsTree;
-    private Label viewProjectHeaderLabel;
-    private Label viewProjectFactionLabel;
-    private Label viewProjectCategoryLabel;
-    private Label viewProjectArchivedLabel;
-    private Label viewProjectCompeletedLabel;
-    private Label viewProjectInTrashLabel;
-    private Button goToEditProjectDetailsButton;
-    private GridPane editProjectPane;
-    private GridPane projectDetailsPane;
     private TreeView subprojectsTree;
-    private TreeView layersTree;
+//    private TreeView layersTree;
     private Scene loginScene;
     private Scene mainScene;
+    
+    SurfacePane surfacePane;
+    ProjectDetailsPane projectDetailsPane;
     
 
     @Override
@@ -74,62 +66,33 @@ public class UserInterface extends Application {
         managerService = new ManagerService("PaintProjectManager.db");
         managerService.init();
         treeViewHelper = new TreeViewHelper(this);
-        currentlyViewedProject = new PaintProject(-1,-1,"No project selected", "-", "-", false, false, false);
-        currentlyViewedSurface = new Surface(-1, "No surface selected");
+        
         
         loggedInAsLabel = new Label();
         newProjectFactionInputBox = new ComboBox();
         newProjectCategoryInputBox = new ComboBox();
-        editProjectFactionInputBox = new ComboBox();
-        editProjectCategoryInputBox = new ComboBox();
         newSurfaceSubprojectInputBox = new ComboBox();
-        layerInputBox = new ComboBox();
-        layerTreatmentSelectionBox = new ComboBox();
-        layerTreatmentSelectionBox.setValue(new Label("0"));
         projectsTree = new TreeView<>(new TreeItem());
-        viewProjectHeaderLabel = new Label("Projects: No project selected");
-        viewProjectFactionLabel = new Label("Faction");
-        viewProjectCategoryLabel = new Label("Category");
-        viewProjectArchivedLabel = new Label("Archived: -");
-        viewProjectCompeletedLabel = new Label("Completed: -");
-        viewProjectInTrashLabel = new Label("In Trash: -");
-        goToEditProjectDetailsButton = new Button("Edit");
-        editProjectPane = new GridPane();
-        projectDetailsPane = new GridPane();
         subprojectsTree = new TreeView<>(new TreeItem("Subprojects"));
-        layersTree = new TreeView<>();
+        
+        surfacePane = new SurfacePane(this.managerService);
+        projectDetailsPane = new ProjectDetailsPane(this.managerService);
     }
     
     public void redrawProjectsTree() {
         ArrayList<PaintProject> updatedProjects = this.managerService.fetchUserProjects();
         projectsTree.setRoot(this.treeViewHelper.getTreeViewItems(updatedProjects));
-        newProjectFactionInputBox.getItems().addAll(treeViewHelper.factionsAsStrings(updatedProjects));
-        newProjectCategoryInputBox.getItems().addAll(treeViewHelper.categoriesAsStrings(updatedProjects));
-        editProjectFactionInputBox.getItems().addAll(treeViewHelper.factionsAsStrings(updatedProjects));
-        editProjectCategoryInputBox.getItems().addAll(treeViewHelper.categoriesAsStrings(updatedProjects));
+        newProjectFactionInputBox.getItems().addAll(factionsAsStrings(updatedProjects));
+        newProjectCategoryInputBox.getItems().addAll(categoriesAsStrings(updatedProjects));
     }
     
-    public void redrawProjectDetails() {
-        this.viewProjectHeaderLabel.setText("Project: " + this.currentlyViewedProject.getProjectName());
-        this.viewProjectFactionLabel.setText(this.currentlyViewedProject.getProjectFaction());
-        this.viewProjectCategoryLabel.setText(this.currentlyViewedProject.getProjectCategory());
-        this.viewProjectArchivedLabel.setText("Archived: " + this.currentlyViewedProject.getProjectArchived().toString());
-        this.viewProjectCompeletedLabel.setText("Completed: " + this.currentlyViewedProject.getProjectCompleted().toString());
-        this.viewProjectInTrashLabel.setText("In Trash: " + this.currentlyViewedProject.getProjectIntrash().toString());
-    }
     
     public void redrawSubprojectsTree() {
-        ArrayList<SubProject> updatedSubProjects = this.managerService.fetchSubprojects(currentlyViewedProject);
+        ArrayList<SubProject> updatedSubProjects = this.managerService.fetchSubprojects(this.managerService.getCurrentlyViewedProject());
         subprojectsTree.setRoot(this.treeViewHelper.getSubprojectTreeItems(updatedSubProjects));
         newSurfaceSubprojectInputBox.getItems().addAll(updatedSubProjects.stream().map(sb -> sb.getSubProjectName()).collect(Collectors.toList()));
     }
     
-    public void redrawLayersTree() {
-        ArrayList<Layer> updatedLayers = this.managerService.fetchLayers(currentlyViewedSurface);
-        layersTree.setRoot(this.treeViewHelper.getLayerTreeItems(this.currentlyViewedSurface.getSurfaceName(), updatedLayers));
-        layerInputBox.getItems().addAll(updatedLayers.stream().map(l -> l.getLayerName()).collect(Collectors.toList()));
-        layerTreatmentSelectionBox.getItems().addAll(this.managerService.fetchAllSurfaceTreatments());
-    }
     
     public TreeItem projectNodeAsTreeItem(PaintProject project) {
         Label projectName = new Label(project.getProjectName());
@@ -142,9 +105,8 @@ public class UserInterface extends Application {
         Button goToProjectViewerButton = new Button(">");
         goToProjectViewerButton.setStyle("-fx-font-size:7");
         goToProjectViewerButton.setOnAction(event -> {
-            this.currentlyViewedProject = project;
-            this.projectDetailsPane.getChildren().remove(editProjectPane);
-            this.redrawProjectDetails();
+            this.managerService.setCurrentlyViewedProject(project);
+            this.projectDetailsPane.refresh();
             this.redrawSubprojectsTree();
             
         });
@@ -160,8 +122,8 @@ public class UserInterface extends Application {
         Button goToSurfaceViewerButton = new Button(">");
         goToSurfaceViewerButton.setStyle("-fx-font-size:7");
         goToSurfaceViewerButton.setOnAction(event -> {
-            this.currentlyViewedSurface = surface;
-            this.redrawLayersTree();
+            this.managerService.setCurrentlyViewedSurface(surface);
+            this.surfacePane.refresh();
         });
         HBox surfaceAsNodeBox = new HBox(surfaceName, goToSurfaceViewerButton);
         surfaceAsNodeBox.setSpacing(10);
@@ -186,16 +148,6 @@ public class UserInterface extends Application {
         return treeItemToReturn;
     }
     
-    
-    
-//    private void treeViewClickHandler(Object newValue) {
-//        if (newValue != null) {
-//            TreeItem newValueTreeItem = (TreeItem) newValue;
-//            if (newValueTreeItem.isLeaf()) {
-//                this.currentlyViewedSurface = (Surface) newValue;
-//            }
-//        } 
-//    }
     
     @Override
     public void start(Stage primaryStage) throws Exception { 
@@ -472,124 +424,6 @@ public class UserInterface extends Application {
             }
         });
         
-        
-        // Nodes for projectNameDetailsBox
-        this.viewProjectHeaderLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 16));
-        this.viewProjectFactionLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
-        this.viewProjectCategoryLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
-        goToEditProjectDetailsButton.setStyle("-fx-font-size:10");
-        GridPane.setValignment(goToEditProjectDetailsButton, VPos.TOP);
-        VBox projectNameDetailsBox = new VBox(viewProjectHeaderLabel, viewProjectFactionLabel, viewProjectCategoryLabel);
-        projectNameDetailsBox.setSpacing(6);
-        VBox projectBooleanDetailsBox = new VBox(this.viewProjectArchivedLabel, this.viewProjectCompeletedLabel, this.viewProjectInTrashLabel);
-        projectBooleanDetailsBox.setSpacing(8);
-        // projectDetailsPane in class attributes
-        projectDetailsPane.setMinHeight(100);
-        projectDetailsPane.add(projectNameDetailsBox, 0, 0);
-        projectDetailsPane.add(projectBooleanDetailsBox, 1, 0);
-        projectDetailsPane.add(goToEditProjectDetailsButton, 2, 0);
-        projectDetailsPane.setHgap(42);
-        GridPane.setMargin(projectBooleanDetailsBox, new Insets(3,0,0,0));
-        
-        // Nodes for editProjectDetailsBox
-        Label editProjectNameLabel = new Label("Project Name");
-        TextField editedProjectNameInput = new TextField(this.currentlyViewedProject.getProjectName());
-        editedProjectNameInput.setStyle("-fx-font-size:10");
-        Label editProjectFactionLabel = new Label("Faction");
-        // editProjectFactionInputBox in class attributes
-        this.editProjectFactionInputBox.setValue(this.currentlyViewedProject.getProjectFaction());
-        this.editProjectFactionInputBox.setEditable(true);
-        this.editProjectFactionInputBox.setStyle("-fx-font-size:10");
-        Label editProjectCategoryLabel = new Label("Category");
-        // editProjectCategoryInputBox in class attributes
-        this.editProjectCategoryInputBox.setValue(this.currentlyViewedProject.getProjectCategory());
-        this.editProjectCategoryInputBox.setEditable(true);
-        this.editProjectCategoryInputBox.setStyle("-fx-font-size:10");
-        Button saveEditProjectButton = new Button("Save");
-        saveEditProjectButton.setStyle("-fx-font-size:10");
-        Button cancelProjectEditButton = new Button("Cancel");
-        cancelProjectEditButton.setStyle("-fx-font-size:10");
-        HBox editProjectButtonsBox = new HBox(saveEditProjectButton, cancelProjectEditButton);
-        editProjectButtonsBox.setAlignment(Pos.BASELINE_RIGHT);
-        editProjectButtonsBox.setSpacing(6);
-        Label editProjectMessage = new Label("");
-        editProjectMessage.setTextFill(Color.RED);
-        editProjectMessage.setMaxWidth(240);
-        editProjectMessage.setWrapText(true);
-        editProjectMessage.setStyle("-fx-font-size:10");
-        GridPane.setRowSpan(editProjectMessage, 3);
-        editProjectPane.add(editProjectNameLabel, 0, 0);
-        editProjectPane.add(editedProjectNameInput, 1, 0);
-        editProjectPane.add(editProjectButtonsBox, 2, 0);
-        editProjectPane.add(editProjectFactionLabel, 0, 1);
-        editProjectPane.add(this.editProjectFactionInputBox, 1, 1);
-        editProjectPane.add(editProjectMessage, 2, 1);
-        editProjectPane.add(editProjectCategoryLabel, 0, 2);
-        editProjectPane.add(this.editProjectCategoryInputBox, 1, 2);
-        editProjectPane.setHgap(9);
-        editProjectPane.setVgap(3);
-        
-        // Button actions for editProjectDetailsBox
-        saveEditProjectButton.setOnAction(event -> {
-            String editedProjectName = editedProjectNameInput.getText().trim();
-            String editedProjectFaction = this.editProjectFactionInputBox.getValue().trim();
-            String editedProjectCategory = this.editProjectCategoryInputBox.getValue().trim();
-            Boolean successfulEdit = true;
-            if (!this.currentlyViewedProject.getProjectName().equals(editedProjectName)) {
-                if (!(stringLengthCheck(editedProjectName, 3, 40) && editedProjectName.matches("[A-Za-z0-9\\s]*"))) {
-                    editProjectMessage.setText("Project name, faction and category must be 3-40 characters long and must only contain numbers and letters");
-                    successfulEdit = false;
-                } else {
-                    this.currentlyViewedProject.setProjectName(editedProjectName);
-                }
-            }
-            if (!this.currentlyViewedProject.getProjectFaction().equals(editedProjectFaction)) {
-                if (!(stringLengthCheck(editedProjectFaction, 3, 40) && editedProjectFaction.matches("[A-Za-z0-9\\s]*"))) {
-                    editProjectMessage.setText("Project name, faction and category must be 3-40 characters long and must only contain numbers and letters");
-                    successfulEdit = false;
-                } else {
-                    this.currentlyViewedProject.setProjectFaction(editedProjectFaction);
-                }
-            }
-            if (!this.currentlyViewedProject.getProjectCategory().equals(editedProjectCategory)) {
-                if (!(stringLengthCheck(editedProjectCategory, 3, 40) && editedProjectCategory.matches("[A-Za-z0-9\\s]*"))) {
-                    editProjectMessage.setText("Project name, faction and category must be 3-40 characters long and must only contain numbers and letters");
-                    successfulEdit = false;
-                } else {
-                    this.currentlyViewedProject.setProjectCategory(editedProjectCategory);
-                }
-            }
-            if (successfulEdit) {
-                this.managerService.updateProject(currentlyViewedProject);
-                editedProjectNameInput.setText("");
-                this.editProjectFactionInputBox.setValue("");
-                this.editProjectCategoryInputBox.setValue("");
-                projectDetailsPane.getChildren().remove(editProjectPane);
-                projectDetailsPane.add(goToEditProjectDetailsButton, 2, 0);
-                this.redrawProjectsTree();
-                this.redrawProjectDetails();
-            }
-        });
-        
-        cancelProjectEditButton.setOnAction(event -> {
-            editedProjectNameInput.setText("");
-            this.editProjectFactionInputBox.setValue("");
-            this.editProjectCategoryInputBox.setValue("");
-            projectDetailsPane.getChildren().remove(editProjectPane);
-            projectDetailsPane.add(goToEditProjectDetailsButton, 2, 0);
-        });
-        
-        // Button actions for projectNameDetailsBox
-        goToEditProjectDetailsButton.setOnAction(event -> {
-            if (this.currentlyViewedProject.getProjectId() != -1) {
-                projectDetailsPane.getChildren().remove(goToEditProjectDetailsButton);
-                editedProjectNameInput.setText(this.currentlyViewedProject.getProjectName());
-                this.editProjectFactionInputBox.setValue(this.currentlyViewedProject.getProjectFaction());
-                this.editProjectCategoryInputBox.setValue(this.currentlyViewedProject.getProjectCategory());
-                projectDetailsPane.add(editProjectPane, 2, 0);
-            }
-        });
-        
         // Nodes for subprojectsPane
         // SubprojectsTree in class attributes
 //        subprojectsTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> treeViewClickHandler(newValue));
@@ -636,12 +470,12 @@ public class UserInterface extends Application {
         
         // Button actions for subprojectsPane
         goToCreateNewSubprojectButton.setOnAction(event -> {
-            if (this.currentlyViewedProject.getProjectId() != -1) {
+            if (this.managerService.getCurrentlyViewedProject().getProjectId() != -1) {
                 subprojectsPane.setBottom(createNewSubprojectBox);
             }
         });
         goToCreateNewSurfaceButton.setOnAction(event -> {
-            if (this.currentlyViewedProject.getProjectId() != -1) {
+            if (this.managerService.getCurrentlyViewedProject().getProjectId() != -1) {
                 subprojectsPane.setBottom(createNewSurfaceBox);
             }
         });
@@ -664,7 +498,7 @@ public class UserInterface extends Application {
             } else if (!newSubprojectName.matches("[A-Za-z0-9\\s]*")) {
                 newSubprojectMessage.setText("Project name, faction and category must only contain numbers and letters");
             } else {
-                this.managerService.createSubproject(this.currentlyViewedProject.getProjectId(), newSubprojectName);
+                this.managerService.createSubproject(this.managerService.getCurrentlyViewedProject().getProjectId(), newSubprojectName);
                 newSubprojectInput.setText("");
                 newSubprojectMessage.setText("");
                 this.redrawSubprojectsTree();
@@ -680,7 +514,7 @@ public class UserInterface extends Application {
             } else if (!(newSurfaceName.matches("[A-Za-z0-9\\s]*") && newSubprojectName.matches("[A-Za-z0-9\\s]*"))) {
                 newSurfaceMessage.setText("Project name, faction and category must only contain numbers and letters");
             } else {
-                SubProject subproject = this.managerService.createSubproject(this.currentlyViewedProject.getProjectId(), newSubprojectName);
+                SubProject subproject = this.managerService.createSubproject(this.managerService.getCurrentlyViewedProject().getProjectId(), newSubprojectName);
                 if (subproject != null) {
                     this.managerService.createSurface(subproject.getSubProjectId(), newSurfaceName);
                 }
@@ -692,156 +526,12 @@ public class UserInterface extends Application {
             }
         });
         
-        // Nodes for surfacePane
-        Button goToCreateNewLayerButton = new Button("Create or edit a layer");
-        Button goToCreateNewTreatmentButton = new Button("Create a new treatment");
-        VBox goToNewLayerTreatmentButtonBox = new VBox(goToCreateNewLayerButton, goToCreateNewTreatmentButton);
-        goToNewLayerTreatmentButtonBox.setSpacing(6);
-        GridPane.setMargin(goToNewLayerTreatmentButtonBox, new Insets(6,0,0,0));
-        // treatmentsSelectionBox
-        Label createNewLayerNameLabel = new Label("Layer name");
-        // layerInputBox is in class attributes
-        layerInputBox.setStyle("-fx-font-size:10");
-        layerInputBox.setEditable(true);
-        // layerTreatmentSelectionBox in class attributes
-        this.layerTreatmentSelectionBox.setStyle("-fx-font-size:10");
-        VBox treatmentsSelectionBox = new VBox(layerTreatmentSelectionBox);
-        treatmentsSelectionBox.setSpacing(3);
-        // End of Treatment selection area
-        // createNewLayerPane
-        Label createNewLayerNoteLabel = new Label("Note");
-        TextField createNewLayerNoteInput = new TextField();
-        createNewLayerNoteInput.setStyle("-fx-font-size:10");
-        Label createNewLayerMessageLabel = new Label();
-        createNewLayerMessageLabel.setTextFill(Color.RED);
-        createNewLayerMessageLabel.setMaxWidth(240);
-        createNewLayerMessageLabel.setWrapText(true);
-        Button createNewLayerButton = new Button("Create");
-        Button cancelNewLayerButton = new Button("Cancel");
-        HBox createNewLayerButtonBox = new HBox(createNewLayerButton, cancelNewLayerButton);
-        createNewLayerButtonBox.setSpacing(6);
-        GridPane createNewLayerPane = new GridPane();
-        createNewLayerPane.add(createNewLayerNameLabel, 0, 0);
-        createNewLayerPane.add(layerInputBox, 0, 1);
-        createNewLayerPane.add(treatmentsSelectionBox, 0, 2);
-        createNewLayerPane.add(createNewLayerNoteLabel, 0, 3);
-        createNewLayerPane.add(createNewLayerNoteInput, 0, 4);
-        createNewLayerPane.add(createNewLayerButtonBox, 0, 5);
-        createNewLayerPane.add(createNewLayerMessageLabel, 1, 5);
-        createNewLayerPane.setVgap(6);
-        createNewLayerPane.setHgap(6);
-        // createNewTreatmentPane
-        Label createNewTreatmentHeaderLabel = new Label("Create a new surface treatment");
-        Label createNewTreatmentNameLabel = new Label("Treatment name");
-        TextField createNewTreatmentNameInput = new TextField();
-        createNewTreatmentNameInput.setStyle("-fx-font-size:10");
-        Label createNewTreatmentTypeLabel = new Label("Type");
-        ComboBox<String> createNewTreatmentTypeInputBox = new ComboBox();
-        createNewTreatmentTypeInputBox.setStyle("-fx-font-size:10");
-        createNewTreatmentTypeInputBox.setEditable(true);
-        Label createNewTreatmentManufacturerLabel = new Label("Manufacturer");
-        ComboBox<String> createNewTreatmentManufacturerInputBox = new ComboBox();
-        createNewTreatmentManufacturerInputBox.setStyle("-fx-font-size:10");
-        createNewTreatmentManufacturerInputBox.setEditable(true);
-        Label createNewTreatmentColourLabel = new Label("Colour");
-        ColorPicker createNewTreatmentColourPicker = new ColorPicker();
-        createNewTreatmentColourPicker.setStyle("-fx-font-size:10");
-        Button createNewTreatmentButton = new Button("Create");
-        Button cancelNewTreatmentButton = new Button("Cancel");
-        HBox createNewTreatmentButtonBox = new HBox(createNewTreatmentButton, cancelNewTreatmentButton);
-        createNewTreatmentButtonBox.setSpacing(6);
-        Label createNewTreatmentMessage = new Label("");
-        createNewTreatmentMessage.setTextFill(Color.RED);
-        GridPane.setColumnSpan(createNewTreatmentMessage, 3);
-        GridPane createNewTreatmentPane = new GridPane();
-        createNewTreatmentPane.add(createNewTreatmentHeaderLabel, 0, 0);
-        createNewTreatmentPane.add(createNewTreatmentNameLabel, 0, 1);
-        createNewTreatmentPane.add(createNewTreatmentNameInput, 0, 2);
-        createNewTreatmentPane.add(createNewTreatmentTypeLabel, 1, 1);
-        createNewTreatmentPane.add(createNewTreatmentTypeInputBox, 1, 2);
-        createNewTreatmentPane.add(createNewTreatmentManufacturerLabel, 2, 1);
-        createNewTreatmentPane.add(createNewTreatmentManufacturerInputBox, 2, 2);
-        createNewTreatmentPane.add(createNewTreatmentColourLabel, 3, 1);
-        createNewTreatmentPane.add(createNewTreatmentColourPicker, 3, 2);
-        createNewTreatmentPane.add(createNewTreatmentButtonBox, 0, 3);
-        createNewTreatmentPane.add(createNewTreatmentMessage, 1, 3);
-        createNewTreatmentPane.setVgap(6);
-        createNewTreatmentPane.setHgap(6);
-        
-        // Layout for surfacePane
-        BorderPane surfacePane = new BorderPane();
-        surfacePane.setCenter(this.layersTree);
-        surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
-        BorderPane.setMargin(this.layersTree, new Insets(0, 0, 12, 0));
-        
-        // Button actions for surfacePane
-        goToCreateNewLayerButton.setOnAction(event -> {
-            if (this.currentlyViewedSurface.getSubprojectId() != -1) {
-                surfacePane.setBottom(createNewLayerPane);
-            }
-        });
-        goToCreateNewTreatmentButton.setOnAction(event -> {
-            if (this.currentlyViewedSurface.getSubprojectId() != -1) {
-                surfacePane.setBottom(createNewTreatmentPane);
-            }
-        });
-        createNewLayerButton.setOnAction(event -> {
-            String newLayerName = layerInputBox.getValue().trim();
-            String newLayerNote = createNewLayerNoteInput.getText().trim();
-            Integer treatmentId = Integer.parseInt(this.layerTreatmentSelectionBox.getItems().get(0).getId());
-            if (!(stringLengthCheck(newLayerName, 3, 40) && stringLengthCheck(newLayerNote, 0, 60))) {
-                createNewLayerMessageLabel.setText("Layer name must be 3-40 and layer note must be 0-60 characters long");
-            } else if (!(newLayerName.matches("[A-Za-z0-9\\s]*") && newLayerNote.matches("[A-Za-z0-9\\s]*"))) {
-                createNewLayerMessageLabel.setText("Layer name and note must only contain numbers and letters");
-            } else {
-                Layer createdLayer = this.managerService.createLayer(newLayerName, newLayerNote);
-                this.managerService.addLayerToSurface(this.currentlyViewedSurface.getSurfaceId(), createdLayer.getLayerId());
-                if (treatmentId != 0) {
-                    this.managerService.addTreatmentToLayer(createdLayer.getLayerId(), treatmentId);
-                }
-                this.layerInputBox.setValue("");
-                this.layerTreatmentSelectionBox.setValue(new Label("0"));
-                createNewLayerNoteInput.setText("");
-                createNewLayerMessageLabel.setText("");
-                this.redrawLayersTree();
-                surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
-            }
-        });
-        createNewTreatmentButton.setOnAction(event -> {
-            String newTreatmentName = createNewTreatmentNameInput.getText().trim();
-            String newTreatmentType = createNewTreatmentTypeInputBox.getValue().trim();
-            String newTreatmentManufacturer = createNewTreatmentManufacturerInputBox.getValue().trim();
-            Paint newTreatmentColour = createNewTreatmentColourPicker.getValue();
-            if (!(stringLengthCheck(newTreatmentName, 3, 40) && stringLengthCheck(newTreatmentType, 3, 40) && stringLengthCheck(newTreatmentManufacturer, 3, 40))) {
-                createNewTreatmentMessage.setText("Treatment name, type and manufaturer must be 3-40 characters long");
-            } else if (!(newTreatmentName.matches("[A-Za-z0-9\\s]*") && newTreatmentType.matches("[A-Za-z0-9\\s]*") && newTreatmentManufacturer.matches("[A-Za-z0-9\\s]*"))) {
-                createNewTreatmentMessage.setText("Treatment name, type and manufaturer must only contain numbers and letters");
-            } else {
-                this.managerService.createTreatment(newTreatmentName, newTreatmentType, newTreatmentManufacturer, newTreatmentColour);
-                createNewTreatmentNameInput.setText("");
-                createNewTreatmentTypeInputBox.setValue("");
-                createNewTreatmentManufacturerInputBox.setValue("");
-                createNewTreatmentColourPicker.setValue(Color.WHITE);
-                createNewTreatmentMessage.setText("");
-                this.redrawLayersTree();
-                surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
-            }
-        });
-        cancelNewLayerButton.setOnAction(event -> {
-            this.layerInputBox.setValue("");
-            this.layerTreatmentSelectionBox.setValue(new Label(""));
-            surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
-        });
-        cancelNewTreatmentButton.setOnAction(event -> {
-            surfacePane.setBottom(goToNewLayerTreatmentButtonBox);
-        });
-        
         // Layout for viewProjectPane
         BorderPane viewProjectPane = new BorderPane();
-        viewProjectPane.setTop(projectDetailsPane);
+        viewProjectPane.setTop(projectDetailsPane.getProjectDetailsPane());
         viewProjectPane.setLeft(subprojectsPane);
-        viewProjectPane.setCenter(surfacePane);
-        BorderPane.setMargin(surfacePane, new Insets(0, 0, 0, 20));
+        viewProjectPane.setCenter(this.surfacePane.getSurfacePane());
+        BorderPane.setMargin(this.surfacePane, new Insets(0, 0, 0, 20));
         
         // Building the main scene
         BorderPane mainPane = new BorderPane();
@@ -858,10 +548,10 @@ public class UserInterface extends Application {
         primaryStage.setTitle("Paint Project Manager");
         primaryStage.setScene(loginScene);
         // debug view!
-//        this.managerService.login("Mikke", "KillerApp");
-//        this.redrawProjectsTree();
-//        loggedInAsLabel.setText("Logged in as: Debug");
-//        primaryStage.setScene(mainScene);
+        this.managerService.login("Mikke", "KillerApp");
+        this.redrawProjectsTree();
+        loggedInAsLabel.setText("Logged in as: Debug");
+        primaryStage.setScene(mainScene);
         // debug view end!
         primaryStage.show();
         primaryStage.setOnCloseRequest(e->{

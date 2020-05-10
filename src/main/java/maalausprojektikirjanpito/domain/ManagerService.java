@@ -18,7 +18,7 @@ import maalausprojektikirjanpito.dao.SubProjectDao;
 import maalausprojektikirjanpito.dao.SurfaceDao;
 import maalausprojektikirjanpito.dao.SurfaceTreatmentDao;
 import maalausprojektikirjanpito.dao.UserDao;
-import static maalausprojektikirjanpito.utilities.Utilities.*;
+import static maalausprojektikirjanpito.domain.Utilities.*;
 
 
 public class ManagerService {
@@ -30,8 +30,10 @@ public class ManagerService {
     private LayerDao layerDao;
     private SubProjectDao subprojectDao;
     private SurfaceDao surfaceDao;
-    private ArrayList<PaintProject> userProjects;
     private HashMap<String, ArrayList<PaintProject>> userProjectsByCategory;
+    
+    private PaintProject currentlyViewedProject;
+    private Surface currentlyViewedSurface;
 
     /**
      * Constructs a new ManagerService-object. UserDao-object inside ensures existence of a User table and database in the designated location.
@@ -46,6 +48,8 @@ public class ManagerService {
         this.surfaceDao = new SurfaceDao(databaseUrl, this.layerDao);
         this.subprojectDao = new SubProjectDao(databaseUrl, this.surfaceDao);
         
+        currentlyViewedProject = new PaintProject(-1,-1,"No project selected", "-", "-", false, false, false);
+        currentlyViewedSurface = new Surface(-1, -1, "No surface selected", false);
     }
     
     /**
@@ -272,9 +276,9 @@ public class ManagerService {
         return updatedSurface.getLayers();
     }
     
-    public ArrayList<Node> fetchAllSurfaceTreatments() {
-        ArrayList<Node> listOfAllTreatments = new ArrayList<>();
-        this.surfaceTreatmentDao.list().forEach(st -> listOfAllTreatments.add(this.surfaceTreatmentAsNode(st)));
+    public ArrayList<SurfaceTreatment> fetchAllSurfaceTreatments() {
+        ArrayList<SurfaceTreatment> listOfAllTreatments = new ArrayList<>();
+        this.surfaceTreatmentDao.list().forEach(st -> listOfAllTreatments.add(st));
         return listOfAllTreatments;
     }
     
@@ -298,5 +302,21 @@ public class ManagerService {
             Logger.getLogger(ManagerService.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+
+    public PaintProject getCurrentlyViewedProject() {
+        return currentlyViewedProject;
+    }
+
+    public void setCurrentlyViewedProject(PaintProject currentlyViewedProject) {
+        this.currentlyViewedProject = currentlyViewedProject;
+    }
+
+    public Surface getCurrentlyViewedSurface() {
+        return currentlyViewedSurface;
+    }
+
+    public void setCurrentlyViewedSurface(Surface currentlyViewedSurface) {
+        this.currentlyViewedSurface = currentlyViewedSurface;
     }
 }

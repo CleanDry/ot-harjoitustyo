@@ -99,8 +99,8 @@ public class LayerDao implements Dao<Layer, Integer> {
                 layer = new Layer(rs.getInt("layer_id"), rs.getString("layer_name"), rs.getString("layer_note"));
                 rs.close();
                 stmt.close();
+                layer.setTreatments(this.surfaceTreatmentDao.treatmentsOfLayer(layerId, connection));
                 connection.close();
-                // implement adding treatments to combinations as ArrayLists!
             } catch (SQLException e) {
                 System.out.println("Error: " + e.toString());
             }
@@ -157,8 +157,10 @@ public class LayerDao implements Dao<Layer, Integer> {
             }
             rs.close();
             stmt.close();
+            for (Layer layer : layers) {
+                layer.setTreatments(this.surfaceTreatmentDao.treatmentsOfLayer(layer.getLayerId(), connection));
+            }
             connection.close();
-            // implement adding treatments to layers as ArrayLists!
         } catch (SQLException e) {
             System.out.println("Error: " + e.toString());
         }
@@ -177,7 +179,9 @@ public class LayerDao implements Dao<Layer, Integer> {
         }
         rs.close();
         stmt.close();
-        // implement adding treatments to layers as ArrayLists!
+        for (Layer layer : layersToReturn) {
+            layer.setTreatments(this.surfaceTreatmentDao.treatmentsOfLayer(layer.getLayerId(), connection));
+        }
         return layersToReturn;
     }
     
